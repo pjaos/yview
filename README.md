@@ -37,7 +37,7 @@ If this is set to true then a password maybe entered over the ssh connection to 
 Where ausername is the ssh username. This should be set to your selected username.
  
 ## Starting the docker container
- `docker-compose up`
+ `docker-compose up -d`
 
 ## Stopping the docker container
  
