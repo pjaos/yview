@@ -17,7 +17,7 @@ This can either be installed via pip or using a deb package. Currently this has 
   `sudo pip uninstall icons_gw`
  
 ## deb installation
- In order to build the deb package you must install [pbuild(git@github.com:pjaos/). Once pbuild is installed the following commands will build and install the deb package.
+ In order to build the deb package you must install [pbuild](git@github.com:pjaos/). Once pbuild is installed the following commands will build and install the deb package.
   
    `git clone git@github.com:pjaos/icons_gw.git`
    
