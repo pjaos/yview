@@ -1,0 +1,10 @@
+Package: python-icons
+Section: Network
+Priority: optional
+Architecture: all
+Essential: no
+Depends: python-pjalib (>= 3.4)
+Installed-Size: 78
+Maintainer: Paul Austen <pausten.os@gmail.com>
+Description: Internet Connection Server (ICONS) for Y devices.
+Version: 3.5

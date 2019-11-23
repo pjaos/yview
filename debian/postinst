@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "The icons_gw, icons_json_check and"
+echo "mqtt_subscribe commands are now available."
