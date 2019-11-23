@@ -3,21 +3,22 @@ version: '3'
 services:
 
   icons:
-    environment:
-      - USER=changeusername
-      - USER_PASSWORD=
-      - SUDO=true
-      - SUDO_REQUIRE_PASSWORD=false
-      - ALLOW_SSH_PASSWORD=false
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        - USER=pjaa
+        - USER=${USER}
+        - USER_PASSWORD=
+        - SUDO=true
+        - SUDO_REQUIRE_PASSWORD=false
+        - ALLOW_SSH_PASSWORD=false
+
     volumes:
-      - ./ssh/:/home/pjaa/.ssh
+      - ./ssh/:/home/${USER}/.ssh
     ports:
       - "2222:22"
+
     stdin_open: true
     tty: true
     container_name: 'icons'
+

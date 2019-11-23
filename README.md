@@ -1,9 +1,9 @@
 # ICONS
 Internet Connection Server for the yView network. This git repo provides the ICON server functionality.
 
-This server exposes a single SSH port (by default 2222). This allows any device offering a service over a TCP socket (E.G web/ssh/vnc server etc) to be securley connected to without passing through a cloud service provider.
+This server exposes a single SSH port (by default 2222). This allows any device offering a service over a TCP socket (E.G web/ssh/vnc server etc) to be securely connected to without passing through a cloud service provider.
 
-Before generating the docker image the ssh/authorized_keys may be changed to include public ssh keys. Public ssh keys can be added to this file for all ICONS gateway or yView Linux/Windows or Android connections.
+Before generating the docker image the ssh/authorized_keys may be changed to include public ssh keys. Public ssh keys can be added to this file for all ICONS gateway or yView Linux/Windows or Android ssh connections.
 
 ## Prerequisites
 Before this docker image can be used the following must be installed.
@@ -17,7 +17,7 @@ Before this docker image can be used the following must be installed.
 The docker-compose.yml file contains some environmental variables that may be changed. These are
 
 ### USER
-This is set to `changeusername` by default and should be changed before use to a username of your choice.
+This is the username inside the container that is used for the ssh login. This should be set on the command line when the docker image is built. See `Building the docker container` section for more details.
 
 ### USER_PASSWORD
 This is the password for the above user. By default this is not set.
@@ -32,7 +32,9 @@ If SUDO=true then this options is used. If you wish to allow sudo access but req
 If this is set to true then a password maybe entered over the ssh connection to login to the ssh server. The default for this option is false. By default the only way to login to the ssh server is to include a public ssh key in the ssh/authorized_keys file.
 
 ## Building the docker container
- `docker-compose build`
+ `USER=ausername && docker-compose build`
+ 
+Where ausername is the ssh username. This should be set to your selected username.
  
 ## Starting the docker container
  `docker-compose up`
