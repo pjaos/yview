@@ -1,0 +1,10 @@
+Package: python-ydev
+Section: Network
+Priority: optional
+Architecture: all
+Essential: no
+Depends: python-pjalib (>= 1.2)
+Installed-Size: 2
+Maintainer: Paul Austen <pausten.os@gmail.com>
+Description: Y device message responder.
+Version: 1.7
