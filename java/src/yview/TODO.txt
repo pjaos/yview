@@ -1,0 +1,22 @@
+TO DO list
+
+- Restart icons.py while gui connected and session in device (line 308 MainFrame.java) is not connected.
+- Timeout device that we've not heard from for some time.
+- Get has PLANET_EARTH: {} in device dict
+- setSelectedDevice in MainFrame.java. IF a terminal and web interface is available
+  then display popup. Maybe this should be done when firing the event from the mouse listener ?
+- Restart icons.py, wygs.py cannot connect to device even if java GUI is restarted
+- Restart wygs.py, cannot connect to device unless java GUI is restarted
+	    
+	    
+- Data flow
+- processRXData() in ICONSConnection receives data from the ICONS
+  this calls processLocation() in same file
+  	this calls processDevice() in same file
+  	  this then sends the device info to all listeners via deviceListener.setDevice(device);
+  	
+  MainFrame.java is the device listener and implements the setDevice() method
+    In this method a tab is created if the location has not been heard from before.
+    
+    The deviceTablePanel.setDevice(device, groupName); is then called. In this method decisions 
+    are taken about when to update or add a new device to the deviceVector (local to deviceTablePanel).

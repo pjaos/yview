@@ -1,0 +1,18 @@
+TODO
+- Setup device in AP mode, switch to airstorm11 and then LAN does not appear in list of locations.
+
+
+DONE
+- Settings only workls from top level
+- locationListenerList grows as you go in and out of the LAN location. Fix.
+- Bug. Does not connect to server and gather device data when exiting settings.
+- Set server connection inactive and remote still show.
+- authorised keys not updated with username@host on Oikitel
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQD8Vdd5b0Wgoh/e/y87NsT3v2A1jHiaREFt0dTOr1DKlMOA5p69mB0CBXsJLtxFNRU/HgaxoYt9fWjg3EUj86TCwpf51WrM/VXm11qe8DWzx0sB5kuaJJsBW03l/YiuvIO3DlDOOVUfTkLS/89h6+iotqZisEtXzj8FL4bOpt1pYw== @
+- Make ssh keys longer
+- Add Option to delete local ssh keys.
+- When in LocationActivity and disconnect in settings no disconnect takes place, need resume in MainActivity.
+- Group does not disable visibility of non group devices
+- Add are you sure you want to delete ssh key dialog.
+
+

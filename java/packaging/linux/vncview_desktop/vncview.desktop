@@ -1,0 +1,18 @@
+[Desktop Entry]
+GenericName=VNCVIEW
+Name=VNCVIEW
+MimeType=text/plain;
+Exec=/usr/local/bin/vncview
+X-KDE-StartupNotify=true
+X-KDE-HasTempFileOption=true
+Icon=/usr/local/bin/yview_files/vncview.png
+Type=Application
+Terminal=false
+Categories=GNOME;GTK;Network;
+X-Ayatana-Desktop-Shortcuts=X-OpenNewWindow
+
+[X-OpenNewWindow Shortcut Group]
+Name=New Window
+Exec=/usr/local/bin/vncview
+TargetEnvironment=Unity
+

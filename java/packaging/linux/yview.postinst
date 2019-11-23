@@ -1,0 +1,7 @@
+#!/bin/sh
+
+echo "yview installation complete."
+echo "The vncview command is now available on the command line."
+echo "the VNCVIEW Launcher icon is available under Application / Internet."
+echo "The yview command is now available on the command line."
+echo "the YView Launcher icon is available under Application / Internet."
