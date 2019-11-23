@@ -1,0 +1,9 @@
+Package: yview 
+Section: internet
+Priority: optional
+Architecture: all
+Essential: no
+Suggests: docbook 
+Installed-Size: 22000000
+Maintainer: Paul Austen <pausten.os@gmail.com>
+Description: YView Application

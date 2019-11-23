@@ -1,0 +1,18 @@
+[Desktop Entry]
+GenericName=YView
+Name=YView
+MimeType=text/plain;
+Exec=/usr/local/bin/yview
+X-KDE-StartupNotify=true
+X-KDE-HasTempFileOption=true
+Icon=/usr/local/bin/yview_files/yview.png
+Type=Application
+Terminal=false
+Categories=GNOME;GTK;Network;
+X-Ayatana-Desktop-Shortcuts=X-OpenNewWindow
+
+[X-OpenNewWindow Shortcut Group]
+Name=New Window
+Exec=/usr/local/bin/yview
+TargetEnvironment=Unity
+

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/empty_string"
+        android:inputType="text"
+        android:key="@string/pref_group"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/group_label" />
+
+    <PreferenceCategory
+        android:title="@string/server_options_string"
+        android:key="server_options_string">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_server_active"
+            android:title="@string/active_label"/>
+
+        <EditTextPreference
+            android:capitalize="words"
+            android:defaultValue="@string/empty_string"
+            android:inputType="text"
+            android:key="@string/pref_server_username"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/server_username_label"
+            android:dependency="@string/pref_server_active" />
+
+        <EditTextPreference
+            android:capitalize="words"
+            android:defaultValue="@string/empty_string"
+            android:inputType="text"
+            android:key="@string/pref_server_address"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/server_address_label"
+            android:dependency="@string/pref_server_active" />
+
+        <uk.me.pausten.yview.view.ServerPortPicker
+            android:id="@+id/np"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="22"
+            android:key="@string/pref_server_port"
+            android:title="@string/server_port_label"
+            android:dependency="@string/pref_server_active" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

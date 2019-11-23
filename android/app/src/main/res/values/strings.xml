@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">YView</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="dialog_wyterm_text">Open Terminal or configure unit ?</string>
+    <string-array name="dialog_wyterm_options">
+        <item>Terminal</item>
+        <item>Configure</item>
+        <item>Cancel</item>
+    </string-array>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_term">TermActivity</string>
+    <string name="table_title">WyUnits</string>
+
+
+    <string name="true_string">true</string>
+
+    <string name="server_options_string">ICON Server Connection</string>
+
+    <string name="server_username_label">Username</string>
+    <string name="server_address_label">Server Address</string>
+    <string name="server_port_label">SSH Server Port</string>
+    <string name="active_label">Active</string>
+    <string name="group_label">Group</string>
+    <string name="test_connection_label">Test Connection</string>
+    <string name="delete_ssh_key_label">Delete Local SSH Key</string>
+
+
+    <string name="pref_server_username">pref_server_username</string>
+    <string name="pref_server_address">pref_server_address</string>
+    <string name="pref_server_port">pref_server_port</string>
+    <string name="pref_server_active">pref_server_active</string>
+    <string name="pref_group">pref_group</string>
+
+    <string name="empty_string"></string>
+
+    <string name="pref_settings">Settings</string>
+    <string name="pref_default_server_address"></string>
+
+    <string name="dialog_add_server_text">Check Server Connection ?</string>
+    <string name="dialog_delete_ssh_key">Are you sure you wish to delete the local ssh key ?</string>
+    <string-array name="dialog_yes_no_options">
+        <item>Yes</item>
+        <item>No</item>
+    </string-array>
+
+</resources>
