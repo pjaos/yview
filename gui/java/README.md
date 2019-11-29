@@ -16,18 +16,11 @@ command line below.
 ![alt text](yview.png "yView Main Window")
 
  Each tab shows the detected devices at a location. Each row in the 
- table is a separate device.
+ table is a separate device. If the user double clicks on a device a popup menu appears that lists the options available to connect to the device (E.G web browser, ssh, vnc etc...). 
  
- If you double click on a device a popup menu appears that lists the 
+ The options presented can be configured to connect using internal (to yView, E.G VNC) or external applications. 
  
- ways in which you may connect to the device (E.G ssh terminal, vnc, 
- 
- web browser, file browser. The options presented can be configured
- 
- to connect using internal applications (E.G VNC or external 
- 
- application (E.G web browser).
- 
+ ## File Menu
  The File Menu contains the following options
  
  - Group Name
@@ -50,3 +43,21 @@ command line below.
  
  - Exit
  Exit the application.
+ 
+The Reconnect button forces a reconnect to the ICONS.
+ 
+ ## Connection Examples
+
+### yView VNC
+The following screen shows a connection through yView to a VNC server running on an Ubuntu Linux machine using the internal VNC application.
+ ![alt text](yview_vnc.png "yView VNC Connection") 
+ 
+### yView Web Browser
+The following screen shows a connection through yView to a YSW8 device ([YSW8 details](https://projects.pausten.me.uk/ysw8.html)) device via an external web browser application.
+
+ ![alt text](yview_ysw8.png "yView VNC Connection")
+
+ ### yView ssh
+ The following screen shows a connection through yView to an ssh server on a Linux server via an external application.
+
+  ![alt text](yview_ssh.png "yView SSH Connection")

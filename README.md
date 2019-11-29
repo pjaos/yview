@@ -1,17 +1,62 @@
 # yView
-yView is a framework that allows any device that offers a service over a TCP 
-server connection to be connected to a private network using only an ssh server connected to the Internet.
+yView is a framework that allows any device which offers a service over a TCP socket to be connected to a private network using only an ssh server connected to the Internet. I use this for managing the IoT devices I have in the house and also for managing servers I have at different locations.
 
 The diagram below shows how the various parts of the yView system connect together.
 
 ![Overview](overview_diagram.png "yView Connected Network")
 
-The ICON server is a virtual device has it's functionality is inside a docker container. Internally (not exposed to the Internet) this docker image executes an MQTT server which brokers all messages in the yView system.
+## Architecture
+This is based around the Internet Connection Server (ICONS). This is virtualised as a docker container and has a single ssh port exposed to the Internet.
+SSH connections to the ICONS can be made from devices (small embedded devices al the way up to large servers) that offer services to the network (E.G http, ssh...).
+Connections to the ICONS can also be made from GUI applications running on Linux, Windows, MAC or Android platforms. From these GUI applications the services accessed (E.G start a web browser to to connect to a HTTP service).
 
-The ICONS gateway program will run on the same machine running the above docker image. At least one instance of the ICONS gateway should be running in 
-each (Home or Remote in the diagram, although many more networks can be connected) network. The ICONS gateway is responsible for sending are you there (AYT) broadcast messages to the local network. Devices and computers
-respond to these messages with JSON messages that contain details of the device including what services they support (E.G http on port 80).
+## System Components
 
-The ydev utility allows any device or computer to become the destination of a connection. The ydev utility is a python application. C libraries are also available so to add the functionality required to allow smaller (unable to run python) to become part of the yView network.
+### ICONS
+The ICONS (Internet Connection Server) is a docker container that exposes a single ssh port to the outside world. This container runs
 
-Computers, tablets and phones connected to the yView network can use the Java or Android GUI software to connect to devices and computers in the yView network.
+- An MQTT server which brokers all messages that pass between devices which offer a service and those that wish to connect to these devices.
+- An MQTT RPC server. This allows remote procedure calls (RPC) to be made from the ICONS gateway component (ICONS GW) detailed below.
+- A standard Linux ssh server.
+
+One advantage in using a docker container to perform this function is that it effectively sandboxes the part of the system exposed to the Internet. The only persistent data in this docker container is the ssh authorised_keys file.
+
+The above diagram shows Home and Remote networks but many more can be connected to a single ICONS. See [icons/](icons/) for more information.
+
+### ICONS GW
+The ICONS gateway program typically runs on the same machine that the ICONS docker image is running. At least one instance of the ICONS gateway should be running in each network. It is the responsibility of the ICONS GW to discover devices (small embedded devices all the way up to large servers) on the local IP sub network and forward the responses to the ICONS. The ICONS GW also has the responsibility of managing connections between the devices that it discovers and the ICONS. See [icons_gw/](icons_gw/) for more information.
+
+### icons_rpc_provider
+This package provides an MQTT RPC client that connects to the ICON server. This allows the ICONS GW to discover free TCP/IP ports inside the ICONS docker container. This is built into the ICONS docker container.  See [icons_rpc_provider/](icons_rpc_provider/) for more information.
+
+### ydev
+This is a small python program that runs on any device (small embedded devices all the way up to large servers) that sits on an IP subnetwork that can hear discovery messages from an ICONS GW instance. See [ydev/](ydev/) for more information.
+
+### gui
+Two yView applications are currently available. 
+
+- A Java application that will run on Linux, Windows and Apple MAC computers. Currently installers only exist for Linux computers. See [gui/java](gui/java) for more information on this application.
+
+- An Android application. See [gui/android](gui/android) for more information on this application.
+
+## System Operation
+This section gives an overview of how the system architecture operates under normal circumstances.
+
+An instance of the Icons docker image must be running as all system communication passes through this.
+
+When an ICONS GW is started it builds an ssh connection to the ICONS. If the ICONS does not have a copy of the ssh public key (local to the ICONS GW) then the user is prompted to login to the ICONS server (over ssh) and the public ssh key is copied to the ICONS. Once the public ssh key is copied the ICONS GW will automatically login to the ICONS. Once ssh connection to the ICONS is built the ICONS GW builds another connection through the ssh connection (tunnelled) to the MQTT server running inside the ICONS.
+
+The ICONS gateway then sends out broadcast messages (UDP) on it's local sub network in order to discover devices that are offering services to the yView network. These messages are referred to as 'are you there' (AYT) messages. As each response (JSON) is received the ICONS GW builds reverse ssh tunnels to the ICONS. These ssh tunnels are used later when a GUI client wishes to connect to the device. The responses are also forwarded to the ICONS over the ssh tunnel built previously to the ICONS MQTT server.
+
+The GUI application (Java or Android) starts by building an ssh connection to the ICONS. Immediately after this  another connection is built through this ssh connection (tunnelled) to the MQTT server running inside the ICONS for use below. The GUI application then subscribes to an MQTT topic and starts receiving messages from connected devices that responded to any AYT message (from an ICONS GW) in the yView network. These response messages detail a location and type of service along with other information about the device.
+
+The GUI then displays the location as a tab containing a table. Each table row equates to a single remote device. If the user double clicks a table row they are presented with options to connect to that device. These options typically involve starting an external program to connect to the service selected (E.G web browser for http services, ssh client for an ssh service or a vnc client for a VNC service). 
+
+When the user attempts to connect to a remote device another tunnelled ssh connection is built to the ICONS and connected to the previously connected reverse ssh tunnel. This enables a direct connection from the GUI application to the remote device through the ICONS. E.G a web browser can communicate directly with the remote device.
+
+## Networking considerations
+
+You home router must be configured to forward a single TCP/IP port from it's Internet to the ICONS ssh port.
+
+Another consideration is that your routers IP address may not be static as it is probably served from your ISP's DHCP server. Therefore it maybe necessary to use a dynamic DNS provider (E.G [Free DDNS](https://freedns.afraid.org/)) in order that you can connect to a domain name that is constantly updated with your routers IP address on the Internet. See [Dynamic DNS](https://en.wikipedia.org/wiki/Dynamic_DNS) for more details.
+

@@ -32,7 +32,7 @@ This can either be installed via pip or using a deb package. Currently this has 
     `sudo dpkg -r python-icons`
  
 # Configuration
-Run the `icons_gw config' command. You will be prompted to enter a number of parameters as detailed below.
+Run the `icons_gw --config' command. You will be prompted to enter a number of parameters as detailed below.
 
 - `The ICON server (ICONS) address`
 This is address (IP address or domain name) of the icon server over the internet. Typically this will be you routers IP address as provided via DHCP from you ISP. You may wish to setup a DDNS if you ISP does not provide a static IP address. In this case you'll need a DNS domain name to link your router IP address too.
