@@ -8,10 +8,10 @@ services:
       dockerfile: Dockerfile
       args:
         - USER=${USER}
-        - USER_PASSWORD=
+        - USER_PASSWORD=changemeNOW
         - SUDO=true
         - SUDO_REQUIRE_PASSWORD=false
-        - ALLOW_SSH_PASSWORD=false
+        - ALLOW_SSH_PASSWORD=true
 
     volumes:
       - ./ssh/:/home/${USER}/.ssh
