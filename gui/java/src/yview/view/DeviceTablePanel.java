@@ -72,7 +72,7 @@ public class DeviceTablePanel extends JPanel implements MouseListener, ActionLis
 	Vector      <DeviceTableSelectionListener>deviceTableSelectionListenerList;
 	JPopupMenu  launcherPopupMenu;
 	String 		location;
-	Timer		deviceTimeoutTimer;
+	Timer		deviceCheckTimer;
 	HighLightedRowRenderer highLightedRowRenderer;
 	boolean 	lan=false;
 	GenericOKCancelDialog optionsConfigDialog;
@@ -165,9 +165,9 @@ public class DeviceTablePanel extends JPanel implements MouseListener, ActionLis
 		highLightedRowRenderer.setJsonDevVector(jsonDeviceVector);
 		deviceTableSelectionListenerList = new Vector<DeviceTableSelectionListener>(); 
 
-		deviceTimeoutTimer = new Timer(Constants.CHECK_DEVICE_POLL_MS, this);
-		deviceTimeoutTimer.setInitialDelay(Constants.CHECK_DEVICE_POLL_MS);
-		deviceTimeoutTimer.start(); 
+		deviceCheckTimer = new Timer(Constants.CHECK_DEVICE_POLL_MS, this);
+		deviceCheckTimer.setInitialDelay(Constants.CHECK_DEVICE_POLL_MS);
+		deviceCheckTimer.start(); 
 	}
 
 	class HighLightedRowRenderer extends DefaultTableCellRenderer {
@@ -1093,7 +1093,25 @@ public class DeviceTablePanel extends JPanel implements MouseListener, ActionLis
 		}
 
 	}
-
+	
+	/**
+	 * @brief Check for device warnings in the list of devices that we have.
+	 */
+	private void checkForDeviceWarnings() {
+		for( JSONObject jsonD : jsonDeviceVector ) {
+			long updateMS = JSONProcessor.GetLocalRxTimeMs(jsonD);
+			if( updateMS != -1 ) {
+				long now = System.currentTimeMillis();
+				long msAgo = now-updateMS;
+				if( msAgo > MainFrame.GetDeviceTimeoutWarningMilliSeconds() ) {
+					//Fire a table update so that the table is rendered with rows highlighted
+					//that have breached the warning timeout.
+					((AbstractTableModel) table.getModel()).fireTableDataChanged();
+				}		
+			}
+		}
+	}	
+	
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseExited(MouseEvent e) {}
 	public void mousePressed(MouseEvent e) {}
@@ -1109,8 +1127,8 @@ public class DeviceTablePanel extends JPanel implements MouseListener, ActionLis
 				textEditorButton = textEditDialog.getOKPanel().getOKButton();
 			}
 	
-			if( e.getSource() == deviceTimeoutTimer ) {
-				
+			if( e.getSource() == deviceCheckTimer ) {
+				checkForDeviceWarnings();
 				checkForDeviceTimeouts();
 				updateCfgDialog=false;
 				
