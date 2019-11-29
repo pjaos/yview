@@ -93,6 +93,7 @@ public class ICONSConnectionManager extends Thread {
 					iconSConnection.setICONServer(iconServer);
 					iconSConnection.setDeviceListeners(deviceListeners);
 					iconSConnection.setStatusBar(statusBar);
+					iconSConnection.resetReconnectTimer();
 					iconSConnection.start();
 					iconsConnectionList.add(iconSConnection);
 					

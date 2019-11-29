@@ -204,6 +204,13 @@ public class ICONSConnection extends Thread implements MqttCallback {
 			}
 		}
 	}
+	
+	/**
+	 * @brief Reset the reconnect delay timer.
+	 */
+	public void resetReconnectTimer() {
+		startMS=System.currentTimeMillis();
+	}
 
 	/**
 	 * @brief Set the associated ICONServer object.
