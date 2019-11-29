@@ -1,4 +1,0 @@
-#Sun Sep 22 18:02:43 BST 2019
-base.0=/scratch/git_repos/mqtt_yview/android/app/build/intermediates/dex/debug/mergeDexDebug/out/classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
