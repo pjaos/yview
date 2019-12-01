@@ -14,8 +14,8 @@
         <pathelement location="bin"/>
         <pathelement location="lib/jsch-0.1.54.jar"/>
         <pathelement location="lib/org.eclipse.paho.client.mqttv3-1.2.1.jar"/>
-        <pathelement location="lib/pja_1.0.jar"/>
-        <pathelement location="lib/mtightvnc_1.0.jar"/>
+        <pathelement location="lib/pja_1.1.jar"/>
+        <pathelement location="lib/mtightvnc_1.1.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
