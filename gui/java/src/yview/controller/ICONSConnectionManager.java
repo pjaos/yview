@@ -64,8 +64,18 @@ public class ICONSConnectionManager extends Thread {
 	
 	/**
 	 * @brief Force a shutdown of this ICONSConnectionManager instance.
+	 * @param pauseReconnectDelay If we are reconnecting to the ICONS
+	 *        and pauseReconnectDelay is true then we reconnect as quickly as 
+	 *        possible for a about 3 seconds after this method is called.
+	 *        After this we return to the delaying a reconnect to the ICONS
+	 *        should the connection drop.
 	 */
-	public void shutdown() {
+	public void shutdown(boolean pauseReconnectDelay) {
+		if( pauseReconnectDelay && iconsConnectionList != null && iconsConnectionList.size() > 0 ) {
+			for( ICONSConnection iconsConnection : iconsConnectionList ) {
+				iconsConnection.shutdown(pauseReconnectDelay);
+			}
+		}
 		running = false;
 	}
 
@@ -75,7 +85,7 @@ public class ICONSConnectionManager extends Thread {
 	private void shutDownConnections() {
 		if( iconsConnectionList != null && iconsConnectionList.size() > 0 ) {
 			for( ICONSConnection iconsConnection : iconsConnectionList ) {
-				iconsConnection.shutdown();
+				iconsConnection.shutdown(false);
 			}
 		}
 	}
@@ -96,7 +106,6 @@ public class ICONSConnectionManager extends Thread {
 					iconSConnection.setICONServer(iconServer);
 					iconSConnection.setDeviceListeners(deviceListeners);
 					iconSConnection.setStatusBar(statusBar);
-					iconSConnection.resetReconnectTimer();
 					iconSConnection.start();
 					iconsConnectionList.add(iconSConnection);
 					

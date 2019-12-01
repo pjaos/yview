@@ -44,7 +44,7 @@ public class ICONSConnection extends Thread implements MqttCallback {
 	private StatusBar statusBar;
 	private boolean running;
 	private Vector<DeviceMsgDebug> deviceMsgDebugList = new Vector<DeviceMsgDebug>();
-	private long startMS = System.currentTimeMillis();
+	private long startMS;
 	private boolean shutdown;
 	private MqttClient mqttClient;
 	private String mqttSubscriptionTopic = "#";
@@ -71,11 +71,21 @@ public class ICONSConnection extends Thread implements MqttCallback {
 	/**
 	 * @brief Shutdown the associated connection to the ICON server. This may block
 	 *        for up to 10 seconds waiting for the connection to drop.
+	 * @param pauseReconnectDelay If we are reconnecting to the ICONS
+	 *        and pauseReconnectDelay is true then we reconnect as quickly as 
+	 *        possible for a about 3 seconds after this method is called.
+	 *        After this we return to the delaying a reconnect to the ICONS
+	 *        should the connection drop.
 	 */
-	public void shutdown() {
+	public void shutdown(boolean pauseReconnectDelay) {
 		SSHWrapper.Disconnect(session, statusBar);
 		session = null;
 		running = false;
+		
+		if( pauseReconnectDelay ) {
+			updateStartTime();
+		}
+		
 		long startShutdownMS = System.currentTimeMillis();
 		while (!shutdown) {
 			if (System.currentTimeMillis() > startShutdownMS + 10000) {
@@ -101,6 +111,7 @@ public class ICONSConnection extends Thread implements MqttCallback {
 	public void run() {
 		int freePort;
 		JSch jsch = new JSch();
+		startMS = System.currentTimeMillis();
 
 		shutdown = false;
 		running = true;
@@ -194,10 +205,12 @@ public class ICONSConnection extends Thread implements MqttCallback {
 	}
 	
 	/**
-	 * @brief Reset the reconnect delay timer.
+	 * @brief Update the start time to now.
+	 *        Therefore reconnects to the ICONS will occur quickly 
+	 *        for a period of time should a disconnect occur.
 	 */
-	public void resetReconnectTimer() {
-		startMS=System.currentTimeMillis();
+	private void updateStartTime() {
+		startMS = System.currentTimeMillis();
 	}
 
 	/**

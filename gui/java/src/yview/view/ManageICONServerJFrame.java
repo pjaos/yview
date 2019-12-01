@@ -135,7 +135,7 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 			saveServerDetails(serverProperties);
 			setVisible(false);
 			statusBar.close();
-			connectToServer();
+			connectToServer(true);
 		} else if (e.getSource() == cancelButton) {
 			setVisible(false);
 			statusBar.close();
@@ -144,16 +144,21 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 	}
 	
 	/**
-	 * @brief Connect or reconnect to the ICON server.
+	 * @brief Connect or Reconnect to the ICON server.
+	 * @param pauseReconnectDelay If we are reconnecting to the ICONS
+	 *        and pauseReconnectDelay is true then we reconnect as quickly as 
+	 *        possible for a about 3 seconds after this method is called.
+	 *        After this we return to the delaying a reconnect to the ICONS
+	 *        should the connection drop.
 	 */
-	public void connectToServer() {
+	public void connectToServer(boolean pauseReconnectDelay) {
 		statusBar.close();
 		try {
 			mainFrame.initTabs();
 		}
 		catch(SocketException ex) {}
 		if( iconsConnectionManager != null ) {
-			iconsConnectionManager.shutdown();
+			iconsConnectionManager.shutdown(pauseReconnectDelay);
 			iconsConnectionManager.connectICONS(getICONServerList());
 		}
 	}

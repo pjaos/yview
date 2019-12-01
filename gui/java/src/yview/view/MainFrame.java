@@ -422,7 +422,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
     		  //Execute the reconnection from another thread so as not to block
     		  new Thread() {
     			  public void run() {
-    				  manageICONServerJFrame.connectToServer();
+    				  manageICONServerJFrame.connectToServer(true);
     			  }
     		  }.start();
     	  }
