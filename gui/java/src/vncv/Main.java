@@ -3,18 +3,18 @@
  *                                                                                       *
  * This program is distributed under the terms of the GNU Lesser General Public License  *
  *****************************************************************************************/
-package sshpfg;
+package vncv;
 
 import java.awt.*;
 
 import javax.swing.UIManager;
 
-import pja.sshpfg.view.*;
-import pja.sshpfg.model.*;
+import vncv.model.Config;
+import vncv.view.*;
 
 public class Main
 {
-  public static final String CONFIG_FILENAME=GUI.PROGRAM_NAME.toLowerCase()+".cfg";
+  public static final String CONFIG_FILENAME=VNCV.PROGRAM_NAME.toLowerCase()+".cfg";
   public static final String OS_NAME = System.getProperty("os.name");
   
   public static final String DEFAULT_WINDOWS_TERMINAL_CMD="putty";
@@ -25,28 +25,26 @@ public class Main
   public static final String DEFAULT_EXECUTE_CMD_ARG="-x";
   public static final String DEFAULT_VNC_CMD="vinagre";
   
-  public static boolean Debug=false;
   public static boolean EnableMemoryUsageReport=false;
-    
-  public Config config;
   
-  GUI       gui;
+  VNCV       gui;
+  
+  Config config;
+  
 
   /**
+   * @brief The VNCV programs entry point.
    * @param args
    */
   public static void main(String[] args) 
   {
     //Check for debug argument
     for( String s : args ) {
-      if( s.toLowerCase().equals("-d") ) {
-        Debug=true;
-      }
       if( s.toLowerCase().equals("-m") ) {
         EnableMemoryUsageReport=true;
       }
       if( s.toLowerCase().equals("-h") ) {
-        cmdLineUsage();
+        CmdLineUsage();
       }
     }
     new Main();
@@ -55,24 +53,25 @@ public class Main
   /**
    * @brief Display command line usage text
    */
-  public static void cmdLineUsage() {
+  public static void CmdLineUsage() {
     System.out.println("java -jar sshpfg.jar <options>");
     System.out.println("Command line options");
     System.out.println("-h : Show this help text.");
-    System.out.println("-d : Enable debugging output.");
-    System.out.println("-m : Enable memory usage reports.");  
+    System.out.println("-m : Enable memory usage reports (every "+(VNCV.PERIODIC_TIMER_UPDATE_MS/1000)+" seconds).");    
     System.exit(0);
   }
   
+  /**
+   * @brief Contructor that caused the VNCV GUI to be displayed.
+   */
   public Main() {
-    config = new Config(GUI.PROGRAM_NAME);
-
+    config = new Config();
     try {
       config.load(CONFIG_FILENAME);
     }
     //Ignore exception if we have no config or it has an error
     catch(Exception e) {}
-
+    
     //Setup the default look and feel
     try {
       UIManager.LookAndFeelInfo[] lookAndFeels = UIManager.getInstalledLookAndFeels();
@@ -81,13 +80,11 @@ public class Main
     catch(Exception e) {}
     
     //Startup the GUI
-    gui = new GUI(config, Main.CONFIG_FILENAME);
-    gui.enableDebug(Debug);
+    gui = new VNCV(config, CONFIG_FILENAME);
     gui.enableShowMemoryUsage(EnableMemoryUsageReport);
     gui.setSize( new Dimension(config.guiWidth, config.guiHeight) );
     gui.setLocation( config.guiX, config.guiY);
     gui.setVisible(true);
-    gui.startLoadConnectionListThread();
   }
   
 }

@@ -175,7 +175,7 @@ public class ServiceCmd {
 	
 	/**
 	 * @brief Get an external program to use for SCP transfers.
-	 *        PJA TODO Add options for winndows.
+	 *        TODO Add options for windows.
 	 * @return The program
 	 */
 	private static String GetSCPProgam() {
@@ -184,9 +184,9 @@ public class ServiceCmd {
 	
 	/**
 	 * @brief Get the default terminal program to use. 
-	 * PJA TODO We could make this configurable by
+	 * TODO We could make this configurable by
 	 * the user in the future. 
-	 * PJA TODO Need terminal program for windows, ?
+	 * TODO Need terminal program for windows, ?
 	 * 
 	 * @return The terminal program File object.
 	 */
@@ -204,7 +204,7 @@ public class ServiceCmd {
 	
 	/**
 	 * @brief Get the default web browser to program to use for external commands. 
-	 * PJA TODO Need terminal program for windows, ?
+	 * TODO Need terminal program for windows, ?
 	 * @return The web browser to use. 
 	 */
 	public static File GetWebBrowserProgram() {

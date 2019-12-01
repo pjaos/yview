@@ -62,6 +62,9 @@ public class ICONSConnectionManager extends Thread {
 		
 	}
 	
+	/**
+	 * @brief Force a shutdown of this ICONSConnectionManager instance.
+	 */
 	public void shutdown() {
 		running = false;
 	}

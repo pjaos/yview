@@ -6,8 +6,7 @@
 package yview.model;
 
 /**
- * @brief Responsible for holding all constants.
- * @author Paul Austen
+ * @brief Responsible for holding all yView constants.
  */
 public class Constants
 {

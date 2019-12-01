@@ -3,7 +3,7 @@
  *                                                                                       *
  * This program is distributed under the terms of the GNU Lesser General Public License  *
  *****************************************************************************************/
-package yview.vnc;
+package vncv.view;
 
 import java.awt.BorderLayout;
 import java.awt.event.*;
@@ -13,23 +13,18 @@ import java.io.*;
 import javax.swing.*;
 import javax.swing.Timer;
 
-import pja.sshpfg.view.ConfigDialog;
-import yview.view.MainFrame;
-import pja.io.SimpleConfig;
 import pja.gui.*;
-import pja.sshpfg.model.Config;
-import pja.cmdline.CmdLineHelper;
-import sshpfg.GUI;
-
+import pja.io.*;
 import mtightvnc.OptionsPanel;
 import mtightvnc.VNCFrame;
 import mtightvnc.VncViewer;
 import mtightvnc.VncViewerListener;
-import mtightvnc.visitpc.VNCOptionsConfig;
+import vncv.model.*;
+import yview.view.MainFrame;
+import pja.cmdline.CmdLineHelper;
 
 /**
  * A GUI to allow VNC connections to be saved and double clicked to connect.
- *
  */
 public class VNCV extends GenericFrame implements WindowListener, MouseListener, ActionListener, VncViewerListener
 {
@@ -41,9 +36,9 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
   public static final int TABLE_COL_0=0;
   public static final int TABLE_COL_1=1;
   public static final int TABLE_COL_2=2;
-
   public static final int HOSTNAME_COL=0;
   public static final int SERVICE_NAME_COL=1;
+  public static int PERIODIC_TIMER_UPDATE_MS = 10000;
   
   DataSource tableDataSource;
   ReadOnlyTable connectionTable;  
@@ -63,12 +58,17 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
   boolean   showMemoryUsage;
   Config config;
   
+  /**
+   * @brief VNCV Constructor
+   * @param config The GUI configuration instance.
+   * @param configFilename The filename to store the configuration.
+   */
   public VNCV(Config config, String configFilename) {
-	super(PROGRAM_NAME);
-    this.setTitle(PROGRAM_NAME+" (v"+GUI.VERSION+")");
+	super(VNCV.PROGRAM_NAME);
+    this.setTitle(PROGRAM_NAME+" (v"+yview.model.Constants.VERSION+")");
     this.config=config;
 
-    vncOptionsConfig = new VNCOptionsConfig( getConfigPath().getAbsolutePath(), PROGRAM_NAME );
+    vncOptionsConfig = new VNCOptionsConfig( getConfigPath().getAbsolutePath() );
     this.addWindowListener(this);
     statusBar = new StatusBar();
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -81,7 +81,7 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
     JMenu file = new JMenu("File");
     file.setMnemonic(KeyEvent.VK_F);
      
-    ImageIcon exitIcon = new ImageIcon(getClass().getResource("/sshpfg/images/door_out.png"));
+    ImageIcon exitIcon = new ImageIcon(getClass().getResource("/vncv/images/door_out.png"));
     JMenuItem eMenuItem = new JMenuItem("Exit", exitIcon);
     eMenuItem.setMnemonic(KeyEvent.VK_E);
     eMenuItem.setToolTipText("Exit application");
@@ -91,7 +91,7 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
       }
     });
     
-    ImageIcon cogIcon = new ImageIcon(getClass().getResource("/sshpfg/images/cog.png"));
+    ImageIcon cogIcon = new ImageIcon(getClass().getResource("/vncv/images/cog.png"));
     configMenuItem = new JMenuItem("Look And Feel", cogIcon);
     configMenuItem.setMnemonic(KeyEvent.VK_C);
     configMenuItem.setToolTipText("Configure application");
@@ -117,7 +117,7 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
     genericOKCancelDialog.add(vncOptionsPanel);
     updateConnectionView();
     
-    memUsageTimer = new Timer(GUI.PERIODIC_TIMER_UPDATE_MS, this);
+    memUsageTimer = new Timer(VNCV.PERIODIC_TIMER_UPDATE_MS, this);
     memUsageTimer.start();
   }
   
@@ -208,7 +208,7 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
     }
     else if( e.getSource() == memUsageTimer ) {
       if( showMemoryUsage ) {
-        statusBar.println(GUI.GetMemoryUsageReport());
+        statusBar.println(VNCV.GetMemoryUsageReport());
       }
     }
   }
@@ -225,13 +225,13 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
       }      
     }
   }
-    
+  
   public void windowActivated(WindowEvent arg0) {}
 
   public void windowClosed(WindowEvent arg0) {}
 
   /**
-   * Save the window size and position
+   * Save the window size and position when closing window.
    */
   public void windowClosing(WindowEvent arg0) {
     try {
@@ -262,6 +262,9 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
 
   public void mouseExited(MouseEvent arg0) {}
 
+  /**
+   * @brief When a VNC host is doublke clicked create a VNC window and connect to the host.
+   */
   public void mousePressed(MouseEvent arg0) {
     if( SwingUtilities.isLeftMouseButton(arg0) && arg0.getClickCount() == 2 ) {    
       //Attempt to load the configuration for the selected connection.
@@ -269,7 +272,11 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
       spawnVNCSession(vncOptionsConfig.getOptionsArray());
     }
   }
-
+  
+  /**
+   * @brief Provide an easy way of accessing the configuration of a host
+   *        by right clicking on the VNC host.
+   */
   public void mouseReleased(MouseEvent arg0) {
     if( SwingUtilities.isRightMouseButton(arg0) ) {
       showVNCConnectionConfigDialog(true);
@@ -299,9 +306,8 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
   }
   
   /**
-   * Display the VNC config dialog
-   * 
-   * @param connectionAtributes
+   * @brief Display the VNC config dialog.
+   * @param edit If true all editing of config parameters.
    */
   public void showVNCConnectionConfigDialog(boolean edit) {
     //Attempt to load the vncOptionsConfig for the selected connection
@@ -336,9 +342,9 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
   }
   
   /**
-   * Return true if already in the list of connections.
+   * @brief Determine if a configuration is already present.
    * @param vncOptionsConfig
-   * @return
+   * @return true if already in the list of connections.
    */
   public boolean alreadyInList(VNCOptionsConfig vncOptionsConfig) {
     boolean alreadyInList=false;
@@ -352,11 +358,11 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
   }
   
   /***
-   * Return the path where config files are saved.
-   * @return
+   * @brief  Get the configuration path.
+   * @return The path where config files are saved.
    */
   public File getConfigPath() {
-    File configPath = new File( SimpleConfig.GetTopLevelConfigPath(VNCV.PROGRAM_NAME), "config"+System.getProperty("file.separator")+VNCV.PROGRAM_NAME.toLowerCase());
+    File configPath = new File(SimpleConfig.GetTopLevelConfigPath(VNCV.PROGRAM_NAME), "config"+System.getProperty("file.separator")+VNCV.PROGRAM_NAME.toLowerCase());
     if( !configPath.isDirectory() ) {
       if( !configPath.mkdirs() ) {
         Dialogs.showErrorDialog(this, "Error", "Failed to create the "+configPath+" folder.");
@@ -366,12 +372,14 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
   }
   
   /**
-   * Start a VNC terminal session.
+   * @brief Start a VNC terminal session.
+   * @param args The command line arguments used to spawn a VNC session.
    */
   private void spawnVNCSession(String args[]) {
     String host = CmdLineHelper.ReadParameter(args, OptionsPanel.HOST, false);
     String port = CmdLineHelper.ReadParameter(args, OptionsPanel.PORT, false);
     statusBar.println("CONNECT TO "+host+":"+port);
+
     /**
      * Responsible for starting an vnc session
      */
@@ -383,7 +391,7 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
         this.vncViewerListener=vncViewerListener;
       }
       public void run() {      
-        VNCFrame.Launch(args, statusBar, vncViewerListener, PROGRAM_NAME);
+        VNCFrame.Launch(args, statusBar, vncViewerListener, VNCV.PROGRAM_NAME);
       }
     }
     Worker worker = new Worker(args, this);
@@ -391,14 +399,19 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
   } 
   
   /**
-   * Set the desktop name in the table.
+   * @brief Set the desktop name in the table.
    * @param row The row to set the desktop name for.
+   * @param desktomeName The name of the VNC desktop.
    */
   private void setTableDesktopName(int row, String desktopName) {
     tableDataSource.setValueAt(row, TABLE_COL_2, desktopName);
   }
+  
   /**
-   * Callback when connected to VNC host, update the desktop name in the table and it's associated persistent configuration object
+   * @brief Callback when connected to VNC host, update the desktop name in the table and it's associated persistent configuration object.
+   * @param host The VNC server address.
+   * @param port The VNC server port number.
+   * @param desktomeName The name of the VNC desktop.
    */
   public void connected(String host, int port, String desktopName) {
     try {
@@ -422,7 +435,15 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
   //Do nothing if this listener method is called
   public void disconnected() {}
 
-  //Listener method called if desktop is resized.
+  /**
+   * @brief Called when desktop is resized to save it size and position.
+   * @param host The VNC server address.
+   * @param port The VNC server port number.
+   * @param width The width of the desktop.
+   * @param height The height of the desktop.
+   * @param x The x postions to the top left corner of the desktop.
+   * @param y The y postions to the top left corner of the desktop. 
+   */
   public void deskTopResized(String host, int port, int width, int height, int x, int y) {
     try {
       vncOptionsConfig.loadSP(host, ""+port);
@@ -453,5 +474,17 @@ public class VNCV extends GenericFrame implements WindowListener, MouseListener,
     return showMemoryUsage;
   }
   
-
+  /**
+   * @brief Get a string representation of the current memory usage in the JVM
+   * @return The string containing the memory usage information.
+   */
+  public static String GetMemoryUsageReport() {
+    
+    double totalMemory = Runtime.getRuntime().totalMemory()/1E6;
+    double maxMemory = Runtime.getRuntime().maxMemory()/1E6;
+    double freeMemory = Runtime.getRuntime().freeMemory()/1E6;
+    
+    return "Memory stats (MB): TOTAL: "+String.format("%2.2f", totalMemory)+", MAX: "+String.format("%2.2f", maxMemory)+" FREE: "+String.format("%2.2f", freeMemory);    
+  }
+  
 }

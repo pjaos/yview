@@ -8,9 +8,7 @@ import yview.model.Constants;
 import yview.model.ServiceCmd;
 
 /**
- * Provides helper functions for processing JSON messages.
- * @author pja
- *
+ * @brief Provides helper functions for processing JSON messages.
  */
 public class JSONProcessor {
 	private static Hashtable <String, Session>SessionsHashtable = new Hashtable<String, Session>();
@@ -248,7 +246,7 @@ public class JSONProcessor {
 		//Local Yview (Old) devices don't advertise their services (The services tag is added by the icons_d gateway)  
 		else {
 			String productID = GetProductID(json);
-			System.out.println("PJA: productID----------------------------->"+productID);
+
 			if( productID.equals(Constants.WYTERM_PRODUCT_ID) ) {
 				services = ServiceCmd.HTTP_SERVICE_NAME+":80,"+ServiceCmd.SERIAL_PORT_SERVICE_NAME+":23";
 			}
@@ -341,7 +339,7 @@ public class JSONProcessor {
 	}
 	
 	/**
-	 * @brief Determinne if the devices Match
+	 * @brief Determine if the devices Match
 	 * @param jsonDeviceA
 	 * @param jsonDeviceB
 	 * @return true if they do

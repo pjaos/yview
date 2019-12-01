@@ -234,7 +234,7 @@ public class SSHWrapper {
     	catch( JSchException ex) {
 
     		ex.printStackTrace();
-    		//PJA TODO UnknownHostException when can't connect to host present different message to user
+    		//TODO UnknownHostException when can't connect to host present different message to user
     		String msg = "Failed to login to the ssh server "+username + "@" + host + ": " + port;
     		statusBar.println( msg );
         }

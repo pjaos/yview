@@ -14,6 +14,9 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.InterfaceAddress;
 
+/**
+ * @brief REsponsible for the discovery of devices on the local IP sub network.
+ */
 public class AreYouThereTXThread extends Thread {
 	private boolean running;
 	DatagramSocket lanDatagramSocket;
@@ -61,7 +64,7 @@ public class AreYouThereTXThread extends Thread {
 	}
 	
 	/**
-	 * Thread method runs until shutdown() is called.
+	 * @brief Thread method runs until shutdown() is called.
 	 */
 	public void run() {
 		InetAddress mcIPAddress;
@@ -104,7 +107,7 @@ public class AreYouThereTXThread extends Thread {
 			
 	/**
 	 * @brief Shutdown the AYT thread. 
-	 * After this is called the AYT thread will shutdown up to DEFAULT_AYT_PERIOD_MS later. 
+	 *        After this is called the AYT thread will shutdown up to DEFAULT_AYT_PERIOD_MS later. 
 	 */
 	public void shutdown() {
 		running = false;

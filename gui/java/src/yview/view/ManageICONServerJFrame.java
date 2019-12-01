@@ -42,13 +42,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.JOptionPane;
 
 /**
- * Responsible for allowing the user to create and delete references to ICON (Internet 
+ * @brief Responsible for allowing the user to create and delete references to ICON (Internet 
  * connection) servers. 
  * WYG servers connect to ICON servers and provide details of all the IOT devices that 
  * they can see on there local networks. Clients can then connect to the ICON server 
  * to get access to all the IOT devices.
- * 
- * @author pja
  */
 public class ManageICONServerJFrame extends JFrame implements ActionListener, ListSelectionListener, MouseListener {
 	static int SelectedIndex;

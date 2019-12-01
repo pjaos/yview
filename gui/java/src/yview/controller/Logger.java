@@ -8,10 +8,8 @@ package yview.controller;
 import java.util.Calendar;
 
 /**
- * Light weight Logger class to replace the previously used org.apache.log4j.Logger
- * which was considered to heavy weight and large for this project.
- * 
- * @author Paul Austen
+ * @brief Light weight Logger class to replace the previously used org.apache.log4j.Logger
+ *        which was considered to heavy weight/large for this project.
  */
 public class Logger
 {

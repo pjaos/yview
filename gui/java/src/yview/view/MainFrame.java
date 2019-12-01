@@ -10,7 +10,6 @@ import javax.swing.*;
 import mtightvnc.OptionsPanel;
 import mtightvnc.VNCFrame;
 import mtightvnc.visitpc.VNCOptionsConfig;
-import yview.vnc.VNCV;
 import pja.gui.Dialogs;
 import pja.gui.GenericOKCancelDialog;
 import pja.gui.LookAndFeelDialog;
@@ -89,7 +88,7 @@ import org.json.JSONObject;
  * 
  * 1.8 Add New Window option in Unity launcher.
  *
- * 1.7 Show text splash window when opening browser to connect to WyUnit as
+ * 1.7 Show text splash window when opening browser to connect to device as
  *     it may take a little while depending upon network connectivity and 
  *     machine speed.
  *     
@@ -169,10 +168,6 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
       statusBar = new StatusBar();
       
       ensureLanDefaultCfgExists();
-      
-      if( Main.ForceDefaultRemoteServices ) {
-    	  statusBar.println("Force remote device (from ICONS server) service list from local file.");
-      }
 
 	  remoteLocalPortHashtable = new Hashtable<String, Integer>();
 
@@ -519,11 +514,6 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	  devMsgWindow.add(jScrollPane);
 	  
 	  SimpleAttributeSet attributeSet = new SimpleAttributeSet();
-	  //PJA
-	  //StyleConstants.setForeground(attributeSet, Color.WHITE);
-	  //StyleConstants.setBackground(attributeSet, Color.BLACK);
-	  //jTextPane.setBackground(Color.BLACK);
-	  //StyleConstants.setBold(attributeSet, true);
 	  
 	  DeviceMsgDebug deviceMsgDebug = new DeviceMsgDebug();
 	  deviceMsgDebug.doc = devDebugTextPane.getStyledDocument();

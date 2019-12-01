@@ -35,6 +35,9 @@ import com.wittams.gritty.swing.TermPanel;
 
 import pja.io.SimpleConfig;
 
+/**
+ * @brief Responsible for displaying a terminal interface when connected to remote serial devices.
+ */
 public class WyTermTerminal implements Tty, WindowListener {
 	public static Logger        logger = Logger.GetLogger(WyTermTerminal.class);
 	public static File 			ConfigFile;
@@ -59,7 +62,9 @@ public class WyTermTerminal implements Tty, WindowListener {
 
 	/**
 	 * Constructor
-	 * @param host The address of the WyTerm unit
+	 * @param host The address of the serial device.
+	 * @param port The TCP port number of the device.
+	 * @param serialConfig The string that defines the serial config.
 	 */
     public WyTermTerminal(String host, int port, String name, String serialConfig) {
 	  this.host=host;
@@ -71,14 +76,19 @@ public class WyTermTerminal implements Tty, WindowListener {
       openSession();
 	}
     
-//************************************************************************************
-// Tty interface methods
-    
+    /**
+     * @brief Init the terminal GUI interface
+     * @brief q A Questioner instance.
+     * @return Always returns true.
+     */
 	public boolean init(Questioner q) {
 		//Return True to indicate init success
 		return true;
 	}
 
+	/**
+	 * @brief Close a connection to remote serial device.
+	 */
 	public void close() {
 		if (socket != null) {
 			try {
@@ -94,15 +104,28 @@ public class WyTermTerminal implements Tty, WindowListener {
 		
 	}
 
+	/**
+	 * @brief Called when terminal resized.
+	 * @param termSize A Dimension instance.
+	 * @param pixelSize A Dimension instance.
+	 */
 	public void resize(Dimension termSize, Dimension pixelSize) {
-		// TODO Auto-generated method stub
-		
 	}
 
+	/**
+	 * @brief Get the name of the terminal.
+	 */
 	public String getName() {
 	  return Constants.APP_NAME+" "+host+":"+port;
 	}
 
+	/**
+	 * @brief Read data from the remote device.
+	 * @param buf A byte buffer to hold the data.
+	 * @param offset The offset in the buffer to place the data.
+	 * @param length The length of the buffer.
+	 * @return The number of bytes received.
+	 */
 	public int read(byte[] buf, int offset, int length) throws IOException {
 		int rc=0;
 		if( in != null ) {
@@ -111,26 +134,20 @@ public class WyTermTerminal implements Tty, WindowListener {
 		return rc;
 	}
 
+	/**
+	 * @brief write to the remote device.
+	 * @param bytes The buffer to write.
+	 */
 	public void write(byte[] bytes) throws IOException {
 		if( out != null ) {	
 			out.write(bytes);
 			out.flush();
 		}
 	}
-//************************************************************************************
 
-	
-	
-	
-
-	
-	
-	
-//************************************************************************************
-// Terminal stuff	
 	
     /**
-     * Init the terminal GUI interface
+     * @brief Init the terminal GUI interface
      */
     private void init() {
         
@@ -165,6 +182,10 @@ public class WyTermTerminal implements Tty, WindowListener {
 		});
     }
     
+    /**
+     * @brief Get the menu bar associated with this terminal.
+     * @return A JMenuBar instance.
+     */
 	private JMenuBar getJMenuBar() {
 		JMenuBar mb = new JMenuBar();
 		JMenu m = new JMenu("File");
@@ -177,12 +198,13 @@ public class WyTermTerminal implements Tty, WindowListener {
 		dm.add(showBuffersAction);
 		dm.add(resetDamage);
 		dm.add(drawDamage);
-		//Don't show the Debug menu
-		//mb.add(dm);
 
 		return mb;
 	}
 	 
+	/**
+	 * @brief Show the RX data.
+	 */
 	private void showBuffers() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -204,6 +226,10 @@ public class WyTermTerminal implements Tty, WindowListener {
 		});
 	}
 	
+	/**
+	 * @brief Set the frame size to hold the terminal.
+	 * @param frame
+	 */
 	private void sizeFrameForTerm(JFrame frame) {
 		Dimension d = terminal.getPreferredSize();
 		
@@ -212,22 +238,32 @@ public class WyTermTerminal implements Tty, WindowListener {
 		frame.setSize(d);
 	}
 	
+	/**
+	 * @brief Reconnect to the tty.
+	 */
     private AbstractAction openAction = new AbstractAction("Reconnect"){
-      public void actionPerformed(ActionEvent e) {
-          close();
-          frame.setVisible(false);
-          init();
-          openSession();
-      }
-  };
+	      public void actionPerformed(ActionEvent e) {
+	          close();
+	          frame.setVisible(false);
+	          init();
+	          openSession();
+	      }
+	  };
   
-  private AbstractAction closeAction = new AbstractAction("Quit"){
-    public void actionPerformed(ActionEvent e) {
-      close();
-      frame.setVisible(false);
-    }
-  };
+    /**
+     * @brief CAlled when the tty is closed.
+     */
+    private AbstractAction closeAction = new AbstractAction("Quit"){
+      public void actionPerformed(ActionEvent e) {
+        close();
+        frame.setVisible(false);
+      }
+    };
 
+  
+    /**
+     * brief Open a tty sesson.
+     */
 	public void openSession() {
 
 		if(!terminal.isSessionRunning()){
@@ -244,13 +280,19 @@ public class WyTermTerminal implements Tty, WindowListener {
 		}
 	}
 
+	/**
+	 * @brief Called tty resetDamage() method.
+	 */
 	private AbstractAction resetDamage = new AbstractAction("Reset damage") {
 		public void actionPerformed(ActionEvent e) {
 			if(termPanel != null)
 				termPanel.getBackBuffer().resetDamage();
 		}
 	};
-	
+
+	/**
+	 * @brief Call tty redrawFromDamage method.
+	 */
 	private AbstractAction drawDamage = new AbstractAction("Draw from damage") {
 		public void actionPerformed(ActionEvent e) {
 			if(termPanel != null)
@@ -258,6 +300,9 @@ public class WyTermTerminal implements Tty, WindowListener {
 		}
 	};
 
+	/**
+	 * @brief Show RX buffers.  
+	 */
 	private AbstractAction showBuffersAction = new AbstractAction("Show buffers") {
 		public void actionPerformed(ActionEvent e) {
 			if(bufferFrame == null)

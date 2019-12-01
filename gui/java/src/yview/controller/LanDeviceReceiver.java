@@ -14,9 +14,7 @@ import java.io.IOException;
 import java.net.*;
   
 /**
- * @author Paul Austen
- *
- * @brief Responsible for receiving UDP multicast messages from WyUnit hardware on the local area network (LAN).
+ * @brief Responsible for receiving UDP multicast messages from devices on the local area network (LAN).
  */
 public class LanDeviceReceiver extends Thread
 {

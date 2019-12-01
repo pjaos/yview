@@ -7,8 +7,6 @@ import java.awt.event.*;
 /**
  * Responsible for displaying the status line (typically at the bottom of a frame)
  * Maybe double clicked to show the history.
- * 
- * @author Paul Austen
  */
 public class StatusBar extends JPanel implements ActionListener, MouseListener
 {

@@ -17,21 +17,16 @@ import java.net.*;
 import java.io.*;
 
 /**
- * 
- * @author Paul Austen
  * @brief Responsible for holding the program entry point method.
  **/
 public class Main
 {
   public static ServerSocket instanceLockSocket=null;
 
-  public static boolean ForceDefaultRemoteServices=false;
   static MainFrame MainFrame;
 
   public static void usage() {
 	  System.out.println("Usage\n");
-	  System.out.println("-f : Force remote device (from ICONS server) service list from local file.\n");
-	  System.out.println("   : Normallly the services that remote devices advertise are used.\n");
 	  System.out.println("-h : Show this help/usage message.\n");
   }
   /**
@@ -48,9 +43,6 @@ public class Main
     	if( arg.equals("-h") ) {
     		usage();
     		System.exit(0);
-    	}
-    	else if( arg.equals("-f") ) {
-    		ForceDefaultRemoteServices=true;
     	}
     }
     

@@ -30,8 +30,6 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 /**
  * @brief Responsible for sending/receiving over an icon server connection.
- * @author pja
- *
  */
 public class ICONSConnection extends Thread implements MqttCallback {
 	public static final int ICONS_RECONNECT_DELAY_SECONDS = 5;
@@ -154,9 +152,9 @@ public class ICONSConnection extends Thread implements MqttCallback {
 	}
 
 	/**
-	 * @brief present a status message to the user if we have a gui widet to send
+	 * @brief Present a status message to the user if we have a gui widet to send
 	 *        the msg to.
-	 * @param line
+	 * @param line The line of text to be displayed.
 	 */
 	private void status(String line) {
 		if (statusBar != null) {
@@ -177,16 +175,6 @@ public class ICONSConnection extends Thread implements MqttCallback {
 		} catch (IOException ex) {
 		}
 		return freePort;
-	}
-
-	/**
-	 * @brief Perform a delay when polling the server for device lists
-	 */
-	private void pollDelay() {
-		try {
-			Thread.sleep(ICONSConnection.SERVER_POLL_DELAY);
-		} catch (InterruptedException ex) {
-		}
 	}
 
 	/**
@@ -214,7 +202,6 @@ public class ICONSConnection extends Thread implements MqttCallback {
 
 	/**
 	 * @brief Set the associated ICONServer object.
-	 * 
 	 * @param ICONServer The ICONServer object.
 	 */
 	public void setICONServer(ICONServer iconServer) {
@@ -230,18 +217,28 @@ public class ICONSConnection extends Thread implements MqttCallback {
 		this.deviceListeners = deviceListeners;
 	}
 
+	/**
+	 * @brief Set the status bar associated with this ICONSConnection instance.
+	 * @param statusBar A StatusBar instance.
+	 */
 	public void setStatusBar(StatusBar statusBar) {
 		this.statusBar = statusBar;
 	}
 
+	/**
+	 * @brief Called when a connection is lost to the ICONS.
+	 */
 	@Override
 	public void connectionLost(Throwable arg0) {
-		System.out.println("PJA: MQTT connectionLost(): " + arg0);
+		System.out.println("MQTT connectionLost(): " + arg0);
 	}
 
+	/**
+	 * @brief Called when an ICONS message delivery is complete. 
+	 */
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken arg0) {
-		System.out.println("PJA: deliveryComplete(): " + arg0);
+		System.out.println("deliveryComplete(): " + arg0);
 	}
 
 	/**
@@ -267,7 +264,6 @@ public class ICONSConnection extends Thread implements MqttCallback {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 }

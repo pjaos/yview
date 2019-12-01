@@ -58,6 +58,9 @@ import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.Color;
 
+/**
+ * @brief Responsible for holding a table each row of which is a remote device.
+ */
 public class DeviceTablePanel extends JPanel implements MouseListener, ActionListener {
 	static final long serialVersionUID=1;
 	public static int UNIT_TYPE_COL_INDEX=0;
@@ -94,6 +97,10 @@ public class DeviceTablePanel extends JPanel implements MouseListener, ActionLis
 	JTextField externalCmdField;
 	JScrollPane serviceListscrollPane;
 	
+	/**
+	 * @brief Constuctor
+	 * @param location The location of this device panel.
+	 */
 	public DeviceTablePanel(String location) {
 		super(new GridLayout(1,0));
 
@@ -170,11 +177,18 @@ public class DeviceTablePanel extends JPanel implements MouseListener, ActionLis
 		deviceCheckTimer.start(); 
 	}
 
+	/**
+	 * @brief Responsible for rendering the device table.
+	 */
 	class HighLightedRowRenderer extends DefaultTableCellRenderer {
 		Vector<JSONObject> devList = new Vector<JSONObject>();
 		Color highLightColor = Color.ORANGE;
 		Color nonHighLightColor = Color.WHITE;
 
+		/**
+		 * @brief Set the device list for this location.
+		 * @param devList A list (Vector) of JSONObject instances.
+		 */
 		public void setJsonDevVector(Vector<JSONObject> devList) {
 			this.devList=devList;
 		}
@@ -622,6 +636,7 @@ public class DeviceTablePanel extends JPanel implements MouseListener, ActionLis
 	/**
 	 * @brief Configure the popup menu for the device.
 	 * @param jsonDevice
+	 * @param serviceCmdList A list (Vector) of ServiceCmd instances.
 	 */
 	public void configureOptionsMenu(JSONObject jsonDevice, Vector<ServiceCmd> serviceCmdList ) throws ServiceCmdException, IOException {
 
