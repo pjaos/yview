@@ -1,8 +1,3 @@
-/*****************************************************************************************************
- *                                Copyright 2015 Paul Austen                                         *
- *                                                                                                   *
- * This program is distributed under the terms of the GNU Lesser General Public License (version 3)  *
- *****************************************************************************************************/
 package yview.controller;
 
 import java.util.Calendar;

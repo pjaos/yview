@@ -1,8 +1,3 @@
-/*****************************************************************************************
- *                        Copyright 2013 Paul Austen                                     *
- *                                                                                       *
- * This program is distributed under the terms of the GNU Lesser General Public License  *
- *****************************************************************************************/
 package vncv.view;
 
 import javax.swing.*;

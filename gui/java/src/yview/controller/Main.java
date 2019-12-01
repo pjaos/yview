@@ -1,8 +1,3 @@
-/*****************************************************************************************
- *                        Copyright 2015 Paul Austen                                  *
- *                                                                                       *
- * This program is distributed under the terms of the GNU Lesser General Public License  *
- *****************************************************************************************/
 package yview.controller;
 
 import yview.model.*;
