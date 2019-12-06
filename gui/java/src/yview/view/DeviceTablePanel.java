@@ -1108,6 +1108,8 @@ public class DeviceTablePanel extends JPanel implements MouseListener, ActionLis
 	 * @brief Check for device warnings in the list of devices that we have.
 	 */
 	private void checkForDeviceWarnings() {
+		//Save the selected row
+		int selectedRow = table.getSelectedRow();
 		for( JSONObject jsonD : jsonDeviceVector ) {
 			long updateMS = JSONProcessor.GetLocalRxTimeMs(jsonD);
 			if( updateMS != -1 ) {
@@ -1119,6 +1121,10 @@ public class DeviceTablePanel extends JPanel implements MouseListener, ActionLis
 					((AbstractTableModel) table.getModel()).fireTableDataChanged();
 				}		
 			}
+		}
+		//IF a row was selected ensure it is still selected.
+		if( selectedRow >= 0 ) {
+			table.setRowSelectionInterval(selectedRow,selectedRow);
 		}
 	}	
 	
