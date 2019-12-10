@@ -29,15 +29,18 @@ The ICONS gateway program typically runs on the same machine that the ICONS dock
 ### icons_rpc_provider
 This package provides an MQTT RPC client that connects to the ICON server. This allows the ICONS GW to discover free TCP/IP ports inside the ICONS docker container. This is built into the ICONS docker container.  See [icons_rpc_provider/](icons_rpc_provider/) for more information.
 
-### ydev
-This is a small python program that runs on any device (small embedded devices all the way up to large servers) that sits on an IP subnetwork that can hear discovery messages from an ICONS GW instance. See [ydev/](ydev/) for more information.
-
 ### gui
-Two yView applications are currently available. 
+Two yView applications are currently available.
 
 - A Java application that will run on Linux, Windows and Apple MAC computers. Currently installers only exist for Linux computers. See [gui/java](gui/java) for more information on this application.
 
 - An Android application. See [gui/android](gui/android) for more information on this application.
+
+### ydev
+This is a small python program that runs on any device (small embedded devices all the way up to large servers) that sits on an IP subnetwork that can hear discovery messages from an ICONS GW instance. See [ydev/](ydev/) for more information.
+
+
+Some devices do not have sufficient processing power to run Python and therefore the ydev program cannot be used. Example code is provided to allow such devices to become part of the yView network. See [embedded_devices/mgos/](embedded_devices/mgos/) for more information.
 
 ## System Operation
 This section gives an overview of how the system architecture operates under normal circumstances.
@@ -50,7 +53,7 @@ The ICONS gateway then sends out broadcast messages (UDP) on it's local sub netw
 
 The GUI application (Java or Android) starts by building an ssh connection to the ICONS. Immediately after this  another connection is built through this ssh connection (tunnelled) to the MQTT server running inside the ICONS for use below. The GUI application then subscribes to an MQTT topic and starts receiving messages from connected devices that responded to any AYT message (from an ICONS GW) in the yView network. These response messages detail a location and type of service along with other information about the device.
 
-The GUI then displays the location as a tab containing a table. Each table row equates to a single remote device. If the user double clicks a table row they are presented with options to connect to that device. These options typically involve starting an external program to connect to the service selected (E.G web browser for http services, ssh client for an ssh service or a vnc client for a VNC service). 
+The GUI then displays the location as a tab containing a table. Each table row equates to a single remote device. If the user double clicks a table row they are presented with options to connect to that device. These options typically involve starting an external program to connect to the service selected (E.G web browser for http services, ssh client for an ssh service or a vnc client for a VNC service).
 
 When the user attempts to connect to a remote device another tunnelled ssh connection is built to the ICONS and connected to the previously connected reverse ssh tunnel. This enables a direct connection from the GUI application to the remote device through the ICONS. E.G a web browser can communicate directly with the remote device.
 
@@ -59,4 +62,3 @@ When the user attempts to connect to a remote device another tunnelled ssh conne
 You home router must be configured to forward a single TCP/IP port from it's Internet to the ICONS ssh port.
 
 Another consideration is that your routers IP address may not be static as it is probably served from your ISP's DHCP server. Therefore it maybe necessary to use a dynamic DNS provider (E.G [Free DDNS](https://freedns.afraid.org/)) in order that you can connect to a domain name that is constantly updated with your routers IP address on the Internet. See [Dynamic DNS](https://en.wikipedia.org/wiki/Dynamic_DNS) for more details.
-
