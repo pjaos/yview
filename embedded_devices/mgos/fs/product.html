@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="thestyle.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+  <div class="hero">
+    <h1 id="devNameLabel"></h1>
+  </div>
+
+  <div class="tab">
+    <button class="tablinks" id="defaultOpen" onclick="selectTab(event, 'Tab 1')">Tab 1</button>
+    <button class="tablinks" onclick="selectTab(event, 'Tab 2')">Tab 2</button>
+    <button class="tablinks" onclick="selectTab(event, 'configTab')">Configuration</button>
+  </div>
+
+  <div id="Tab 1" class="tabcontent">
+    <h3>Tab 1</h3>
+    <p>Tab 1 selected.</p>
+
+    <div class="row form">
+      <button href="#" class="btn btn-sm btn-b" id="tab1Button" title="Describe what the button does here.">Tab 1 Action Button</button>
+    </div>
+  </div>
+
+  </div>
+
+  <div id="Tab 2" class="tabcontent">
+    <h3>Tab 2</h3>
+    <p>Tab 2 selected.</p>
+
+    <div class="row form">
+      <button href="#" class="btn btn-sm btn-b" id="tab2Button" title="Describe what the button does here.">Tab 2 Action Button</button>
+    </div>
+
+  </div>
+
+  <div id="configTab" class="tabcontent">
+    <h3>Configuration</h3>
+
+    <div class="row form">
+      <TABLE BORDER="0">
+        <tr>
+          <TD>Device Name:</TD>
+          <TD><input id="devNameText" class="btn btn-sm btn-a" type="text" SIZE="24" title="Enter the name for this device."></TD>
+        </tr>
+
+        <tr>
+          <TD>Group Name:</TD>
+          <TD><input id="groupNameText" class="btn btn-sm btn-a" type="text" SIZE="24" title="Enter the group name for this device in order to restrict access to group members."></TD>
+        </tr>
+
+        <tr>
+          <TD>Enable Syslog</TD>
+          <TD><input id="syslogEnableCheckbox" type="checkbox" title="Enable syslog. Syslog data will be sent to the ICONS Gateway."></TD>
+        </tr>
+
+        <TD>Options</TD>
+        <TD>
+          <select class="btn btn-sm btn-a" id="pullDownListA" title="Select the option from the pulldown list.">
+            <option value="pda1">Option1</option>
+            <option value="pda2">Option2</option>
+            <option value="pda3">Option3</option>
+            <option value="pda4">Option4</option>
+            <option value="pda5">Option5</option>
+          </select>
+        </TD>
+        </tr>
+      </TABLE>
+
+      <div class="row form">
+          <button href="#" class="btn btn-sm btn-b" id="setConfigButton" title="Save configuration to the device.">Save</button>
+          <button href="#" class="btn btn-sm btn-c" id="setDefaultsButton" title="Restore the default settings.">Factory Defaults</button>
+          <button href="#" class="btn btn-sm btn-c" id="rebootButton" title="Reboot.">Reboot</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="product.js"></script>
+</body>
+
+</html>
