@@ -1,27 +1,27 @@
 # yView
-yView is a framework that allows any device which offers a service over a TCP socket to be connected to a private network using only an ssh server connected to the Internet. I use this for managing the IoT devices I have in the house and also for managing servers I have at different locations.
+yView is a framework that allows any device which offers a service over a TCP socket to be connected to a private network using only an ssh server connected to the Internet. yView can be used for accessing devices (from small IoT devices all the way up to large servers).
 
 The diagram below shows how the various parts of the yView system connect together.
 
 ![Overview](overview_diagram.png "yView Connected Network")
 
 ## Architecture
-This is based around the Internet Connection Server (ICONS). This is virtualised as a docker container and has a single ssh port exposed to the Internet.
-SSH connections to the ICONS can be made from devices (small embedded devices al the way up to large servers) that offer services to the network (E.G http, ssh...).
-Connections to the ICONS can also be made from GUI applications running on Linux, Windows, MAC or Android platforms. From these GUI applications the services accessed (E.G start a web browser to to connect to a HTTP service).
+The architecture is based around the Internet Connection Server (ICONS). This is virtualised as a docker container and has a single ssh port exposed to the Internet.
+SSH connections to the ICONS can be made from devices (small embedded devices all the way up to large servers) that offer services to the network (E.G http, ssh, etc).
+Connections to the ICONS can also be made from GUI applications running on Linux, Windows, MAC or Android platforms. From these GUI applications device services can be accessed (E.G start a web browser to to connect to a HTTP service).
 
 ## System Components
 
 ### ICONS
 The ICONS (Internet Connection Server) is a docker container that exposes a single ssh port to the outside world. This container runs
 
-- An MQTT server which brokers all messages that pass between devices which offer a service and those that wish to connect to these devices.
-- An MQTT RPC server. This allows remote procedure calls (RPC) to be made from the ICONS gateway component (ICONS GW) detailed below.
+- An MQTT server which brokers all messages that pass between devices which offer a service and applications that allow connections to these services.
+- An MQTT RPC server. This allows remote procedure calls (RPC) to be made from the ICONS gateway component (ICONS GW) as detailed below.
 - A standard Linux ssh server.
 
 One advantage in using a docker container to perform this function is that it effectively sandboxes the part of the system exposed to the Internet. The only persistent data in this docker container is the ssh authorised_keys file.
 
-The above diagram shows Home and Remote networks but many more can be connected to a single ICONS. See [icons/](icons/) for more information.
+The above diagram shows 'Home' and 'Remote' networks. However many more remote networks can be connected to a single ICONS. See [icons/](icons/) for more information.
 
 ### ICONS GW
 The ICONS gateway program typically runs on the same machine that the ICONS docker image is running. At least one instance of the ICONS gateway should be running in each network. It is the responsibility of the ICONS GW to discover devices (small embedded devices all the way up to large servers) on the local IP sub network and forward the responses to the ICONS. The ICONS GW also has the responsibility of managing connections between the devices that it discovers and the ICONS. See [icons_gw/](icons_gw/) for more information.

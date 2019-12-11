@@ -1,9 +1,7 @@
 # ICONS
-Internet Connection Server for the yView network. This git repo provides the ICON server functionality.
+Internet Connection Server (ICONS) for the yView network. The ICONS is docker container.
 
-This server exposes a single SSH port (by default 2222). This allows any device offering a service over a TCP socket (E.G web/ssh/vnc server etc) to be securely connected to without passing through a cloud service provider.
-
-Before generating the docker image the ssh/authorized_keys may be changed to include public ssh keys. Public ssh keys can be added to this file for all ICONS gateway or yView Linux/Windows or Android ssh connections.
+This server exposes a single SSH port (by default 2222). This allows any device offering a service over a TCP socket (E.G web/ssh/vnc server etc) to be securely (tunnelled through an encypted ssh connection over the Internet) connected without passing through a cloud service provider.
 
 ## Prerequisites
 Before this docker image can be used the following must be installed.
@@ -12,7 +10,7 @@ Before this docker image can be used the following must be installed.
  	[Installing Docker on Ubuntu 18.04](https://www.hostinger.com/tutorials/how-to-install-and-use-docker-on-ubuntu/)
  - docker-compose must be also be installed
     `sudo apt-get install docker-compose`
-    
+
 ## Docker image configuration
 The docker-compose.yml file contains some environmental variables that may be changed. These are
 
@@ -33,13 +31,12 @@ If this is set to true then a password maybe entered over the ssh connection to 
 
 ## Building the docker container
  `USER=ausername && docker-compose build`
- 
+
 Where ausername is the ssh username. This should be set to your selected username.
- 
+
 ## Starting the docker container
  `docker-compose up -d`
 
 ## Stopping the docker container
- 
- `docker-compose stop`
 
+ `docker-compose stop`
