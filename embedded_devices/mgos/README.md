@@ -53,7 +53,7 @@ The wload.sh script can be used to load code to a device over a WiFi connection.
 ```./wload.sh 192.168.1.1```
 
 ## Hardware
-Node MCU devices such as this detailed below may be purchased cheaply on Ebay and the software here maybe loaded onto these in order to get up and running quickly with minimal cost. These modules have the LED and switch required to enable WiFi to be setup as detailed above.
+Node MCU devices such as this detailed below may be purchased cheaply on Ebay (search for 'nodeMcu esp8266' or 'nodeMcu esp32') and the software here maybe loaded onto these in order to get up and running quickly with minimal cost. These modules have the LED and switch required to enable WiFi to be setup as detailed above.
 
 ![nodemcu_esp8266.png](images/nodemcu_esp8266.png "NodeMcu device with ESP8266 processor.")
 ![nodemcu_esp32.png](images/nodemcu_esp32.png "NodeMcu device with ESP8266 processor.")
