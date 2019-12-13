@@ -59,6 +59,6 @@ When the user attempts to connect to a remote device another tunnelled ssh conne
 
 ## Networking considerations
 
-Your router must be configured to forward a single TCP/IP port from it's Internet to the ICONS ssh port.
+Your router must be configured to forward a single TCP/IP port from it's Internet interface to the ICONS ssh port.
 
 Another consideration is that your routers IP address may not be static as it is probably served from your ISP's DHCP server. Therefore it maybe necessary to use a dynamic DNS provider (E.G [Free DDNS](https://freedns.afraid.org/)) in order that you can connect to a domain name that is constantly updated with your routers IP address on the Internet. See [Dynamic DNS](https://en.wikipedia.org/wiki/Dynamic_DNS) for more details.
