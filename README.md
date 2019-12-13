@@ -21,7 +21,7 @@ The ICONS (Internet Connection Server) is a docker container that exposes a sing
 
 One advantage in using a docker container to perform this function is that it effectively sandboxes the part of the system exposed to the Internet. The only persistent data in this docker container is the ssh authorised_keys file.
 
-The above diagram shows 'Home' and 'Remote' networks. However many more remote networks can be connected to a single ICONS. See [icons/](icons/) for more information.
+The above diagram shows 'Local' and 'Remote' networks. However many more remote networks can be connected to a single ICONS. See [icons/](icons/) for more information.
 
 ### ICONS GW
 The ICONS gateway program typically runs on the same machine that the ICONS docker image is running. At least one instance of the ICONS gateway should be running in each network. It is the responsibility of the ICONS GW to discover devices (small embedded devices all the way up to large servers) on the local IP sub network and forward the responses to the ICONS. The ICONS GW also has the responsibility of managing connections between the devices that it discovers and the ICONS. See [icons_gw/](icons_gw/) for more information.
@@ -59,6 +59,6 @@ When the user attempts to connect to a remote device another tunnelled ssh conne
 
 ## Networking considerations
 
-You home router must be configured to forward a single TCP/IP port from it's Internet to the ICONS ssh port.
+Your router must be configured to forward a single TCP/IP port from it's Internet to the ICONS ssh port.
 
 Another consideration is that your routers IP address may not be static as it is probably served from your ISP's DHCP server. Therefore it maybe necessary to use a dynamic DNS provider (E.G [Free DDNS](https://freedns.afraid.org/)) in order that you can connect to a domain name that is constantly updated with your routers IP address on the Internet. See [Dynamic DNS](https://en.wikipedia.org/wiki/Dynamic_DNS) for more details.
