@@ -680,7 +680,7 @@ class IconsClient(object):
 
     def setupAutologin(self):
       """Setup autologin on the ssh server."""
-        
+
       publicKeyFile = "{}.pub".format(self._options.private_key)
       if not os.path.isfile(publicKeyFile):
           raise IconsClientError("{} public key file not found. Please create a public/private key pair and try again.".format(publicKeyFile) )
@@ -688,9 +688,9 @@ class IconsClient(object):
       self._uo.warn("Auto login to the ssh server failed authentication.")
       self._uo.info("Copying the local public ssh key to the ssh server for automatic login.")
       self._uo.info("Please enter the ssh server ({}) password for the user: {}".format(self._options.server, self._options.username))
-      
+
       sshPassword = self._uo.getPassword()
-          
+
       ssh = openSSHConnection( self._options.username,\
                                self._options.server,\
                                self._options.server_port,\
@@ -743,7 +743,7 @@ class IconsGW(IconsClient):
 
         self._shutdownServer        = False
         self._knownDeviceList       = []
-        
+
         self._user = getpass.getuser()
 
     def runClient(self):
@@ -1091,17 +1091,20 @@ class IconsGW(IconsClient):
             self._uo.errorException()
 
         self._uo.info("Stopped listening for device responses.")
-        
-    def enableAutoStart(self):
-        """@brief Enable this program to auto start when the computer on which it is installed starts."""
+
+    def enableAutoStart(self, user=None):
+        """@brief Enable this program to auto start when the computer on which it is installed starts.
+           @param user The username which which you wish to execute on autostart."""
         bootManager = BootManager()
+        if user:
+            self._user = user
         bootManager.add(user=self._user)
 
     def disableAutoStart(self):
         """@brief Enable this program to auto start when the computer on which it is installed starts."""
         bootManager = BootManager()
         bootManager.remove()
-        
+
 def main():
     uo = UO(syslogEnabled=True)
     uo.setDisableSyslogFile( IconsGWConfig.GetConfigFile( IconsGWConfig.DISABLE_SYSLOG_FILE) )
@@ -1124,6 +1127,7 @@ def main():
         opts.add_option("--keepalive",          help="The number of seconds between each MQTT keepalive message (default=%d)." % (IconsClient.MQTT_DEFAULT_KEEPALIVE_SECONDS) , type="int", default=IconsClient.MQTT_DEFAULT_KEEPALIVE_SECONDS)
         opts.add_option("--enable_auto_start",  help="Enable auto start this program when this computer starts.", action="store_true", default=False)
         opts.add_option("--disable_auto_start", help="Disable auto start this program when this computer starts.", action="store_true", default=False)
+        opts.add_option("--user",               help="Set the user for auto start (default={}).".format(getpass.getuser()))
 
         (options, args) = opts.parse_args()
 
@@ -1136,7 +1140,7 @@ def main():
 
         if options.debug:
             uo.debugLevel=UO.DEBUG_LEVEL_7
-            
+
         elif options.enable_syslog:
             uo.disableSyslog(False)
 
@@ -1159,7 +1163,7 @@ def main():
             iconsGW = IconsGW(uo, options)
 
             if options.enable_auto_start:
-                iconsGW.enableAutoStart()
+                iconsGW.enableAutoStart(options.user)
 
             elif options.disable_auto_start:
                 iconsGW.disableAutoStart()
