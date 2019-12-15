@@ -12,17 +12,17 @@ AUTHOR_EMAIL = "pausten.os@gmail.com"                                           
 DESCRIPTION = "ICON server gateway client."                                     # A short description of the application
 PYTHON_VERSION = 3                                                              #The python applications version
 LICENSE = "MIT License"                                                         #The License that the application is distributed under
-REAUIRED_LIBS = ['pjalib>=3.5']                                                 #A python list of required libs (optionally including versions)
+REAUIRED_LIBS = ['pjalib>=3.7']                                                 #A python list of required libs (optionally including versions)
                                                                                 #A list of python files (minus the .py extension) in the module containing the main entry point.
-MAIN_FILES=["icons_gw", "icons_json_check", "mqtt_subscribe"]                                                   
+MAIN_FILES=["icons_gw", "icons_json_check", "mqtt_subscribe"]
 
 LOGGING_FOLDER="/var/log/"                                                      #The location of the modules install log file
 
 class CustomInstallCommand(install):
     """@brief Respinsible for installing one or more startup scripts
-              for the python code. These should then be available to users 
+              for the python code. These should then be available to users
               as they should be found in the $PATH."""
-              
+
     def run(self):
         """@brief Install one or more startup scripts."""
         try:
@@ -69,7 +69,7 @@ class CustomInstallCommand(install):
             self._makeExecutable(startupScript)
             self._log("Installed %s" % (startupScript) )
         return startupScript
-                    
+
     def _runCmd(self, cmd):
         """@brief Run a command
            @param cmd The command to run.
