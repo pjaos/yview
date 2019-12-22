@@ -3,7 +3,7 @@
 
 #include "ayt_tx_handler.h"
 #include "rpc_handler.h"
-#include "timers.h"
+#include "timer.h"
 
 /**
  * @brief The MGOS program entry point.

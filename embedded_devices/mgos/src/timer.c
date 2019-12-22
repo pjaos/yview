@@ -1,7 +1,7 @@
 #include "mgos.h"
 #include "mgos_syslog.h"
 
-#include "timers.h"
+#include "timer.h"
 
 #define SYSLOG_MSG_BUF_SIZE 132                   //The maximum size +1 (null character) of syslog messages.
 static char syslog_msg_buf[SYSLOG_MSG_BUF_SIZE];  //The buffer to load syslog messages into ready for transmission.
