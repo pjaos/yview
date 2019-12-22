@@ -68,9 +68,9 @@ libs:
  - origin: https://github.com/mongoose-os-libs/wifi
  - origin: https://github.com/mongoose-os-libs/ota-common
  - origin: https://github.com/mongoose-os-libs/ota-http-server
- - origin: /scratch/git_repos/mgos/libs/syslog
- - origin: /scratch/git_repos/mgos/libs/ydev_ayt_handler
- - origin: /scratch/git_repos/mgos/libs/wifi_button_setup
+ - origin: https://github.com/pjaos/syslog.git
+ - origin: https://github.com/pjaos/ydev_ayt_handler.git
+ - origin: https://github.com/pjaos/wifi_button_setup.git
 
 # Used by the mos tool to catch mos binaries incompatible with this file format
 manifest_version: 2017-09-29
