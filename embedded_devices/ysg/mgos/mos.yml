@@ -1,0 +1,94 @@
+author: mongoose-os
+description: A Mongoose OS app skeleton
+version: 1.0
+
+libs_version: ${mos.version}
+modules_version: ${mos.version}
+mongoose_os_version: ${mos.version}
+
+# Optional. List of tags for online search.
+tags:
+  - c
+
+# List of files / directories with C sources. No slashes at the end of dir names.
+sources:
+  - src
+
+includes:
+  - include
+
+# List of dirs. Files from these dirs will be copied to the device filesystem
+filesystem:
+  - fs
+
+#Define the configuration attributes here
+config_schema:
+# Custom configuration entries, settable via "device configuration"
+# Below is a custom firmware configuration example.
+# Uncomment and modify according to your needs:
+
+# config_schema:
+#  - ["my_app", "o", {title: "My app custom settings"}]
+#  - ["my_app.bool_value", "b", false, {title: "Some boolean value"}]
+#  - ["my_app.string_value", "s", "", {title: "Some string value"}]
+#  - ["my_app.int_value", "i", 123, {title: "Some integer value"}]
+
+# These settings get compiled into the C structure, and can be accessed
+# from the C code this way:
+#
+# printf("Hello from %s!\n", mgos_sys_config_get_device_id());
+#
+# Settings are cool: can be modified remotely without full firmware upgrade!
+#
+# To see all available compiled settings, buid the firmware and open
+# build/gen/mgos_config.h file.
+#
+# Also, in this config_schema section, you can override existing
+# settings that has been created by other libraries. For example, debug log
+# level is 2 by default. For this firmware we can override it to 3:
+#
+# config_schema:
+#  - ["debug.level", 3]
+
+ #These are user configurable attributes
+ - ["ydev",               "o",              {title: "Holds attributes that the user may configure."}]
+ - ["ydev.product_id",    "s", "YSG",       {title: "Y RF signal generator device."}]
+ - ["ydev.unit_name",     "s", "YSG1",      {title: "The name for the device."}]
+ - ["ydev.group_name",    "s", "",          {title: "The yView group name."}]
+ - ["ydev.enable_syslog", "b", false,       {title: "Enable syslogging."}]
+ - ["ydev.output_mhz",    "d", 2500.0,      {title: "The RF output frequency in MHz."}]
+ - ["ydev.rf_level",      "i", 5,           {title: "The RF output level in dBm."}]
+ - ["ydev.rf_on",         "b", true,        {title: "The RF on/off state."}]
+
+ - ["adf4350", "o",           {"title": "ADF4350 device settings"}]
+ - ["adf4350.ce_pin", "i", 4, {title:   "ADF43509 CE pin"}]
+ - ["adf4350.spi_cs", "i", 2, {title:   "The SPI CS connected to the ADF4350 LE pin (0,1 or 2)"}]
+
+#SPI bus defaults
+ - ["spi.enable",    "i", 1,  {title: "Enable SPI bus."}]
+ - ["spi.cs0_gpio",  "i", -1, {title: "The SPI bus CS0 pin."}]
+ - ["spi.cs1_gpio",  "i", -1, {title: "The SPI bus CS1 pin."}]
+ - ["spi.cs2_gpio",  "i", 5,  {title: "The SPI bus CS2 pin."}]
+ - ["spi.mosi_gpio", "i", 23, {title: "Connected to the ADF4350 DATA input."}]
+ - ["spi.miso_gpio", "i", 19, {title: "Not used as the ADF4350 only supports write opperations."}]
+ - ["spi.sclk_gpio", "i", 18, {title: "The SPI CLK line."}]
+
+libs:
+ - origin: https://github.com/mongoose-os-libs/boards
+ - origin: https://github.com/mongoose-os-libs/ca-bundle
+ - origin: https://github.com/mongoose-os-libs/http-server
+ - origin: https://github.com/mongoose-os-libs/rpc-service-config
+ - origin: https://github.com/mongoose-os-libs/rpc-service-fs
+ - origin: https://github.com/mongoose-os-libs/rpc-uart
+ - origin: https://github.com/mongoose-os-libs/wifi
+ - origin: https://github.com/mongoose-os-libs/ota-common
+ - origin: https://github.com/mongoose-os-libs/ota-http-server
+ - origin: https://github.com/pjaos/syslog.git
+ - origin: https://github.com/pjaos/ydev_ayt_handler.git
+ - origin: https://github.com/pjaos/wifi_button_setup.git
+ - origin: https://github.com/mongoose-os-libs/spi
+ - origin: https://github.com/pjaos/adf4350.git
+
+
+# Used by the mos tool to catch mos binaries incompatible with this file format
+manifest_version: 2017-09-29

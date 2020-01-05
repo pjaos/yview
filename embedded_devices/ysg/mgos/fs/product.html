@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="thestyle.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+  <div class="hero">
+    <h1 id="devNameLabel"></h1>
+  </div>
+
+  <div class="tab">
+    <button class="tablinks" id="defaultOpen" onclick="selectTab(event, 'Tab 1')">RF outputs</button>
+    <button class="tablinks" onclick="selectTab(event, 'configTab')">Configuration</button>
+  </div>
+
+  <div id="Tab 1" class="tabcontent">
+    <div class="row form">
+      <TABLE BORDER="0" cellpadding="10">
+        <tr>
+          <TD>RF frequency (MHz):</TD>
+          <TD><input id="opFreqNumber" class="btn btn-sm btn-a" type="number" step="0.1" SIZE="24" title="The output frequency can be set from 137.5 MHz to 4.4 GHz."></TD>
+        </tr>
+        <tr>
+          <TD>RF Level (dBm):</TD>
+          <TD>
+            <input id="rfLevelM4", type="radio" name="rfLevel" value="-4"> -4 dBm<br>
+            <input id="rfLevelM1", type="radio" name="rfLevel" value="-1"> -1 dBm<br>
+            <input id="rfLevel2",  type="radio" name="rfLevel" value="2"> 2 dBm<br>
+            <input id="rfLevel5",  type="radio" name="rfLevel" value="5"> 5 dBm<br>
+          </TD>
+        </tr>
+        <tr>
+          <TD>RF On/Off:</TD>
+          <TD>
+            <input id="rfStateOn",  type="radio" name="rfState" value="on"> on<br>
+            <input id="rfStateOff", type="radio" name="rfState" value="off"> off<br>
+          </TD>
+        </tr>
+      </TABLE>
+
+      <div class="hero"><legend>Command History</legend>
+          <div id="cmd_history"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="configTab" class="tabcontent">
+    <h3>Configuration</h3>
+
+    <div class="row form">
+      <TABLE BORDER="0">
+        <tr>
+          <TD>Device Name:</TD>
+          <TD><input id="devNameText" class="btn btn-sm btn-a" type="text" SIZE="24" title="Enter the name for this device."></TD>
+        </tr>
+
+        <tr>
+          <TD>Group Name:</TD>
+          <TD><input id="groupNameText" class="btn btn-sm btn-a" type="text" SIZE="24" title="Enter the group name for this device in order to restrict access to group members."></TD>
+        </tr>
+
+        <tr>
+          <TD>Enable Syslog</TD>
+          <TD><input id="syslogEnableCheckbox" type="checkbox" title="Enable syslog. Syslog data will be sent to the ICONS Gateway."></TD>
+        </tr>
+
+      </TABLE>
+
+      <div class="row form">
+          <button href="#" class="btn btn-sm btn-b" id="setConfigButton" title="Save configuration to the device.">Save</button>
+          <button href="#" class="btn btn-sm btn-c" id="setDefaultsButton" title="Restore the default settings.">Factory Defaults</button>
+          <button href="#" class="btn btn-sm btn-c" id="rebootButton" title="Reboot.">Reboot</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="product.js"></script>
+</body>
+
+</html>
