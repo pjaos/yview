@@ -46,11 +46,11 @@ A nodeMCU ESP 32 board provides WiFi connectivity.
 
 ![NodeMCU ESP32 Board](doc/nodemcu_esp32.jpg)
 
-The nodeMCU ESP32 device is connected to an ADF4350 development board via an SPI bus.
+An ADF4350 development board was connected to the above board via an SPI bus.
 
-The schematic folder contains the Kicad schematic of the connections between the above modules.
+![ADF4350 Development Board](doc/adf4350_dev_board.jpg)
 
-![Module Connectivity](doc/schematic.pdf)
+The schematic folder contains the Kicad schematic of the connections between the above modules. Click ![here](doc/schematic.pdf) for a PDF of the schematic.
 
 ## Software
 The device software is written in C ([here](mgos)). As part of this project I wrote the [ADF4350 device driver](https://github.com/pjaos/adf4350) from scratch.
