@@ -32,13 +32,13 @@ This tab allows the user to set
 
 
 # Hardware
+Once the electronics and software was complete I designed and 3D printed an ABS case as shown in the following pictures of the finished product.
 
 ![](doc/ysg3.jpg)
 ![](doc/ysg1.jpg)
 ![](doc/ysg2.jpg)
 
-The Red LED indicates power to the device.
-The Blue LED indicates the WiFi is connected.
+The 3D printed case included light pipes to bring out the LED's. The Red LED indicates power to the device. The Blue LED indicates the WiFi is connected. The hole nearest the LED's can be used to  reset the device. The hole furthest from the LED's can be used to setup the WiFi on the device if held down for 5 seconds.
 
 
 
