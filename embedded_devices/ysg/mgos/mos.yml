@@ -52,6 +52,7 @@ config_schema:
 
  #These are user configurable attributes
  - ["ydev",               "o",              {title: "Holds attributes that the user may configure."}]
+ - ["user.product_id",    "s", "YSG",       {title: "The Y product ID (before WiFi setup this is part of AP SSID)"}]
  - ["ydev.product_id",    "s", "YSG",       {title: "Y RF signal generator device."}]
  - ["ydev.unit_name",     "s", "YSG1",      {title: "The name for the device."}]
  - ["ydev.group_name",    "s", "",          {title: "The yView group name."}]
