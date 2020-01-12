@@ -33,8 +33,8 @@ The following embedded devices have been developed for connection to the yView n
 
 * [YSG](embedded_devices/ysg/)
 * [YSmartMeter](https://projects.pausten.me.uk/ysmartmeter.html)
+* [YSW8](https://projects.pausten.me.uk/ysw8.html)
 * [YSW3](https://projects.pausten.me.uk/WySW3.html)
-* [YSW8](https://projects.pausten.me.uk/WySW3.html)
 
 ### YVIEW GUI
 Two yView applications are currently available.
