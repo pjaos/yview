@@ -20,6 +20,7 @@ static void timer1_cb(void *arg) {
 
       snprintf(syslog_msg_buf, SYSLOG_MSG_BUF_SIZE, "uptime: %.2lf, heap (size/free/min) %d/%d/%d, fs (size/free) %d/%d",  mgos_uptime(), heap_zize, free_heap_size, min_free_heap_size, fs_size, fs_free_size);
       mgos_syslog_log_info(__FUNCTION__, syslog_msg_buf);
+      LOG(LL_INFO, (syslog_msg_buf) );
     }
 
     (void) arg;

@@ -1,6 +1,6 @@
 const CONFIG_OPT    = "config";
 const YDEV_OPT      = "ydev";
-const MIN_FREQ_MHZ  = 137.5;
+const MIN_FREQ_MHZ  = 138;
 const MAX_FREQ_MHZ  = 4400;
 
 var devNameLabel         = document.getElementById("devNameLabel");
@@ -157,7 +157,7 @@ function setFreqAction() {
     })
   }
   else {
-    alert(opFreqNumber.value+" is invalid. Valid range = 137.5 to 4400 MHz.")
+    alert(opFreqNumber.value+" is invalid. Valid range = "+MIN_FREQ_MHZ+" to "+MAX_FREQ_MHZ+" MHz.")
   }
 }
 

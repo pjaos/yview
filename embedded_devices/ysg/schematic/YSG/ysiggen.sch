@@ -1,4 +1,5 @@
 EESchema Schematic File Version 4
+LIBS:ysiggen-cache
 EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
@@ -18,7 +19,7 @@ GND
 Text Notes 5850 3450 0    50   ~ 0
 VCC
 Text Notes 5850 3550 0    50   ~ 0
-NC
+CAL
 Text Notes 5850 3650 0    50   ~ 0
 NC
 Text Notes 5850 3750 0    50   ~ 0
@@ -115,4 +116,105 @@ Wire Wire Line
 	2450 4250 2450 5350
 Wire Wire Line
 	2450 5350 4850 5350
+Wire Wire Line
+	5550 3550 5350 3550
+$Comp
+L Device:R 56K
+U 1 1 5E1969D5
+P 2300 3750
+F 0 "56K" V 2093 3750 50  0000 C CNN
+F 1 "R" V 2184 3750 50  0000 C CNN
+F 2 "" V 2230 3750 50  0001 C CNN
+F 3 "~" H 2300 3750 50  0001 C CNN
+	1    2300 3750
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	2450 3750 3000 3750
+Connection ~ 2450 5350
+$Comp
+L Device:C C?
+U 1 1 5E198E79
+P 1650 4000
+F 0 "C?" H 1765 4046 50  0000 L CNN
+F 1 "4.7uf" H 1765 3955 50  0000 L CNN
+F 2 "" H 1688 3850 50  0001 C CNN
+F 3 "~" H 1650 4000 50  0001 C CNN
+	1    1650 4000
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 5E199144
+P 1300 4000
+F 0 "C?" H 1415 4046 50  0000 L CNN
+F 1 "0.1uf" H 1415 3955 50  0000 L CNN
+F 2 "" H 1338 3850 50  0001 C CNN
+F 3 "~" H 1300 4000 50  0001 C CNN
+	1    1300 4000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1650 3750 1650 3850
+Wire Wire Line
+	1650 3750 1300 3750
+Wire Wire Line
+	1300 3750 1300 3850
+Connection ~ 1650 3750
+Wire Wire Line
+	1300 4150 1300 5350
+Wire Wire Line
+	1300 5350 1650 5350
+Wire Wire Line
+	1650 4150 1650 5350
+Connection ~ 1650 5350
+Wire Wire Line
+	5350 3550 5350 2550
+Wire Wire Line
+	5350 2550 1300 2550
+Wire Wire Line
+	1300 2550 1300 3750
+Connection ~ 1300 3750
+Wire Wire Line
+	1650 3750 2050 3750
+$Comp
+L Device:R 8K2
+U 1 1 5E19DF5B
+P 2050 3300
+F 0 "8K2" H 1980 3254 50  0000 R CNN
+F 1 "R" H 1980 3345 50  0000 R CNN
+F 2 "" V 1980 3300 50  0001 C CNN
+F 3 "~" H 2050 3300 50  0001 C CNN
+	1    2050 3300
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R 8K2
+U 1 1 5E19E5F7
+P 2050 4550
+F 0 "8K2" H 1980 4504 50  0000 R CNN
+F 1 "R" H 1980 4595 50  0000 R CNN
+F 2 "" V 1980 4550 50  0001 C CNN
+F 3 "~" H 2050 4550 50  0001 C CNN
+	1    2050 4550
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3000 2950 2050 2950
+Wire Wire Line
+	2050 2950 2050 3150
+Wire Wire Line
+	2050 3450 2050 3750
+Connection ~ 2050 3750
+Wire Wire Line
+	2050 3750 2150 3750
+Wire Wire Line
+	2050 3750 2050 4400
+Wire Wire Line
+	2050 4700 2050 5350
+Wire Wire Line
+	1650 5350 2050 5350
+Connection ~ 2050 5350
+Wire Wire Line
+	2050 5350 2450 5350
 $EndSCHEMATC

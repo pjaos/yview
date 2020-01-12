@@ -60,6 +60,7 @@ config_schema:
  - ["ydev.output_mhz",    "d", 2500.0,      {title: "The RF output frequency in MHz."}]
  - ["ydev.rf_level",      "i", 5,           {title: "The RF output level in dBm."}]
  - ["ydev.rf_on",         "b", true,        {title: "The RF on/off state."}]
+ - ["ydev.dac_cal",       "i", 128,         {title: "The DAC cal value. This pulls the TCXO to calibrate the output frequency."}]
 
  - ["adf4350", "o",           {"title": "ADF4350 device settings"}]
  - ["adf4350.ce_pin", "i", 4, {title:   "ADF43509 CE pin"}]
@@ -90,6 +91,9 @@ libs:
  - origin: https://github.com/mongoose-os-libs/spi
  - origin: https://github.com/pjaos/adf4350.git
 
+#If defined then extra ADF4350 debug is displayed on the serial console.
+#cdefs:
+#  ADF4350_DEBUG:
 
 # Used by the mos tool to catch mos binaries incompatible with this file format
 manifest_version: 2017-09-29

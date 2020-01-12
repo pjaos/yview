@@ -5,6 +5,7 @@
 #include "ayt_tx_handler.h"
 #include "rpc_handler.h"
 #include "timer.h"
+#include "cal.h"
 
 /**
  * @brief The MGOS program entry point.
@@ -27,6 +28,8 @@ enum mgos_app_init_result mgos_app_init(void) {
   if( !mgos_sys_config_get_ydev_rf_on() ) {
     mgos_power_down(true);
   }
+
+  init_cal();
 
   return MGOS_APP_INIT_SUCCESS;
 }
