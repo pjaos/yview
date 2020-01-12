@@ -62,3 +62,15 @@ The 3D printed case includes light pipes to bring out the LED's. The Red LED ind
 ## Software
 The device software is written in C ([the source is available here](mgos)). As part of this project I wrote the [ADF4350 device driver](https://github.com/pjaos/adf4350) from scratch.
 The software makes extensive use of [Mongoose OS](https://mongoose-os.com/). Mongoose OS was chosen because as it provides many features (libraries including configuratin management, RPC etc) on top of the FreeRTOS SDK from [Esspessif](https://www.espressif.com/en/products/software/esp-sdk/overview) which allows faster product development.
+
+## Calibration
+These are the steps required to calibrate the output frequency of the YSG device.
+
+* Power up the YSG device.
+* Use the ysg.py tool to set the RF output frequency (--freq argument) to 2500 MHz.
+* Power up a spectrum analyser capable of measuring a 2.5 GHz signal.
+* Wait 30 minutes.
+* Connect the spectrum analyser to the RF output and set it to a centre frequency of 2500 MHz with a span of 1 MHz.
+* Use the ysg.py tool (--cal argument) to adjust the output frequency calibration value. Start with the calibration value around 140 and adjust up/down until the closest value to 2500 MHz is found. You will need to progressively reduce the spectrum analyser span while doing this.
+
+ The calibration value is automatically stored persistently in the YSG device. The accuracy of the calibration will depend upon the calibration accuracy of the spectrum analyser used.
