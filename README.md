@@ -1,5 +1,5 @@
 # yView
-yView is a framework that allows any device which offers a service over a TCP socket to be connected to a private network using only an ssh server connected to the Internet. yView can be used for accessing devices (from small IoT devices all the way up to large servers).
+yView is a framework that allows any device which offers a service over a TCP socket to be connected to a private network using only an ssh server connected to the Internet. yView can be used for accessing devices from small IoT devices all the way up to large servers.
 
 The diagram below shows how the various parts of the yView system connect together.
 
