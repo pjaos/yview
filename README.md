@@ -15,7 +15,7 @@ Connections to the ICONS can also be made from GUI applications running on Linux
 ### ICONS
 The ICONS (Internet Connection Server) is a docker container that exposes a single ssh port to the outside world. This container runs
 
-- An MQTT server which brokers all messages that pass between devices which offer a service and applications that allow connections to these services.
+- An MQTT server which brokers all messages that pass between devices which offer a service and applications that allow connections to these services. A factor in choosing an MQTT server was that it allows easy migration to cloud computing frameworks (AWS etc) if required in future.
 - An MQTT RPC server. This allows remote procedure calls (RPC) to be made from the ICONS gateway component (ICONS GW) as detailed below.
 - A standard Linux ssh server.
 
@@ -24,12 +24,19 @@ One advantage in using a docker container to perform this function is that it ef
 The above diagram shows 'Local' and 'Remote' networks. However many more remote networks can be connected to a single ICONS. See [icons/](icons/) for more information.
 
 ### ICONS GW
-The ICONS gateway program typically runs on the same machine that the ICONS docker image is running. At least one instance of the ICONS gateway should be running in each network. It is the responsibility of the ICONS GW to discover devices (small embedded devices all the way up to large servers) on the local IP sub network and forward the responses to the ICONS. The ICONS GW also has the responsibility of managing connections between the devices that it discovers and the ICONS. See [icons_gw/](icons_gw/) for more information.
+The ICONS gateway program typically runs on the same machine that the ICONS docker image is running. However it may run on any machine in the same subnetwork as the ICONS. At least one instance of the ICONS gateway should be running in each network. It is the responsibility of the ICONS GW to discover devices (small embedded devices all the way up to large servers) on the local IP sub network and forward the responses to the ICONS. The ICONS GW also has the responsibility of managing connections between the devices that it discovers. See [icons_gw/](icons_gw/) for more information.
 
-### icons_rpc_provider
-This package provides an MQTT RPC client that connects to the ICON server. This allows the ICONS GW to discover free TCP/IP ports inside the ICONS docker container. This is built into the ICONS docker container.  See [icons_rpc_provider/](icons_rpc_provider/) for more information.
+### EMBEDDED DEVICES
+Embedded devices can be developed to connect to the yView network. A template embedded device application is available [here](embedded_devices/mgos/).
 
-### gui
+The following embedded devices have been developed for connection to the yView network.
+
+* [YSG](embedded_devices/ysg/)
+* [YSmartMeter](https://projects.pausten.me.uk/ysmartmeter.html)
+* [YSW3](https://projects.pausten.me.uk/WySW3.html)
+* [YSW8](https://projects.pausten.me.uk/WySW3.html)
+
+### YVIEW GUI
 Two yView applications are currently available.
 
 - A Java application that will run on Linux, Windows and Apple MAC computers. Currently installers only exist for Linux computers. See [gui/java](gui/java) for more information on this application.
