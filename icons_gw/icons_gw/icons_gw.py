@@ -39,6 +39,7 @@ class IconsGWConfig(object):
     SERVER                              = "server"
     SERVER_PORT                         = "server_port"
     LOCATION                            = "location"
+    AYT_MSG                             = "are_you_there_message"
     PRIVATE_KEY_FILE                    = "private_key_file"
 
     DEFAULT_CONFIG = {
@@ -100,6 +101,8 @@ class IconsGWConfig(object):
 
         self._configManager.inputStr(IconsGWConfig.LOCATION, "The location name for this ICONS destination client", False)
 
+        self._configManager.inputStr(IconsGWConfig.AYT_MSG, "The devices 'Are You There' message text (min 8, max 64 characters)", False)
+
         privateKeyFile = self._configManager.getAttr(IconsGWConfig.PRIVATE_KEY_FILE)
         #If no key file has been defined then set the default key file
         if len(privateKeyFile) == 0:
@@ -120,6 +123,7 @@ class IconsGWConfig(object):
         options.server_port = self._configManager.getAttr(IconsGWConfig.SERVER_PORT)
         options.username    = self._configManager.getAttr(IconsGWConfig.USERNAME)
         options.location    = self._configManager.getAttr(IconsGWConfig.LOCATION)
+        options.ayt_msg     = self._configManager.getAttr(IconsGWConfig.AYT_MSG)
         options.private_key = self._configManager.getAttr(IconsGWConfig.PRIVATE_KEY_FILE)
 
 class ServiceConfigurator(object):
@@ -449,28 +453,36 @@ class ServiceConfig(object):
 class AreYouThereThread(threading.Thread):
     """Responsible for sendng UDP messages that are intended to elict responses"""
 
-    AreYouThereMessage      = "{\"AYT\":\"-!#8[dkG^v's!dRznE}6}8sP9}QoIR#?O&pg)Qra\"}"
     MULTICAST_ADDRESS       = "255.255.255.255"
     UDP_DEV_DISCOVERY_PORT  = 2934
 
-    def __init__(self, uo, sock, messagePeriod):
+    @staticmethod
+    def GetJSONAYTMsg(ayt_msg_str):
+        """@brief Get the JSON text string of the AYT message
+           @return The AYT message text."""
+        aytDict={"AYT": ayt_msg_str}
+        return IconsClient.DictToJSON(aytDict)
+
+    def __init__(self, uo, sock, messagePeriod, aytMsg):
         """@brief Constructor
            @param uo The USerOutput object
            @param sock The UDP socket to send AYT messages on
-           @param messagePeriod The AYT messages TX period in seconds"""
+           @param messagePeriod The AYT messages TX period in seconds
+           @param aytMsg The are you there message text."""
         threading.Thread.__init__(self)
         self._running = False
         self.setDaemon(True)
         self._uo = uo
         self._sock = sock
         self._messagePeriod = messagePeriod
+        self._aytMsg = aytMsg
 
     def run(self):
         self._running = True
         self._uo.info("Started the AYT thread")
         while self._running:
             try:
-                self._sock.sendto( str.encode(AreYouThereThread.AreYouThereMessage), (AreYouThereThread.MULTICAST_ADDRESS, AreYouThereThread.UDP_DEV_DISCOVERY_PORT) )
+                self._sock.sendto( str.encode( AreYouThereThread.GetJSONAYTMsg(self._aytMsg) ), (AreYouThereThread.MULTICAST_ADDRESS, AreYouThereThread.UDP_DEV_DISCOVERY_PORT) )
             except:
                 self._uo.error("Failed to send AYT message.")
                 self._uo.errorException()
@@ -782,7 +794,7 @@ class IconsGW(IconsClient):
 
             if not self._options.no_lan:
 				#Start the thread that sends AYT messages to elicit device responses
-                areYouThereThread = AreYouThereThread(self._uo, sock, self._options.dev_poll_period)
+                areYouThereThread = AreYouThereThread(self._uo, sock, self._options.dev_poll_period, self._options.ayt_msg)
                 areYouThereThread.start()
 
                 self._listenForDevResponses(sock)
@@ -1070,7 +1082,7 @@ class IconsGW(IconsClient):
                     self._uo.debug("%s: DEVICE RX DATA: %s" % (str(addressPort), rxData), self._debugLevel )
 
                 #Ignore the discovery message we sent as this will come back to us
-                if rxData == AreYouThereThread.AreYouThereMessage:
+                if rxData == AreYouThereThread.GetJSONAYTMsg(self._options.ayt_msg):
                     self._sendServicesResponse(addressPort)
 
                 else:
@@ -1141,7 +1153,7 @@ def main():
         if options.debug:
             uo.debugLevel=UO.DEBUG_LEVEL_7
 
-        elif options.enable_syslog:
+        if options.enable_syslog:
             uo.disableSyslog(False)
 
         elif options.disable_syslog:
