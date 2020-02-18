@@ -6,7 +6,7 @@ from setuptools.command.install import install
 from tempfile import NamedTemporaryFile
 
 MODULE_NAME="icons_gw"                                                          #The python module name
-VERSION = "3.7"                                                                 #The version of the application
+VERSION = "3.8"                                                                 #The version of the application
 AUTHOR  = "Paul Austen"                                                         #The name of the applications author
 AUTHOR_EMAIL = "pausten.os@gmail.com"                                           #The email address of the author
 DESCRIPTION = "ICON server gateway client."                                     # A short description of the application
