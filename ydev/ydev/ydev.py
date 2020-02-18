@@ -20,7 +20,7 @@ class AYTListener(object):
     OS_KEY                   = "OS"
     UDP_DEV_DISCOVERY_PORT   = 2934
     UDP_RX_BUFFER_SIZE       = 2048
-    AreYouThereMessage       = "{\"AYT\":\"-!#8[dkG^v's!dRznE}6}8sP9}QoIR#?O&pg)Qra\"}"
+    AYT_KEY                  = "AYT"
 
     def __init__(self, uo, options, deviceConfig):
         """@Constructor
@@ -32,36 +32,53 @@ class AYTListener(object):
         self._deviceConfig=deviceConfig
         self._sock=None
         self._user = getpass.getuser()
-                
+
         self._osName = platform.system()
 
     def _listener(self):
         """@brief Listen for messages from the icons dest server.
            @return The message received."""
         self._uio.info("Listening on UDP port %d" % (AYTListener.UDP_DEV_DISCOVERY_PORT))
+
         try:
             while True:
+                #Inside loop so we re read config if changed by another instance using --config option.
+                jsonDict = self._deviceConfig.getConfigDict()
+
+                #Wait for RX data
                 rxData, addressPort = self._sock.recvfrom(AYTListener.UDP_RX_BUFFER_SIZE)
 
-                #If this was an AYT message
-                if rxData == AYTListener.AreYouThereMessage:
+                try:
+                    rxDict = json.loads(rxData)
+                    if AYTListener.AYT_KEY in rxDict:
+                        aytString = rxDict[AYTListener.AYT_KEY]
+                        if jsonDict[DeviceConfig.AYT_MSG] == aytString:
 
-                    self._lastAYTMsgTime = time()
+                            self._lastAYTMsgTime = time()
 
-                    #Get the name of the interface on which we received the rxData
-                    ifName = self._netIF.getIFName(addressPort[0])
-                    jsonDict = self._deviceConfig.getConfigDict()
-                    #Add the interface address on this machine as the source of the message for yview
-                    jsonDict[AYTListener.IP_ADDRESS_KEY] = self._netIF.getIFIPAddress(ifName)
-                    jsonDict[AYTListener.OS_KEY] = self._osName
-                    jsonDictStr = json.dumps( jsonDict, sort_keys=True, indent=4, separators=(',', ': '))
+                            #Get the name of the interface on which we received the rxData
+                            ifName = self._netIF.getIFName(addressPort[0])
 
-                    if self._options.debug:
-                        self._uio.info("%s: %s" % (self.__class__.__name__, jsonDictStr) )
+                            #Add the interface address on this machine as the source of the message for yview
+                            jsonDict[AYTListener.IP_ADDRESS_KEY] = self._netIF.getIFIPAddress(ifName)
+                            jsonDict[AYTListener.OS_KEY] = self._osName
+                            jsonDictStr = json.dumps( jsonDict, sort_keys=True, indent=4, separators=(',', ': '))
 
-                    self._sock.sendto( jsonDictStr, addressPort)
+                            if self._options.debug:
+                                self._uio.info("%s: %s" % (self.__class__.__name__, jsonDictStr) )
+
+                            self._sock.sendto( jsonDictStr, addressPort)
+
+                        elif self._options.debug:
+                            self._uio.error("AYT mismatch:")
+                            self._uio.info("Expected: {}".format(jsonDict[DeviceConfig.AYT_MSG]) )
+                            self._uio.info("Found:    {}".format(aytString) )
+
+                except:
+                    pass
 
         except:
+            self._uio.errorException()
             self._uio.info("Shutdown device listener.")
 
     def run(self):
@@ -124,12 +141,14 @@ class DeviceConfig(object):
     PRODUCT_ID                          = "PRODUCT_ID"
     SERVICE_LIST                        = "SERVICE_LIST"
     GROUP_NAME                          = "GROUP_NAME"
+    AYT_MSG                             = "AYT_MSG"
 
     DEFAULT_CONFIG = {
         UNIT_NAME:    "",
         PRODUCT_ID:   "",
         SERVICE_LIST: "",
-        GROUP_NAME:   ""
+        GROUP_NAME:   "",
+        AYT_MSG:      ""
     }
 
     def __init__(self, uio, configFile):
@@ -172,6 +191,8 @@ class DeviceConfig(object):
 
            except ValueError:
                self._uio.error("%s is not a valid service string (E.G 'ssh:22,web:80')." % (srvListStr) )
+
+        self._configManager.inputStr(DeviceConfig.AYT_MSG, "The devices 'Are You There' message text (min 8, max 64 characters)", False)
 
         self._configManager.inputStr(DeviceConfig.GROUP_NAME, "The group name (enter none for no/default group)", False)
         groupName = self._configManager.getAttr(DeviceConfig.GROUP_NAME)
