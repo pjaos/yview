@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.InterfaceAddress;
+import javax.swing.*;
 
 /**
  * @brief REsponsible for the discovery of devices on the local IP sub network.
@@ -20,13 +21,15 @@ import java.net.InterfaceAddress;
 public class AreYouThereTXThread extends Thread {
 	private boolean running;
 	DatagramSocket lanDatagramSocket;
+	String aytMsg;
 	
 	/**
 	 * @brief Constructor
 	 * @param lanDatagramSocket The socket to send UDP are you there messages.
 	 */
-	public AreYouThereTXThread(DatagramSocket lanDatagramSocket) {
+	public AreYouThereTXThread(DatagramSocket lanDatagramSocket, String aytMsg) {
 		this.lanDatagramSocket=lanDatagramSocket;
+		this.aytMsg=aytMsg;
 	}
 	
 	/***
@@ -71,9 +74,9 @@ public class AreYouThereTXThread extends Thread {
 		running = true;
 		
 		Vector<String> multicastIPList = GetMulticastIPAddressList();
-	    
+		
 	    try {
-		    byte[] msg = Constants.AYT_MESSAGE.getBytes();
+		    byte[] msg = this.aytMsg.getBytes();
 		    
 			while(running) {
 

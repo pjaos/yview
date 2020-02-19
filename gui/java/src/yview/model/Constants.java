@@ -33,7 +33,7 @@ public class Constants
   public static final int       MIN_TCP_PORT_NUMBER 		   		= 1;
   public static final int       MAX_TCP_PORT_NUMBER 		   		= 65535;
   
-  public static final String    AYT_MESSAGE 				   		= "{\"AYT\":\"-!#8[dkG^v's!dRznE}6}8sP9}QoIR#?O&pg)Qra\"}";
+  public static final String    DEFAULT_AYT_MESSAGE 				= "-!#8[dkG^v's!dRznE}6}8sP9}QoIR#?O&pg)Qra";
   
   public static final String	NO_LOCATION					   		= "NO_LOCATION";
   public static final String	LOCAL_LOCATION				   		= "LAN";

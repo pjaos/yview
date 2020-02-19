@@ -311,7 +311,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	    	  lanDatagramSocket = new DatagramSocket(Constants.UDP_MULTICAST_PORT);
 	      }
 	      catch(BindException e ) {
-	    	  statusBar.println("UDP port "+Constants.UDP_MULTICAST_PORT+" is in use on this computer.\nLAN device detection disabled as the above TCPIP port is in use.");
+	    	  Dialogs.showErrorDialog(this, "Problem", "UDP port "+Constants.UDP_MULTICAST_PORT+" is in use on this computer.\nLocal LAN device detection disabled as the above TCPIP port is in use." );
 	      }
 	      if( lanDatagramSocket != null ) {
 	    	  initLocalDeviceInterface();
@@ -345,8 +345,11 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	  tabbedPane.setMnemonicAt(0, KeyEvent.VK_L);
 
 	  if( lanDatagramSocket != null ) {
-		  
-	      areYouThereTXThread = new AreYouThereTXThread(lanDatagramSocket);
+			
+		  String aytMsgContent = JOptionPane.showInputDialog(this, "The device are you there message", Constants.DEFAULT_AYT_MESSAGE);
+		  String aytMsg = "{\"AYT\":\""+aytMsgContent+"\"}";
+		 
+	      areYouThereTXThread = new AreYouThereTXThread(lanDatagramSocket, aytMsg);
 		  areYouThereTXThread.start();    
 	
 	      lanDeviceReceiver = new LanDeviceReceiver(lanDatagramSocket);
