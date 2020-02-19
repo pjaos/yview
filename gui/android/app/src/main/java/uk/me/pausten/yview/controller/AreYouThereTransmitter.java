@@ -19,6 +19,7 @@ import uk.me.pausten.yview.model.Constants;
  */
 public class AreYouThereTransmitter {
 
+    private String aytMsgContents = Constants.AYT_MESSAGE_CONTENTS;
     /***
      * @brief   Get a list of Multicast IP addresses for this machine.
      *          This will not include localhost or any virtual interfaces.
@@ -65,7 +66,8 @@ public class AreYouThereTransmitter {
         Vector<String> multicastIPList = GetMulticastIPAddressList();
 
         try {
-            byte[] msg = Constants.AYT_MESSAGE.getBytes();
+            String aytMsg = "{\"AYT\":\""+aytMsgContents+"\"}";
+            byte[] msg = aytMsg.getBytes();
 
             //Send the broadcast on each interface capable of sending multicast messages
             for( String ipAddress : multicastIPList ) {
@@ -87,6 +89,14 @@ public class AreYouThereTransmitter {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * @brief Set the contents of the AYT message
+     * @param aytMsgContents The AYT message contents string.
+     */
+    public void setAYTMsgContents(String aytMsgContents) {
+        this.aytMsgContents=aytMsgContents;
     }
 
 }

@@ -142,7 +142,7 @@ public class NetworkingManager extends Thread implements JSONListener {
             //Setup a timer to timeout units we have lost contact with
             aytTXTimer = new Timer();
             AYTTXTask aytTXTask = new AYTTXTask();
-            aytTXTimer.schedule(aytTXTask, Constants.DEFAULT_AYT_PERIOD_MS, Constants.DEFAULT_AYT_PERIOD_MS);
+            aytTXTimer.schedule(aytTXTask, 0, Constants.DEFAULT_AYT_PERIOD_MS);
 
             //Setup a timer to timeout units we have lost contact with
             deviceTimeoutTimer = new Timer();
@@ -152,6 +152,16 @@ public class NetworkingManager extends Thread implements JSONListener {
         }
         catch(IOException e ) {
             MainActivity.Log("LAN ERROR: "+e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * @brief Set the contents of the AYT message
+     * @param aytMsgContents The AYT message contents string.
+     */
+    public void setAYTMsgContents(String aytMsgContents) {
+        if( aytTransmitter != null ) {
+            aytTransmitter.setAYTMsgContents(aytMsgContents);
         }
     }
 

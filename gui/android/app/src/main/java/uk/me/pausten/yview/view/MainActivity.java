@@ -24,6 +24,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.widget.Toast;
 import android.content.SharedPreferences;
 import 	android.app.Activity;
+import android.app.AlertDialog;
 
 import org.json.JSONObject;
 
@@ -37,14 +38,15 @@ import uk.me.pausten.yview.controller.LocationListener;
 import uk.me.pausten.yview.controller.NetworkingManager;
 import uk.me.pausten.yview.model.Constants;
 
-public class MainActivity extends AppCompatActivity implements OnClickListener, LocationListener {
+public class MainActivity extends AppCompatActivity implements OnClickListener, LocationListener, StringInputListener {
     public static final int             COL_PADDING_LEFT            = 10;
     public static final int             COL_PADDING_TOP             = 10;
     public static final int             COL_PADDING_RIGHT           = 10;
     public static final int             COL_PADDING_BOTTOM          = 10;
     public static final int             TABLE_GRAVITY               = Gravity.CENTER;
     public static final int             TABLE_FONT_SIZE             = 24;
-    private static String                AppStorageFolder;
+    private static String               AppStorageFolder;
+    private AlertDialog                 enterAYTMsgDialog;
 
     public static NetworkingManager     NetworkManager;
 
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     int                                 toolBarBackgroundColor;
     Handler                             uiHandler;
     boolean                             activityVisible;
+    boolean                             removeLocations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +127,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         super.onStart();
         MainActivity.Log("MainActivity.onStart()");
         ensureNetworkManagerExists();
+        //If not using an ICONS server allow the user to set the AYT message
+        if( !NetworkManager.isICONSConnectionEnabled() ) {
+            enterAYTMsgDialog = Dialogs.showInputDialog(this, "YView", Constants.AYT_MSG_PROMPT, Constants.AYT_MESSAGE_CONTENTS , false, this);
+        }
     }
 
     /**
@@ -205,6 +212,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         locationTable = (TableLayout) findViewById(R.id.location_table);
 
         locationTable.removeAllViews();
+        if( removeLocations ) {
+            removeLocations=false;
+            return;
+        }
 
         ttc1 = new TextView(this);
         ttc1.setText("Location");
@@ -326,4 +337,20 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         return MainActivity.AppStorageFolder;
     }
 
+    @Override
+    public void positiveInput(String title, String prompt, String input) {
+        MainActivity.Log("PJA: input="+input);
+        if( NetworkManager != null ) {
+            MainActivity.Log("PJA: 1");
+            NetworkManager.setAYTMsgContents(input);
+            MainActivity.ShutDownNetworkManager();
+            ensureNetworkManagerExists();
+            removeLocations=true;
+        }
+    }
+
+    @Override
+    public void negativeInput(String title, String prompt) {
+
+    }
 }

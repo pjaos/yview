@@ -75,6 +75,9 @@ public class Dialogs {
         if( password ) {
             input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         }
+        if( currentValue != null ) {
+            input.setText(currentValue);
+        }
         builder.setView(input);
         builder.setPositiveButton("OK", new OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {

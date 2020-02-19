@@ -32,7 +32,7 @@ public class Constants {
     public static final int       DEFAULT_SSH_SERVER_PORT 	   = 22;
 
 
-    public static final String    AYT_MESSAGE 				   = "{\"AYT\":\"-!#8[dkG^v's!dRznE}6}8sP9}QoIR#?O&pg)Qra\"}";
+    public static final String    AYT_MESSAGE_CONTENTS 		   = "-!#8[dkG^v's!dRznE}6}8sP9}QoIR#?O&pg)Qra";
 
     public static final String	  NO_LOCATION				   = "NO_LOCATION";
     public static final String	  LOCAL_LOCATION			   = "LAN";
@@ -52,6 +52,7 @@ public class Constants {
 
     public static final String    SSH_PW_TITLE                 = "SSH Password Required";
     public static final String    PASSWORD                     = "Password";
+    public static final String    AYT_MSG_PROMPT               = "Are you there message";
 
     //USed in ICONSConnection
     public static final int ICONS_RECONNECT_DELAY_SECONDS       = 5;
