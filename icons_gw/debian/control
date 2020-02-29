@@ -7,4 +7,4 @@ Depends: python-pjalib (>= 3.7)
 Installed-Size: 78
 Maintainer: Paul Austen <pausten.os@gmail.com>
 Description: Internet Connection Server (ICONS) for Y devices.
-Version: 3.8
+Version: 3.9
