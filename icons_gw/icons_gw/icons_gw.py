@@ -463,26 +463,30 @@ class AreYouThereThread(threading.Thread):
         aytDict={"AYT": ayt_msg_str}
         return IconsClient.DictToJSON(aytDict)
 
-    def __init__(self, uo, sock, messagePeriod, aytMsg):
+    def __init__(self, uo, sock, options):
         """@brief Constructor
            @param uo The USerOutput object
            @param sock The UDP socket to send AYT messages on
-           @param messagePeriod The AYT messages TX period in seconds
-           @param aytMsg The are you there message text."""
+           @param options Command line options."""
         threading.Thread.__init__(self)
         self._running = False
         self.setDaemon(True)
         self._uo = uo
         self._sock = sock
-        self._messagePeriod = messagePeriod
-        self._aytMsg = aytMsg
+        self._options = options
+        self._messagePeriod = self._options.dev_poll_period
+        self._aytMsg = self._options.ayt_msg
 
     def run(self):
         self._running = True
         self._uo.info("Started the AYT thread")
         while self._running:
+            if self._options.no_lan:
+                destAddress = LOCALHOST_IP
+            else:
+                destAddress = AreYouThereThread.MULTICAST_ADDRESS
             try:
-                self._sock.sendto( str.encode( AreYouThereThread.GetJSONAYTMsg(self._aytMsg) ), (AreYouThereThread.MULTICAST_ADDRESS, AreYouThereThread.UDP_DEV_DISCOVERY_PORT) )
+                self._sock.sendto( str.encode( AreYouThereThread.GetJSONAYTMsg(self._aytMsg) ), (destAddress, AreYouThereThread.UDP_DEV_DISCOVERY_PORT) )
             except:
                 self._uo.error("Failed to send AYT message.")
                 self._uo.errorException()
@@ -792,12 +796,11 @@ class IconsGW(IconsClient):
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
             sock.bind(('', AreYouThereThread.UDP_DEV_DISCOVERY_PORT))
 
-            if not self._options.no_lan:
-				#Start the thread that sends AYT messages to elicit device responses
-                areYouThereThread = AreYouThereThread(self._uo, sock, self._options.dev_poll_period, self._options.ayt_msg)
-                areYouThereThread.start()
+            #Start the thread that sends AYT messages to elicit device responses
+            areYouThereThread = AreYouThereThread(self._uo, sock, self._options)
+            areYouThereThread.start()
 
-                self._listenForDevResponses(sock)
+            self._listenForDevResponses(sock)
 
         finally:
 
