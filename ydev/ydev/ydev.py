@@ -6,7 +6,6 @@ import  platform
 from    time import time, sleep
 from    pjalib.netif import NetIF
 import  json
-import  getpass
 from    pjalib.uio import  UIO
 from    optparse import OptionParser
 from    pjalib.pconfig import ConfigManager
@@ -31,7 +30,6 @@ class AYTListener(object):
         self._options=options
         self._deviceConfig=deviceConfig
         self._sock=None
-        self._user = getpass.getuser()
 
         self._osName = platform.system()
 
@@ -126,7 +124,7 @@ class AYTListener(object):
     def enableAutoStart(self):
         """@brief Enable this program to auto start when the computer on which it is installed starts."""
         bootManager = BootManager()
-        bootManager.add(user=self._user)
+        bootManager.add(user=self._options.user)
 
     def disableAutoStart(self):
         """@brief Enable this program to auto start when the computer on which it is installed starts."""
@@ -245,6 +243,7 @@ def main():
     opts.add_option("--debug",      help="Enable debugging.", action="store_true", default=False)
     opts.add_option("--enable_auto_start",  help="Enable auto start this program when this computer starts.", action="store_true", default=False)
     opts.add_option("--disable_auto_start", help="Disable auto start this program when this computer starts.", action="store_true", default=False)
+    opts.add_option("--user",               help="Set the user for auto start.")
 
     try:
         (options, args) = opts.parse_args()
