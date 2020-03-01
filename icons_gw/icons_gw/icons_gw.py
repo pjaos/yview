@@ -1140,9 +1140,9 @@ def main():
         opts.add_option("--enable_syslog",      help="Enable syslog. This enable syslogging for running instances and new instances of icons on this machine.", action="store_true", default=False)
         opts.add_option("--disable_syslog",     help="Disable syslog.", action="store_true", default=False)
         opts.add_option("--keepalive",          help="The number of seconds between each MQTT keepalive message (default=%d)." % (IconsClient.MQTT_DEFAULT_KEEPALIVE_SECONDS) , type="int", default=IconsClient.MQTT_DEFAULT_KEEPALIVE_SECONDS)
-        opts.add_option("--enable_auto_start",  help="Enable auto start this program when this computer starts.", action="store_true", default=False)
-        opts.add_option("--disable_auto_start", help="Disable auto start this program when this computer starts.", action="store_true", default=False)
-        opts.add_option("--user",               help="Set the user for auto start (default={}).".format(getpass.getuser()))
+        opts.add_option("--enable_auto_start",  help="Auto start when this computer starts.", action="store_true", default=False)
+        opts.add_option("--disable_auto_start", help="Disable auto starting when this computer starts.", action="store_true", default=False)
+        opts.add_option("--user",               help="Set the user for auto start.")
 
         (options, args) = opts.parse_args()
 

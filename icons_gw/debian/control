@@ -3,8 +3,8 @@ Section: Network
 Priority: optional
 Architecture: all
 Essential: no
-Depends: python-pjalib (>= 3.7)
+Depends: python-pjalib (>= 3.8)
 Installed-Size: 78
 Maintainer: Paul Austen <pausten.os@gmail.com>
 Description: Internet Connection Server (ICONS) for Y devices.
-Version: 3.9
+Version: 4.0
