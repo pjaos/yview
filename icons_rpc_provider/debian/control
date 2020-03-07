@@ -3,8 +3,8 @@ Section: Network
 Priority: optional
 Architecture: all
 Essential: no
-Depends: python-pjalib (>= 3.4)
+Depends: python-pjalib (>= 4.0)
 Installed-Size: 78
 Maintainer: Paul Austen <pausten.os@gmail.com>
 Description: RPC provider for ICONS GW.
-Version: 1.0
+Version: 1.1

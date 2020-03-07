@@ -47,10 +47,11 @@ def main():
 
         rpcMethodProvider = RPCMethodProvider()
 
-        mqttRPCProviderClient = MQTTRPCProviderClient(uo, options, (rpcMethodProvider,) )
-        
+        mqttRPCProviderClient = MQTTRPCProviderClient(uo, options, (rpcMethodProvider,), autoStartUser="root", allowRootAutoStartUser=True)
+
         if options.enable_auto_start:
-            mqttRPCProviderClient.enableAutoStart()
+            #This tool has no persistent config. All parameters are passed on the command line.
+            mqttRPCProviderClient.enableAutoStart(argString="--server {} --port={} --keepalive={} --sid={} --cid={}".format(options.server, options.port, options.keepalive, options.sid, options.cid) )
 
         elif options.disable_auto_start:
             mqttRPCProviderClient.disableAutoStart()
