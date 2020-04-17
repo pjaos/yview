@@ -6,7 +6,7 @@
 #define IP_BUF_SIZE 16
 #define URL_BUF_SIZE 30
 #define JSON_BUFFER_SIZE 4096
-extern  struct mg_connection *aty_response_con;
+struct mg_connection *aty_response_con;
 
 static char sta_ip[IP_BUF_SIZE];
 static char jbuf[JSON_BUFFER_SIZE];
