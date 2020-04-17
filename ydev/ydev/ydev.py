@@ -146,7 +146,7 @@ class DeviceConfig(object):
         PRODUCT_ID:   "",
         SERVICE_LIST: "",
         GROUP_NAME:   "",
-        AYT_MSG:      ""
+        AYT_MSG:      "-!#8[dkG^v's!dRznE}6}8sP9}QoIR#?O&pg)Qra"
     }
 
     def __init__(self, uio, configFile):
