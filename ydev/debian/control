@@ -3,7 +3,7 @@ Section: Network
 Priority: optional
 Architecture: all
 Essential: no
-Depends: python-pjalib (>= 3.9)
+Depends: python-pjalib (>= 3.8)
 Installed-Size: 2
 Maintainer: Paul Austen <pausten.os@gmail.com>
 Description: Y device message responder.
