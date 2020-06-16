@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "***********************************************************************"
+echo "* ydev2db                                                             *"
+echo "* Read device data from an ICON server and store to a MYSQL database. *"
+echo "***********************************************************************"
