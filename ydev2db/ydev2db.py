@@ -206,20 +206,26 @@ class YDev2DBClient(object):
         """@brief handle a connected ICONS session"""
         self._uio.info("Connected")
 
+    def _showDevData(self, devDict):
+        """@brief Show the device data received from the ICONS"""
+        if "LOCATION" in devDict:
+            location = devDict["LOCATION"]
+        if "UNIT_NAME" in devDict:
+            unitName = devDict["UNIT_NAME"]
+        self._uio.info("")
+        self._uio.info("********** {}/{} DEVICE ATTRIBUTES **********".format(location, unitName))
+        printDict(self._uio, devDict)
+
     def _messageReceived(self, client, userdata, msg):
         """@brief Called when a message is received from the ICONS MQTT server."""
         try:
             rxStr = msg.payload.decode()
             rxDict = json.loads(rxStr)
             if self._options.show_all:
-                if "LOCATION" in rxDict:
-                    location=rxDict["LOCATION"]
-                if "UNIT_NAME" in rxDict:
-                    unitName=rxDict["UNIT_NAME"]
-                self._uio.info("")
-                self._uio.info("********** {}/{} DEVICE ATTRIBUTES **********".format(location, unitName))
-                printDict(self._uio, rxDict)
+                self._showDevData(rxDict)
             else:
+                if self._options.show:
+                    self._showDevData(rxDict)
                 self._updateDatabase(rxDict)
         except Exception as ex:
             #HAndle reconnect to DB on error
@@ -407,6 +413,7 @@ def main():
     opts.add_option("--enable_auto_start",  help="Enable auto start when this computer starts.", action="store_true", default=False)
     opts.add_option("--disable_auto_start", help="Disable auto start.", action="store_true", default=False)
     opts.add_option("--log",                help="The log file (default={}".format(YDev2DBClient.DEFAULT_LOGFILE), default=YDev2DBClient.DEFAULT_LOGFILE)
+    opts.add_option("--show",               help="A debug mode to show YDEV messages from the ICONS for the selected device.", action="store_true", default=False)
     opts.add_option("--show_all",           help="A debug mode to show all YDEV messages from the ICONS. No data is stored to the database if this option is used.", action="store_true", default=False)
     opts.add_option("--debug",              help="Enable debugging.", action="store_true", default=False)
 
