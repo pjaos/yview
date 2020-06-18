@@ -14,7 +14,7 @@ import  paho.mqtt.client as mqtt
 from open_source_libs.p3lib.pconfig import ConfigManager
 from open_source_libs.p3lib.uio import UIO
 from open_source_libs.p3lib.boot_manager import BootManager
-from open_source_libs.p3lib.helper import logTraceBack, GetFreeTCPPort, getHomePath
+from open_source_libs.p3lib.helper import logTraceBack, GetFreeTCPPort, getHomePath, printDict
 from open_source_libs.p3lib.ssh import SSH, SSHTunnelManager
 from open_source_libs.p3lib.database_if import DBConfig, DatabaseIF
 
@@ -211,7 +211,16 @@ class YDev2DBClient(object):
         try:
             rxStr = msg.payload.decode()
             rxDict = json.loads(rxStr)
-            self._updateDatabase(rxDict)
+            if self._options.show_all:
+                if "LOCATION" in rxDict:
+                    location=rxDict["LOCATION"]
+                if "UNIT_NAME" in rxDict:
+                    unitName=rxDict["UNIT_NAME"]
+                self._uio.info("")
+                self._uio.info("********** {}/{} DEVICE ATTRIBUTES **********".format(location, unitName))
+                printDict(self._uio, rxDict)
+            else:
+                self._updateDatabase(rxDict)
         except Exception as ex:
             #HAndle reconnect to DB on error
             self._uio.error( str(ex) )
@@ -273,7 +282,10 @@ class YDev2DBClient(object):
         #Subscribe to a single topic
         topic = "{}/{}/#".format(self._config.getAttr(YDev2DBClientConfig.LOCATION),
                                   self._config.getAttr(YDev2DBClientConfig.DEV_NAME))
+        if self._options.show_all:
+            topic="#"
         client.subscribe(topic, qos=1)
+
         while (self._ssh.getTransport() and self._ssh.getTransport().is_active()):
             # Loop and block here for a period of time
             client.loop(YDev2DBClient.MQTT_LOOP_BLOCK_SECONDS)
@@ -286,8 +298,9 @@ class YDev2DBClient(object):
 
             try:
                 try:
-                    #Check we can connect to the database
-                    self._connectToDBS()
+                    if not self._options.show_all:
+                        #Check we can connect to the database
+                        self._connectToDBS()
 
                     localMQTTPort = self._startSSHTunnel()
                     host = YDev2DBClient.LOCALHOST
@@ -394,6 +407,7 @@ def main():
     opts.add_option("--enable_auto_start",  help="Enable auto start when this computer starts.", action="store_true", default=False)
     opts.add_option("--disable_auto_start", help="Disable auto start.", action="store_true", default=False)
     opts.add_option("--log",                help="The log file (default={}".format(YDev2DBClient.DEFAULT_LOGFILE), default=YDev2DBClient.DEFAULT_LOGFILE)
+    opts.add_option("--show_all",           help="A debug mode to show all YDEV messages from the ICONS. No data is stored to the database if this option is used.", action="store_true", default=False)
     opts.add_option("--debug",              help="Enable debugging.", action="store_true", default=False)
 
     try:
@@ -430,7 +444,7 @@ def main():
         elif options.read:
             yDev2DBClient.readTable()
 
-        elif options.collect:
+        elif options.collect or options.show_all:
             yDev2DBClient.collectData()
 
         else:
