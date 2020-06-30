@@ -1,6 +1,9 @@
 #!/bin/sh
 
 echo "***********************************************************************"
+echo "* The following commands are available.                               *"
 echo "* ydev2db                                                             *"
 echo "* Read device data from an ICON server and store to a MYSQL database. *"
+echo "* dba                                                                 *"
+echo "* MySQL database administration.                                      *"
 echo "***********************************************************************"

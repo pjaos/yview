@@ -152,18 +152,6 @@ class YDev2DBClient(object):
         tableSchemaString = self._config.getAttr(YDev2DBClientConfig.DB_TABLE_SCHEMA)
         return YDev2DBClient.GetTableSchema(tableSchemaString)
 
-    def enableAutoStart(self, user=None, argString=None):
-        """@brief Enable this program to auto start when the computer on which it is installed starts."""
-        bootManager = BootManager()
-        if user:
-            self._user = user
-        bootManager.add(user=self._user, argString=argString)
-
-    def disableAutoStart(self):
-        """@brief Enable this program to auto start when the computer on which it is installed starts."""
-        bootManager = BootManager()
-        bootManager.remove()
-
     def _startSSHTunnel(self):
         """@brief Start the ssh tunnel to the SSH server"""
         sshCompression = True
@@ -240,8 +228,8 @@ class YDev2DBClient(object):
         """@brief Update the database with the data received from the YSMartMeter device.
            @param rxDict The data received from the YSmartMeter device"""
         if "UNIT_NAME" in rxDict:
-            if self._options.table_name:
-                tableName = self._options.table_name
+            if self._options.table:
+                tableName = self._options.table
             else:
                 tableName = rxDict["UNIT_NAME"]
                 
@@ -326,96 +314,6 @@ class YDev2DBClient(object):
             finally:
                 self._shutdown()
 
-    def createDB(self):
-        """@brief Create the configured database on the MYSQL server"""
-        try:
-            dataBaseName = self._uio.getInput("Database to create: ")
-            self._setupDBConfig()
-            self._dataBaseIF.connectNoDB()
-
-            self._dbConfig.dataBaseName = dataBaseName
-            self._dataBaseIF.createDatabase()
-
-        finally:
-            self._shutdownDBSConnection()
-
-    def deleteDB(self):
-        """@brief Delete the configured database on the MYSQL server"""
-        try:
-            dataBaseName = self._uio.getInput("Database to delete: ")            
-            self._setupDBConfig()
-            self._dbConfig.dataBaseName = dataBaseName
-            deleteDB = self._uio.getBoolInput("Are you sure you wish to delete the '{}' database [y/n]".format(self._dbConfig.dataBaseName))
-            if deleteDB:
-
-                self._dataBaseIF.connectNoDB()
-
-                self._dataBaseIF.dropDatabase()
-
-        finally:
-            self._shutdownDBSConnection()
-
-    def createTable(self):
-        """@brief Create the database table configured"""
-        try:
-            tableName = self._uio.getInput("Table to create: ")
-            self._setupDBConfig()
-
-            self._dataBaseIF.connect()
-
-            tableSchema = self.getTableSchema()
-            self._dataBaseIF.createTable(tableName, tableSchema)
-
-        finally:
-            self._shutdownDBSConnection()
-
-    def deleteTable(self):
-        """@brief Delete a database table configured"""
-        try:
-            tableName = self._uio.getInput("Table to delete: ")
-            self._setupDBConfig()
-            deleteDBTable = self._uio.getBoolInput("Are you sure you wish to delete the '{}' database table [y/n]".format(tableName))
-            if deleteDBTable:
-
-                self._dataBaseIF.connect()
-
-                self._dataBaseIF.dropTable(tableName)
-
-        finally:
-            self._shutdownDBSConnection()
-
-    def showDBS(self):
-        """@brief List the databases."""
-        try:
-
-            self._setupDBConfig()
-
-            self._dataBaseIF.connectNoDB()
-
-            sql = 'SHOW DATABASES;'
-            recordTuple = self._dataBaseIF.executeSQL(sql)
-            for record in recordTuple:
-                self._uio.info( str(record) )
-
-        finally:
-            self._shutdownDBSConnection()
-
-    def showTables(self):
-        """@brief List the databases."""
-        try:
-
-            self._setupDBConfig()
-
-            self._dataBaseIF.connect()
-
-            sql = 'SHOW TABLES;'
-            recordTuple = self._dataBaseIF.executeSQL(sql)
-            for record in recordTuple:
-                self._uio.info( str(record) )
-
-        finally:
-            self._shutdownDBSConnection()
-
     def readTable(self):
         """@brief Read a number of records from the end of the database table."""
         try:
@@ -437,39 +335,6 @@ class YDev2DBClient(object):
         finally:
             self._shutdownDBSConnection()
             
-    def executeSQL(self):
-        """@brief Execute SQL command provided on the command line."""
-        try:
-            sql = self._uio.getInput("SQL command to execute: ")
-            self._setupDBConfig()
-
-            self._dataBaseIF.connect()
-
-            recordTuple = self._dataBaseIF.executeSQL(sql)
-            for record in recordTuple:
-                self._uio.info( str(record) )
-
-        finally:
-            self._shutdownDBSConnection()
-                  
-            
-    def showSchema(self):
-        """@brief Execute SQL command provided on the command line."""
-        try:
-            tableName = self._uio.getInput("SQL table to show the Schema of: ")
-            self._setupDBConfig()
-
-            self._dataBaseIF.connect()
-
-            sql = "DESCRIBE `{}`;".format(tableName)
-            recordTuple = self._dataBaseIF.executeSQL(sql)
-            for record in recordTuple:
-                self._uio.info( str(record) )
-
-        finally:
-            self._shutdownDBSConnection()
-
-
 def main():
     uio = UIO()
     uio.logAll(True)
@@ -481,17 +346,7 @@ def main():
     opts.add_option("--collect",            help="Collect data from the ICONS and save to a MySQL database.", action="store_true", default=False)
     opts.add_option("--read",               help="Read a number of records from the end of the database table.", action="store_true", default=False)
     opts.add_option("--read_count",         help="The number of lines to read from the end of the database table (default=1).", type="int", default=1)
-    opts.add_option("--sql",                help="Execute an SQL command.", action="store_true", default=False)
-    opts.add_option("--show_dbs",           help="Show all the databases on the MySQL server.", action="store_true", default=False)
-    opts.add_option("--show_tables",        help="Show all the database tables for the configured database on the MySQL server.", action="store_true", default=False)
-    opts.add_option("--show_table_schema",  help="Show the schema of an SQL table.", action="store_true", default=False)
-    opts.add_option("--create_db",          help="Create the configured database.", action="store_true", default=None)
-    opts.add_option("--delete_db",          help="Delete the configured database.", action="store_true", default=None)
-    opts.add_option("--create_table",       help="Create a table in the configured database.", action="store_true", default=None)
-    opts.add_option("--delete_table",       help="Delete a table from the configured database.", action="store_true", default=None)
-    opts.add_option("--enable_auto_start",  help="Enable auto start when this computer starts.", action="store_true", default=False)
-    opts.add_option("--disable_auto_start", help="Disable auto start.", action="store_true", default=False)
-    opts.add_option("--table_name",         help="The table name to set in the configured database. By default the ydev unit name is used.", default=None)
+    opts.add_option("--table",              help="The table name to set in the configured database. By default the ydev unit name is used.", default=None)
     opts.add_option("--log",                help="The log file (default={}".format(YDev2DBClient.DEFAULT_LOGFILE), default=YDev2DBClient.DEFAULT_LOGFILE)
     opts.add_option("--show",               help="A debug mode to show YDEV messages from the ICONS for the selected device.", action="store_true", default=False)
     opts.add_option("--show_all",           help="A debug mode to show all YDEV messages from the ICONS. No data is stored to the database if this option is used.", action="store_true", default=False)
@@ -510,41 +365,11 @@ def main():
         if options.c:
             yDev2DBClientConfig.configure()
 
-        elif options.enable_auto_start:
-            yDev2DBClient.enableAutoStart(options.user, "--collect -f {} --log {}".format(options.f, options.log))
-
-        elif options.disable_auto_start:
-            yDev2DBClient.disableAutoStart()
-
-        elif options.create_db:
-            yDev2DBClient.createDB()
-
-        elif options.delete_db:
-            yDev2DBClient.deleteDB()
-
-        elif options.create_table:
-            yDev2DBClient.createTable()
-
-        elif options.delete_table:
-            yDev2DBClient.deleteTable()
-
         elif options.read:
             yDev2DBClient.readTable()
 
-        elif options.show_dbs:
-            yDev2DBClient.showDBS()
-
-        elif options.show_tables:
-            yDev2DBClient.showTables()
-
         elif options.collect or options.show_all:
             yDev2DBClient.collectData()
-
-        elif options.sql:
-            yDev2DBClient.executeSQL()
-            
-        elif options.show_table_schema:
-            yDev2DBClient.showSchema()
 
         else:
             raise Exception("No action selected on command line.")
