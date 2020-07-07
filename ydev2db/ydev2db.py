@@ -322,8 +322,8 @@ class YDev2DBClient(object):
 
             self._dataBaseIF.connect()
             
-            if self._options.table_name:
-                tableName = self._options.table_name
+            if self._options.table:
+                tableName = self._options.table
             else:
                 tableName = self._config.getAttr(YDev2DBClientConfig.DEV_NAME)
                 
@@ -342,7 +342,6 @@ def main():
     opts = OptionParser(usage="Connect to an MQTT server on an ICON server, read the data from a device and store it in a mysql database.")
     opts.add_option("-f",                   help="The config file for the device to be read.")
     opts.add_option("-c",                   help="Set the configuration for your device in the above config file.", action="store_true", default=False)
-    opts.add_option("--user",               help="Set the user for auto start.")
     opts.add_option("--collect",            help="Collect data from the ICONS and save to a MySQL database.", action="store_true", default=False)
     opts.add_option("--read",               help="Read a number of records from the end of the database table.", action="store_true", default=False)
     opts.add_option("--read_count",         help="The number of lines to read from the end of the database table (default=1).", type="int", default=1)
