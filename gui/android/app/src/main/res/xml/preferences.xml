@@ -46,10 +46,10 @@
             android:id="@+id/np"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:defaultValue="22"
+            android:defaultValue="true"
+            android:dependency="@string/pref_server_active"
             android:key="@string/pref_server_port"
-            android:title="@string/server_port_label"
-            android:dependency="@string/pref_server_active" />
+            android:title="@string/server_port_label" />
 
     </PreferenceCategory>
 
