@@ -78,12 +78,6 @@ public class AreYouThereTransmitter {
                 lanDatagramSocket.send(packet);
             }
 
-            //Wait between TX of multicast messages
-            Thread.sleep(Constants.DEFAULT_AYT_PERIOD_MS);
-
-        }
-        catch(InterruptedException e) {
-            e.printStackTrace();
         }
         catch(IOException e) {
             e.printStackTrace();
