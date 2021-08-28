@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         //toolbar.setSubtitle("Locations");
         toolBarBackgroundColor = ((ColorDrawable) toolbar.getBackground()).getColor();
         MainActivity.Log("MainActivity.onCreate()");
-        MainActivity.AppStorageFolder = getApplicationContext().getExternalFilesDir(null).getAbsolutePath();
+        MainActivity.AppStorageFolder = getApplicationContext().getFilesDir().getAbsolutePath();
 
         // Defines a Handler object that's attached to the UI thread
         uiHandler = new Handler(Looper.getMainLooper()) {
