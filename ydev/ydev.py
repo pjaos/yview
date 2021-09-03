@@ -1,15 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import  sys
 import  socket
 import  platform
 from    time import time, sleep
-from    pjalib.netif import NetIF
+from    p3lib.netif import NetIF
 import  json
-from    pjalib.uio import  UIO
+from    p3lib.uio import  UIO
 from    optparse import OptionParser
-from    pjalib.pconfig import ConfigManager
-from    pjalib.boot_manager import BootManager
+from    p3lib.pconfig import ConfigManager
+from    p3lib.boot_manager import BootManager
 
 class AYTListener(object):
     """@brief Responsible listening for are you there messages (AYT) from the host and sending responses
@@ -45,13 +44,12 @@ class AYTListener(object):
 
                 #Wait for RX data
                 rxData, addressPort = self._sock.recvfrom(AYTListener.UDP_RX_BUFFER_SIZE)
-
                 try:
                     rxDict = json.loads(rxData)
                     if AYTListener.AYT_KEY in rxDict:
-                        aytString = rxDict[AYTListener.AYT_KEY]
+                        aytString = rxDict[AYTListener.AYT_KEY].strip()
                         if jsonDict[DeviceConfig.AYT_MSG] == aytString:
-
+                            self._uio.debug("AYT string matched")
                             self._lastAYTMsgTime = time()
 
                             #Get the name of the interface on which we received the rxData
@@ -62,18 +60,20 @@ class AYTListener(object):
                             jsonDict[AYTListener.OS_KEY] = self._osName
                             jsonDictStr = json.dumps( jsonDict, sort_keys=True, indent=4, separators=(',', ': '))
 
-                            if self._options.debug:
-                                self._uio.info("%s: %s" % (self.__class__.__name__, jsonDictStr) )
+                            self._uio.debug("%s: %s" % (self.__class__.__name__, jsonDictStr) )
 
-                            self._sock.sendto( jsonDictStr, addressPort)
-
-                        elif self._options.debug:
+                            self._sock.sendto( jsonDictStr.encode(), addressPort)
+                            self._uio.debug("Sent above message to {}:{}".format(addressPort[0],addressPort[1]))
+                        else:
                             self._uio.error("AYT mismatch:")
                             self._uio.info("Expected: {}".format(jsonDict[DeviceConfig.AYT_MSG]) )
                             self._uio.info("Found:    {}".format(aytString) )
 
-                except:
-                    pass
+                    else:
+                        self._uio.debug("No match on AYT string")
+
+                except Exception as ex:
+                    self._uio.error(ex)
 
         except:
             self._uio.errorException()
@@ -159,48 +159,54 @@ class DeviceConfig(object):
         self._configManager.load()
 
     def configure(self):
-        """@brief configure the required parameters for normal opperation."""
-        configOK = True
-        invalidInitialCharList = ('+','#','/')
-        while True:
-            self._configManager.inputStr(DeviceConfig.UNIT_NAME, "Enter the name of the device", False)
-            unitName = self._configManager.getAttr(DeviceConfig.UNIT_NAME)
-            if len(unitName) > 0 and unitName[0] in invalidInitialCharList:
-                self._uio.warn("The name of a device may not start with a '%s' character." % (unitName[0]) )
-            else:
-                break
-
-        self._configManager.inputStr(DeviceConfig.PRODUCT_ID, "Product identifier for the device", False)
-
-        while True:
-           self._configManager.inputStr(DeviceConfig.SERVICE_LIST, "The service list string for the device", False)
-
-           srvListStr = self._configManager.getAttr(DeviceConfig.SERVICE_LIST)
-           try:
-               elems = srvListStr.split(",")
-               for service in elems:
-                   name, port = service.split(":")
-                   if len(name) == 0:
-                       raise ValueError("")
-                   portValue = int(port)
-                   if portValue < 1 or portValue > 65535:
-                       raise ValueError("")
-               break
-
-           except ValueError:
-               self._uio.error("%s is not a valid service string (E.G 'ssh:22,web:80')." % (srvListStr) )
-
-        self._configManager.inputStr(DeviceConfig.AYT_MSG, "The devices 'Are You There' message text (min 8, max 64 characters)", False)
-
-        self._configManager.inputStr(DeviceConfig.GROUP_NAME, "The group name (enter none for no/default group)", False)
-        groupName = self._configManager.getAttr(DeviceConfig.GROUP_NAME)
-        if groupName.lower() == 'none':
-            self._configManager.addAttr(DeviceConfig.GROUP_NAME, "")
-
-        if configOK:
-            self._configManager.store()
-        else:
-            self._uio.error("Configuration aborted.")
+        """@brief configure the required parameters for normal operation."""
+        self._configManager.configure(self._editConfig)
+        
+    def _editConfig(self, key):
+        """@brief Edit an icons_gw persistent config attribute.
+           @param key The dictionary key to edit."""
+        if key == DeviceConfig.UNIT_NAME:
+            invalidInitialCharList = ('+','#','/')
+            while True:
+                self._configManager.inputStr(DeviceConfig.UNIT_NAME, "Enter the name of the device", False)
+                unitName = self._configManager.getAttr(DeviceConfig.UNIT_NAME)
+                if len(unitName) > 0 and unitName[0] in invalidInitialCharList:
+                    self._uio.warn("The name of a device may not start with a '%s' character." % (unitName[0]) )
+                else:
+                    break
+                
+        elif key == DeviceConfig.PRODUCT_ID:
+            self._configManager.inputStr(DeviceConfig.PRODUCT_ID, "Product identifier for the device", False)            
+                        
+        elif key == DeviceConfig.SERVICE_LIST:
+            self._uio.info("Example service list: ssh:22,web:80")
+            while True:
+               self._configManager.inputStr(DeviceConfig.SERVICE_LIST, "The service list string for the device", False)
+    
+               srvListStr = self._configManager.getAttr(DeviceConfig.SERVICE_LIST)
+               try:
+                   elems = srvListStr.split(",")
+                   for service in elems:
+                       name, port = service.split(":")
+                       if len(name) == 0:
+                           raise ValueError("")
+                       portValue = int(port)
+                       if portValue < 1 or portValue > 65535:
+                           raise ValueError("")
+                   break
+    
+               except ValueError:
+                   self._uio.error("%s is not a valid service string (E.G 'ssh:22,web:80')." % (srvListStr) )
+            
+        elif key == DeviceConfig.AYT_MSG:
+            self._uio.info("Default AYT message: -!#8[dkG^v\'s!dRznE}6}8sP9}QoIR#?O&pg)Qra")
+            self._configManager.inputStr(DeviceConfig.AYT_MSG, "The devices 'Are You There' message text (min 8, max 64 characters)", False)
+            
+        elif key == DeviceConfig.GROUP_NAME:
+            self._configManager.inputStr(DeviceConfig.GROUP_NAME, "The group name (enter none for no/default group)", False)
+            groupName = self._configManager.getAttr(DeviceConfig.GROUP_NAME)
+            if groupName.lower() == 'none':
+                self._configManager.addAttr(DeviceConfig.GROUP_NAME, "")
 
     def show(self):
         """@brief Show the current configuration parameters."""
@@ -232,7 +238,7 @@ class DeviceConfig(object):
         return self._configManager.getAttr(key)
 
     def getConfigDict(self):
-	return self._configManager._configDict
+        return self._configManager._configDict
 
 #Very simple cmd line template using optparse
 def main():
@@ -247,13 +253,14 @@ def main():
 
     try:
         (options, args) = opts.parse_args()
+        uio.enableDebug(options.debug)
 
         deviceConfig = DeviceConfig(uio, "ydev.cfg")
+        aytListener = AYTListener(uio, options, deviceConfig)
         if options.config:
             deviceConfig.configure()
 
-        aytListener = AYTListener(uio, options, deviceConfig)
-        if options.enable_auto_start:
+        elif options.enable_auto_start:
             aytListener.enableAutoStart()
 
         elif options.disable_auto_start:
@@ -268,12 +275,12 @@ def main():
     #Don't print error information if CTRL C pressed
     except KeyboardInterrupt:
       pass
-    except:
-     if options.debug:
-       raise
-
-     else:
-       uio.error(sys.exc_value)
+    except Exception as ex:
+        if options.debug:
+            raise
+    
+        else:
+            uio.error(ex)
 
 
 if __name__== '__main__':
