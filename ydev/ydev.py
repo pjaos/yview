@@ -124,6 +124,8 @@ class AYTListener(object):
     def enableAutoStart(self):
         """@brief Enable this program to auto start when the computer on which it is installed starts."""
         bootManager = BootManager()
+        if not self._options.user:
+            raise Exception("--user not set.")
         bootManager.add(user=self._options.user)
 
     def disableAutoStart(self):
