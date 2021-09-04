@@ -104,11 +104,11 @@
         },
         "p3lib": {
             "hashes": [
-                "sha256:49722cf03ea24145e6657a36fd472ea3121357ca4292661d779d38f3ccabd582",
-                "sha256:cc2ff165806175b8740b44192a60f96d4c89e89742cad9a9b273fa7e6de973ef"
+                "sha256:156f4292cc2695263e79ba266efafd9887fb62f3157777100fa41a8a01c02b23",
+                "sha256:de76a24dcccc5012a6acaefe9d6de18f88ab395105e28a7cdf8b7ae0e563f398"
             ],
             "index": "pypi",
-            "version": "==1.1.17"
+            "version": "==1.1.19"
         },
         "paho-mqtt": {
             "hashes": [

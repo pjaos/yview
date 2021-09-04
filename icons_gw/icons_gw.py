@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-# TODO
-# - Add -s/--status option for checking if it is running.
-#
-#
-
 import  os
 import  socket
 import  sys
@@ -1141,6 +1136,15 @@ class IconsGW(IconsClient):
         """@brief Enable this program to auto start when the computer on which it is installed starts."""
         bootManager = BootManager()
         bootManager.remove()
+        
+    def checkAutoStartStatus(self):
+        """@brief Check the status of a process previously set to auto start."""
+        bootManager = BootManager()
+        lines = bootManager.getStatus()
+        if lines and len(lines) > 0:
+            for line in lines:
+                self._uo.info(line)
+        
 
 def main():
     uo = UO()
@@ -1161,6 +1165,7 @@ def main():
         opts.add_option("--keepalive",          help="The number of seconds between each MQTT keepalive message (default=%d)." % (IconsClient.MQTT_DEFAULT_KEEPALIVE_SECONDS) , type="int", default=IconsClient.MQTT_DEFAULT_KEEPALIVE_SECONDS)
         opts.add_option("--enable_auto_start",  help="Auto start when this computer starts.", action="store_true", default=False)
         opts.add_option("--disable_auto_start", help="Disable auto starting when this computer starts.", action="store_true", default=False)
+        opts.add_option("--check_auto_start",   help="Check the status of an auto started iconds_gw instance.", action="store_true", default=False)
         opts.add_option("--user",               help="Set the user for auto start.")
 
         (options, args) = opts.parse_args()
@@ -1185,6 +1190,10 @@ def main():
 
             iconsGWConfig.configure()
 
+        elif options.check_auto_start:
+            iconsGW = IconsGW(uo, options)
+            iconsGW.checkAutoStartStatus()            
+            
         else:
 
             iconsGWConfig.updateOptions(options)
