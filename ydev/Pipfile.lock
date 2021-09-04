@@ -18,11 +18,11 @@
     "default": {
         "p3lib": {
             "hashes": [
-                "sha256:aa18bf82f8c1e6f6d866a574ac2f06a2f2f92921bbbd57f22ba9417aa50bf001",
-                "sha256:b360276464661434784a39a3f3a3a2c3091f62d6e5e00b3474a78c2eb09d9b13"
+                "sha256:156f4292cc2695263e79ba266efafd9887fb62f3157777100fa41a8a01c02b23",
+                "sha256:de76a24dcccc5012a6acaefe9d6de18f88ab395105e28a7cdf8b7ae0e563f398"
             ],
             "index": "pypi",
-            "version": "==1.1.15"
+            "version": "==1.1.19"
         }
     },
     "develop": {}

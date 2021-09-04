@@ -126,12 +126,28 @@ class AYTListener(object):
         bootManager = BootManager()
         if not self._options.user:
             raise Exception("--user not set.")
-        bootManager.add(user=self._options.user)
+        
+        argString = ""
+        if self._options.enable_syslog:
+            argString = "--enable_syslog"
+            
+        if self._options.debug:
+            argString = argString + " --debug"
+            
+        bootManager.add(user=self._options.user, argString=argString)
 
     def disableAutoStart(self):
         """@brief Enable this program to auto start when the computer on which it is installed starts."""
         bootManager = BootManager()
         bootManager.remove()
+        
+    def checkAutoStartStatus(self):
+        """@brief Check the status of a process previously set to auto start."""
+        bootManager = BootManager()
+        lines = bootManager.getStatus()
+        if lines and len(lines) > 0:
+            for line in lines:
+                self._uio.info(line)
         
 
 class DeviceConfig(object):
@@ -251,14 +267,20 @@ def main():
     opts.add_option("--debug",      help="Enable debugging.", action="store_true", default=False)
     opts.add_option("--enable_auto_start",  help="Enable auto start this program when this computer starts.", action="store_true", default=False)
     opts.add_option("--disable_auto_start", help="Disable auto start this program when this computer starts.", action="store_true", default=False)
+    opts.add_option("--check_auto_start",   help="Check the status of an auto started ydev instance.", action="store_true", default=False)
     opts.add_option("--user",               help="Set the user for auto start.")
+    opts.add_option("--enable_syslog",      help="Enable syslog on this instance of ydev. By default syslog is disabled.", action="store_true", default=False)
 
     try:
         (options, args) = opts.parse_args()
         uio.enableDebug(options.debug)
 
+        if options.enable_syslog:
+            uio.enableSyslog(True)
+            
         deviceConfig = DeviceConfig(uio, "ydev.cfg")
         aytListener = AYTListener(uio, options, deviceConfig)
+        
         if options.config:
             deviceConfig.configure()
 
@@ -267,6 +289,9 @@ def main():
 
         elif options.disable_auto_start:
             aytListener.disableAutoStart()
+            
+        elif options.check_auto_start:
+            aytListener.checkAutoStartStatus()     
                 
         else:
             aytListener.run()
@@ -279,6 +304,7 @@ def main():
       pass
     except Exception as ex:
         if options.debug:
+            uio.errorException()
             raise
     
         else:
