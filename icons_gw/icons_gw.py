@@ -1,27 +1,31 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
+# TODO
+# - Add -s/--status option for checking if it is running.
+#
+#
 
 import  os
 import  socket
 import  sys
 import  traceback
 import  threading
-import  thread
+import  _thread
 import  json
 from    optparse import OptionParser
 from    time import sleep
 import  getpass
 import  paho.mqtt.client as mqtt
 from    paramiko import AuthenticationException
+from    texttable import Texttable
 
-from    icons_mqtt_rpc_provider import RPCMethodProvider
+from    lib.icons_mqtt_rpc_provider import RPCMethodProvider
 
-from    pjalib.mqtt_rpc import MQTTRPCCallerClient
-from    pjalib.uio import UIO as UO
-from    pjalib.ssh import SSH, SSHTunnelManager
-from    pjalib.pconfig import ConfigManager
-from    pjalib.texttable import Texttable
-from    pjalib.ssh import openSSHConnection, ensureAutoLogin
-from    pjalib.boot_manager import BootManager
+from    p3lib.mqtt_rpc import MQTTRPCCallerClient
+from    p3lib.uio import UIO as UO
+from    p3lib.ssh import SSH, SSHTunnelManager
+from    p3lib.pconfig import ConfigManager
+from    p3lib.boot_manager import BootManager
 
 LOCALHOST = 'localhost'
 LOCALHOST_IP = '127.0.0.1'
@@ -42,20 +46,22 @@ class IconsGWConfig(object):
     AYT_MSG                             = "are_you_there_message"
     PRIVATE_KEY_FILE                    = "private_key_file"
 
-    DEFAULT_CONFIG = {
-        USERNAME:    		"",
-        SERVER:  		"",
-        SERVER_PORT:    	"22",
-        LOCATION: 		"",
-        PRIVATE_KEY_FILE:   	""
-    }
-
     DEFAULT_GROUP_NAME       = "none"
     DISABLE_SYSLOG_FILE      = "disable_icons_gw_syslog"
     MQTT_SERVER_PORT         = 1883
     DEFAULT_DEV_POLL_PERIOD  = 10
     CONFIG_FILENAME          = "icons_gw.cfg"
-
+    DEFAULT_AYT_MSG          = "-!#8[dkG^v's!dRznE}6}8sP9}QoIR#?O&pg)Qra"
+    
+    DEFAULT_CONFIG = {
+        SERVER:             "",
+        SERVER_PORT:        "22",
+        USERNAME:           "",
+        LOCATION:           "",
+        AYT_MSG:            DEFAULT_AYT_MSG,
+        PRIVATE_KEY_FILE:   ""
+    }
+    
     @staticmethod
     def GetHomePath():
         """Get the user home path as this will be used to store config files"""
@@ -91,27 +97,36 @@ class IconsGWConfig(object):
         self._configManager.load()
 
     def configure(self):
-        """@brief configure the required parameters for normal opperation."""
+        """@brief configure the required parameters for normal operation."""
+        self._configManager.configure(self._editConfig)
+        
+    def _editConfig(self, key):
+        """@brief Edit an icons_gw persistent config attribute.
+           @param key The dictionary key to edit."""
+        if key == IconsGWConfig.SERVER:
+            self._configManager.inputStr(IconsGWConfig.SERVER, "The ICON server (ICONS) address", False)
+            
+        elif key == IconsGWConfig.SERVER_PORT:
+            self._configManager.inputDecInt(IconsGWConfig.SERVER_PORT, "The ICON server TCP IP port", 1, 65535)
 
-        self._configManager.inputStr(IconsGWConfig.SERVER, "The ICON server (ICONS) address", False)
+        elif key == IconsGWConfig.USERNAME:
+            self._configManager.inputStr(IconsGWConfig.USERNAME, "The ICONS username", False)
 
-        self._configManager.inputDecInt(IconsGWConfig.SERVER_PORT, "The ICON server TCP IP port", 1, 65535)
+        elif key == IconsGWConfig.LOCATION:
+            self._configManager.inputStr(IconsGWConfig.LOCATION, "The location name for this ICONS destination client", False)
 
-        self._configManager.inputStr(IconsGWConfig.USERNAME, "The ICONS username", False)
+        elif key == IconsGWConfig.AYT_MSG:
+            self._uio.info("Default AYT message: {}".format(IconsGWConfig.DEFAULT_AYT_MSG))
+            self._configManager.inputStr(IconsGWConfig.AYT_MSG, "The devices 'Are You There' message text (min 8, max 64 characters)", False)
 
-        self._configManager.inputStr(IconsGWConfig.LOCATION, "The location name for this ICONS destination client", False)
+        elif key == IconsGWConfig.PRIVATE_KEY_FILE:
+            privateKeyFile = self._configManager.getAttr(IconsGWConfig.PRIVATE_KEY_FILE)
+            #If no key file has been defined then set the default key file
+            if len(privateKeyFile) == 0:
+                privateKeyFile = SSH.GetPrivateKeyFile()
+                self._configManager.addAttr(IconsGWConfig.PRIVATE_KEY_FILE, privateKeyFile)
 
-        self._configManager.inputStr(IconsGWConfig.AYT_MSG, "The devices 'Are You There' message text (min 8, max 64 characters)", False)
-
-        privateKeyFile = self._configManager.getAttr(IconsGWConfig.PRIVATE_KEY_FILE)
-        #If no key file has been defined then set the default key file
-        if len(privateKeyFile) == 0:
-            privateKeyFile = SSH.GetPrivateKeyFile()
-            self._configManager.addAttr(IconsGWConfig.PRIVATE_KEY_FILE, privateKeyFile)
-
-        self._configManager.inputStr(IconsGWConfig.PRIVATE_KEY_FILE, "The local ssh private key file to use when connecting to the ICONS", False)
-
-        self._configManager.store()
+            self._configManager.inputStr(IconsGWConfig.PRIVATE_KEY_FILE, "The local ssh private key file to use when connecting to the ICONS", False)
 
     def loadConfigQuiet(self):
         """@brief Load the config without displaying a message to the user."""
@@ -573,10 +588,6 @@ class IconsClient(object):
         self._uo = uo
         self._options = options
 
-        self._debugLevel = UO.DEBUG_OFF
-        if self._options.debug:
-            self._debugLevel = UO.DEBUG_LEVEL_7
-
         self._knownDeviceList = []
         self._ssh = None
         self._sshTunnelManager = None
@@ -629,15 +640,16 @@ class IconsClient(object):
         self._mqttClient.on_disconnect = self.on_disconnect
         self._connectAttemptInProgress = True
         self._mqttClient.connect(LOCALHOST, self._localMQTTPort, self._options.keepalive)
-        thread.start_new_thread( self._mqttClient.loop_forever, () )
+        _thread.start_new_thread( self._mqttClient.loop_forever, () )
         self._waitForConnectSuccess()
 
         self._uo.info("Connecting to MQTT RPC server (port %d) on ssh server" % (self._localMQTTPort) )
         options = RPCCallerOptions(LOCALHOST, self._localMQTTPort, IconsClient.RPC_SERVER_ID, self._options.location, self._options.keepalive)
         self._mqttRPCCallerClient = MQTTRPCCallerClient(self._uo, options)
         self._mqttRPCCallerClient.connect()
-        thread.start_new_thread( self._mqttRPCCallerClient.loopForever, () )
-        self._mqttRPCCallerClient.waitForConnectSuccess()
+        _thread.start_new_thread( self._mqttRPCCallerClient.loopForever, () )
+        # PJA Not sure this is needed
+        #self._mqttRPCCallerClient.waitForConnectSuccess() 
 
     def _startServerWithException(self):
         """@brief Called to connect to the ssh server running the ICONS MQTT server.
@@ -657,7 +669,12 @@ class IconsClient(object):
                 raise IconsClientError("%s file not found. Please reconfigure and try again." % (self._options.private_key) )
 
             #Build an ssh connection to the ICON server
-            self._ssh = SSH(self._options.server, self._options.server_port, self._options.username, not self._options.no_comp, self._options.private_key, uo=self._uo)
+            self._ssh = SSH(self._options.server, 
+                            self._options.username, 
+                            port=self._options.server_port, 
+                            useCompression=not self._options.no_comp, 
+                            privateKeyFile=self._options.private_key, 
+                            uio=self._uo)
             self._ssh.connect()
             self._locaIPAddress = self._ssh.getLocalAddress()
             self._uo.info("Connected to ssh server %s on port %d" % (self._options.server, self._options.server_port) )
@@ -707,12 +724,12 @@ class IconsClient(object):
 
       sshPassword = self._uo.getPassword()
 
-      ssh = openSSHConnection( self._options.username,\
-                               self._options.server,\
-                               self._options.server_port,\
-                               self._uo,\
-                               (sshPassword,) )
-      ensureAutoLogin(ssh, self._uo)
+      ssh = SSH(self._options.server,
+          self._options.username,
+          password=sshPassword,
+          port=self._options.server_port,
+          uio=self._uo)
+      ssh._ensureAutoLogin()
       ssh.close()
       self._uo.info("Local public ssh key copied to the ssh server.")
       self._uo.info("Please restart to connect to the ssh server without a password.")
@@ -735,7 +752,7 @@ class IconsClient(object):
             except KeyboardInterrupt:
                 raise
 
-            except Exception, ex:
+            except Exception as ex:
                 if self._options.debug:
                     self._uo.errorException()
                 else:
@@ -958,7 +975,7 @@ class IconsGW(IconsClient):
                 index=index+1
 
             if indexToDelete >= 0:
-                self._uo.debug("Removing from known device list: %s" % (devDict), self._debugLevel )
+                self._uo.debug("Removing from known device list: %s" % (devDict))
                 del self._knownDeviceList[indexToDelete]
 
     def _getValidTopic(self, topic):
@@ -1082,7 +1099,7 @@ class IconsGW(IconsClient):
                 rxData = rxData.decode("utf-8")
 
                 if self._options.debug:
-                    self._uo.debug("%s: DEVICE RX DATA: %s" % (str(addressPort), rxData), self._debugLevel )
+                    self._uo.debug("%s: DEVICE RX DATA: %s" % (str(addressPort), rxData))
 
                 #Ignore the discovery message we sent as this will come back to us
                 if rxData == AreYouThereThread.GetJSONAYTMsg(self._options.ayt_msg):
@@ -1107,13 +1124,18 @@ class IconsGW(IconsClient):
 
         self._uo.info("Stopped listening for device responses.")
 
-    def enableAutoStart(self, user=None):
+    def enableAutoStart(self, user):
         """@brief Enable this program to auto start when the computer on which it is installed starts.
            @param user The username which which you wish to execute on autostart."""
         bootManager = BootManager()
         if user:
-            self._user = user
-        bootManager.add(user=self._user)
+            arsString = ""
+            if self._options.log_file:
+                arsString = "--log_file {}".format(self.options.log_file)
+                
+            bootManager.add(user=user, argString=arsString, enableSyslog=self._options.enable_syslog)
+        else:
+            raise Exception("--user not set.")
 
     def disableAutoStart(self):
         """@brief Enable this program to auto start when the computer on which it is installed starts."""
@@ -1121,9 +1143,7 @@ class IconsGW(IconsClient):
         bootManager.remove()
 
 def main():
-    uo = UO(syslogEnabled=True)
-    uo.setDisableSyslogFile( IconsGWConfig.GetConfigFile( IconsGWConfig.DISABLE_SYSLOG_FILE) )
-    uo.disableSyslog(True)
+    uo = UO()
     debug = False
 
     try:
@@ -1137,8 +1157,7 @@ def main():
         opts.add_option("--no_comp",            help="Disable SSH data compression. By default compression is used.", action="store_true", default=False)
         opts.add_option("--services",           help="Configure services to be provided by machines. These can be any network device that runs a TCP server (E.G SSH, VNC etc).", action="store_true", default=False)
         opts.add_option("--no_lan",             help="Do not attempt to discover devices on the LAN.", action="store_true", default=False)
-        opts.add_option("--enable_syslog",      help="Enable syslog. This enable syslogging for running instances and new instances of icons on this machine.", action="store_true", default=False)
-        opts.add_option("--disable_syslog",     help="Disable syslog.", action="store_true", default=False)
+        opts.add_option("--enable_syslog",      help="Enable syslog on this instance of icons_gw. By default syslog is disabled.", action="store_true", default=False)
         opts.add_option("--keepalive",          help="The number of seconds between each MQTT keepalive message (default=%d)." % (IconsClient.MQTT_DEFAULT_KEEPALIVE_SECONDS) , type="int", default=IconsClient.MQTT_DEFAULT_KEEPALIVE_SECONDS)
         opts.add_option("--enable_auto_start",  help="Auto start when this computer starts.", action="store_true", default=False)
         opts.add_option("--disable_auto_start", help="Disable auto starting when this computer starts.", action="store_true", default=False)
@@ -1147,22 +1166,17 @@ def main():
         (options, args) = opts.parse_args()
 
         debug = options.debug
+        uo.enableDebug(debug)
 
-        #Create another UO instance that may define a log file.
-        uo = UO(logFile=options.log_file)
-
-        iconsGWConfig       = IconsGWConfig(uo, IconsGWConfig.CONFIG_FILENAME)
-
-        if options.debug:
-            uo.debugLevel=UO.DEBUG_LEVEL_7
+        if options.log_file:
+            uo.setLogFile(options.log_file)
 
         if options.enable_syslog:
-            uo.disableSyslog(False)
+            uo.enableSyslog(True)
+            
+        iconsGWConfig = IconsGWConfig(uo, IconsGWConfig.CONFIG_FILENAME)
 
-        elif options.disable_syslog:
-            uo.disableSyslog(True)
-
-        elif options.services:
+        if options.services:
 
             serviceConfigurator = ServiceConfigurator(uo)
             serviceConfigurator.editServices(uo)
@@ -1196,10 +1210,11 @@ def main():
 
     except Exception as e:
          if debug:
+           uo.errorException()
            raise
 
          else:
-           uo.error(e)
+           uo.error(str(e))
 
 if __name__== '__main__':
     main()

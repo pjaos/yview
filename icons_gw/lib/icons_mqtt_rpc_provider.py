@@ -2,8 +2,8 @@
 
 from    optparse import OptionParser
 import  socket
-from    pjalib.mqtt_rpc import MQTTRPCClient, MQTTRPCProviderClient
-from    pjalib.uio import UIO as UO
+from    p3lib.mqtt_rpc import MQTTRPCClient, MQTTRPCProviderClient
+from    p3lib.uio import UIO as UO
 
 class RPCMethodProvider(object):
 

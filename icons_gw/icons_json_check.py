@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import  sys
 from    optparse import OptionParser
@@ -7,10 +7,10 @@ import  json
 class UserOutput(Exception):
   
   def info(self, line):
-      print 'INFO:  %s' % (line)
+      print('INFO:  %s' % (line))
 
   def error(self, line):
-      print 'ERROR: %s' % (line)
+      print('ERROR: %s' % (line))
       
 class JsonCheckerError(Exception):
   pass
@@ -84,7 +84,7 @@ def main():
        raise
        
      else:
-       uo.error(sys.exc_value)
+       uo.error(sys.exc_info()[1])
 
 if __name__== '__main__':
     main()

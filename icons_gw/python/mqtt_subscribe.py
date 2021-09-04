@@ -1,1 +1,0 @@
-../icons_gw/mqtt_subscribe.py

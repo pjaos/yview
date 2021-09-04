@@ -1,10 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from    optparse import OptionParser
 from    pjalib.uio import UIO as UO
-from    time import sleep
 import  paho.mqtt.client as mqtt
-#from    mqtt_rpc import MQTTRPCClient
 
 DEFAULT_HOST = "localhost"
 DEFAULT_PORT = 1883
