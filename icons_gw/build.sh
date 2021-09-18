@@ -2,6 +2,6 @@
 set -e
 
 #Check the python files and exit on error.
-python3 -m pyflakes *.py
+python3 -m pyflakes python/*.py
 
-python3 -m pipenv2deb
+p3build --sitep --python=python3.9

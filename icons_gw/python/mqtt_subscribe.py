@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3.9
 
 from    optparse import OptionParser
 from    pjalib.uio import UIO as UO
