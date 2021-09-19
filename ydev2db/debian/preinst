@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 check_internet_connectivity()
 {
 echo "Checking Internet connection"
@@ -15,20 +17,20 @@ else
 fi
 }
 
-if !(which python3.8) > /dev/null ; then
+if !(which python3.9) > /dev/null ; then
   echo "****************************************************************"
-  echo "* Python3.8 is not installed is not installed on your computer *"
+  echo "* Python3.9 is not installed is not installed on your computer *"
   echo "****************************************************************"
   check_internet_connectivity
-  echo "Run the following commands to install python3.8."
-  echo "- sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget curl"
-  echo "- sudo apt install libssl-dev libffi-dev"
-  echo "- cd /tmp"
-  echo "- curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz"
-  echo "- tar -xf Python-3.8.2.tar.xz"
-  echo "- cd Python-3.8.2"
-  echo "- ./configure --enable-optimizations"
-  echo "- sudo make altinstall"
+  echo "Run the following commands to install python3.9."
+  echo "    sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget curl"
+  echo "    sudo apt install libssl-dev libffi-dev"
+  echo "    cd /tmp"
+  echo "    curl -O https://www.python.org/ftp/python/3.9.7/Python-3.9.7.tar.xz"
+  echo "    tar -xf Python-3.9.7.tar.xz"
+  echo "    cd Python-3.9.7"
+  echo "    ./configure --enable-optimizations"
+  echo "    sudo make altinstall"
   echo "When the above steps are complete try installing this package again"
   exit 1
 fi

@@ -5,4 +5,4 @@ Architecture: all
 Essential: no
 Maintainer: Paul Austen <pausten.os@gmail.com>
 Description: Connect to the mqtt server on an icon server and read the messages from a single y device and store the data in a mysql database.
-Version: 1.5
+Version: 1.6

@@ -1,22 +1,16 @@
-#!/usr/bin/env python3.8
+#!/usr/bin/env python3.9
 
 #TODO
 # Encrypt data on disk
 
-import  json
-
-from time import sleep, time
+from time import time
 
 from   optparse import OptionParser
 
-import  paho.mqtt.client as mqtt
-
-from open_source_libs.p3lib.pconfig import ConfigManager
-from open_source_libs.p3lib.uio import UIO
-from open_source_libs.p3lib.boot_manager import BootManager
-from open_source_libs.p3lib.helper import logTraceBack, GetFreeTCPPort, getHomePath, printDict
-from open_source_libs.p3lib.ssh import SSH, SSHTunnelManager
-from open_source_libs.p3lib.database_if import DBConfig, DatabaseIF
+from p3lib.pconfig import ConfigManager
+from p3lib.uio import UIO
+from p3lib.helper import logTraceBack
+from p3lib.database_if import DBConfig, DatabaseIF
 
 class DBConnectionConfig(ConfigManager):
     """@brief Responsible for managing the configuration used by the ydev application."""

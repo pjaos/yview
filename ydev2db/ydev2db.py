@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.8
+#!/usr/bin/env python3.9
 
 #TODO
 # Encrypt data on disk
@@ -11,12 +11,11 @@ from   optparse import OptionParser
 
 import  paho.mqtt.client as mqtt
 
-from open_source_libs.p3lib.pconfig import ConfigManager
-from open_source_libs.p3lib.uio import UIO
-from open_source_libs.p3lib.boot_manager import BootManager
-from open_source_libs.p3lib.helper import logTraceBack, GetFreeTCPPort, getHomePath, printDict
-from open_source_libs.p3lib.ssh import SSH, SSHTunnelManager
-from open_source_libs.p3lib.database_if import DBConfig, DatabaseIF
+from p3lib.pconfig import ConfigManager
+from p3lib.uio import UIO
+from p3lib.helper import logTraceBack, GetFreeTCPPort, getHomePath, printDict
+from p3lib.ssh import SSH, SSHTunnelManager
+from p3lib.database_if import DBConfig, DatabaseIF
 
 class YDev2DBClientConfig(ConfigManager):
     """@brief Responsible for managing the configuration used by the ydev application."""
@@ -232,7 +231,7 @@ class YDev2DBClient(object):
                 tableName = self._options.table
             else:
                 tableName = rxDict["UNIT_NAME"]
-                
+
             if not self._dataBaseIF:
                 self._connectToDBS()
 
@@ -321,12 +320,12 @@ class YDev2DBClient(object):
             self._setupDBConfig()
 
             self._dataBaseIF.connect()
-            
+
             if self._options.table:
                 tableName = self._options.table
             else:
                 tableName = self._config.getAttr(YDev2DBClientConfig.DEV_NAME)
-                
+
             sql = 'SELECT * FROM `{}` ORDER BY {} DESC LIMIT {}'.format(tableName, YDev2DBClient.TIMESTAMP, self._options.read_count)
             recordTuple = self._dataBaseIF.executeSQL(sql)
             for record in recordTuple:
@@ -334,7 +333,7 @@ class YDev2DBClient(object):
 
         finally:
             self._shutdownDBSConnection()
-            
+
 def main():
     uio = UIO()
     uio.logAll(True)
