@@ -2,32 +2,15 @@
 The internet connection server gateway. This is installed on a machine that has access to an IP sub network. This subnetwork will have yView devices sitting on it. A yView device is any device that responds to a yView are you there (AYT) message. In order to use the icons_gw you should have previously started the [icon server](https://github.com/pjaos/icons).
 
 # Installation
-This can either be installed via pip or using a deb package. Currently this has only been tested on Debian Linux systems. However the pip installation method should work on other platforms.
-
-## pip installation
-
- The python pjalib package must be installed before installing the icons_gw. See https://github.com/pjaos/pip_pjalib for details of this.
+In order to build the deb package you must install [p3build](git@github.com:pjaos/p3build). Once p3build is installed the following commands will build and install the icons_gw deb package.
 
  `git clone https://github.com/pjaos/yview`
 
  `cd yview/icons_gw`
 
- `sudo pip install .`
+ `sudo ./build.sh`
 
- You may uninstall icons_gw using the following command.
-
- `sudo pip uninstall icons_gw`
-
-## deb installation
- In order to build the deb package you must install [pbuild](git@github.com:pjaos/pbuild). Once pbuild is installed the following commands will build and install the deb package.
-
- `git clone https://github.com/pjaos/yview`
-
- `cd yview/icons_gw`
-
- `sudo pbuild`
-
- `sudo dpkg -i packages/python-icons-3.7-all.deb`
+ `sudo dpkg -i packages/python-icons-4.2-all.deb`
 
   You may uninstall icons_gw using the following command.
 
