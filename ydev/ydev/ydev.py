@@ -2,11 +2,13 @@
 
 import  socket
 import  platform
-from    time import time, sleep
-from    p3lib.netif import NetIF
 import  json
-from    p3lib.uio import  UIO
+
+from    time import time, sleep
 from    optparse import OptionParser
+
+from    p3lib.netif import NetIF
+from    p3lib.uio import  UIO
 from    p3lib.pconfig import ConfigManager
 from    p3lib.boot_manager import BootManager
 
@@ -126,21 +128,21 @@ class AYTListener(object):
         bootManager = BootManager()
         if not self._options.user:
             raise Exception("--user not set.")
-        
+
         argString = ""
         if self._options.enable_syslog:
             argString = "--enable_syslog"
-            
+
         if self._options.debug:
             argString = argString + " --debug"
-            
+
         bootManager.add(user=self._options.user, argString=argString)
 
     def disableAutoStart(self):
         """@brief Enable this program to auto start when the computer on which it is installed starts."""
         bootManager = BootManager()
         bootManager.remove()
-        
+
     def checkAutoStartStatus(self):
         """@brief Check the status of a process previously set to auto start."""
         bootManager = BootManager()
@@ -148,7 +150,7 @@ class AYTListener(object):
         if lines and len(lines) > 0:
             for line in lines:
                 self._uio.info(line)
-        
+
 
 class DeviceConfig(object):
     """@brief Responsible for managing the configuration used by the ydev application."""
@@ -179,7 +181,7 @@ class DeviceConfig(object):
     def configure(self):
         """@brief configure the required parameters for normal operation."""
         self._configManager.configure(self._editConfig)
-        
+
     def _editConfig(self, key):
         """@brief Edit an icons_gw persistent config attribute.
            @param key The dictionary key to edit."""
@@ -192,15 +194,15 @@ class DeviceConfig(object):
                     self._uio.warn("The name of a device may not start with a '%s' character." % (unitName[0]) )
                 else:
                     break
-                
+
         elif key == DeviceConfig.PRODUCT_ID:
-            self._configManager.inputStr(DeviceConfig.PRODUCT_ID, "Product identifier for the device", False)            
-                        
+            self._configManager.inputStr(DeviceConfig.PRODUCT_ID, "Product identifier for the device", False)
+
         elif key == DeviceConfig.SERVICE_LIST:
             self._uio.info("Example service list: ssh:22,web:80")
             while True:
                self._configManager.inputStr(DeviceConfig.SERVICE_LIST, "The service list string for the device", False)
-    
+
                srvListStr = self._configManager.getAttr(DeviceConfig.SERVICE_LIST)
                try:
                    elems = srvListStr.split(",")
@@ -212,14 +214,14 @@ class DeviceConfig(object):
                        if portValue < 1 or portValue > 65535:
                            raise ValueError("")
                    break
-    
+
                except ValueError:
                    self._uio.error("%s is not a valid service string (E.G 'ssh:22,web:80')." % (srvListStr) )
-            
+
         elif key == DeviceConfig.AYT_MSG:
             self._uio.info("Default AYT message: -!#8[dkG^v\'s!dRznE}6}8sP9}QoIR#?O&pg)Qra")
             self._configManager.inputStr(DeviceConfig.AYT_MSG, "The devices 'Are You There' message text (min 8, max 64 characters)", False)
-            
+
         elif key == DeviceConfig.GROUP_NAME:
             self._configManager.inputStr(DeviceConfig.GROUP_NAME, "The group name (enter none for no/default group)", False)
             groupName = self._configManager.getAttr(DeviceConfig.GROUP_NAME)
@@ -277,10 +279,10 @@ def main():
 
         if options.enable_syslog:
             uio.enableSyslog(True)
-            
+
         deviceConfig = DeviceConfig(uio, "ydev.cfg")
         aytListener = AYTListener(uio, options, deviceConfig)
-        
+
         if options.config:
             deviceConfig.configure()
 
@@ -289,10 +291,10 @@ def main():
 
         elif options.disable_auto_start:
             aytListener.disableAutoStart()
-            
+
         elif options.check_auto_start:
-            aytListener.checkAutoStartStatus()     
-                
+            aytListener.checkAutoStartStatus()
+
         else:
             aytListener.run()
 
@@ -306,7 +308,7 @@ def main():
         if options.debug:
             uio.errorException()
             raise
-    
+
         else:
             uio.error(ex)
 
