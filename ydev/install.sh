@@ -36,7 +36,7 @@ if !(which python3.8) > /dev/null ; then
 fi
 
 #Remove old build folders
-./clean.sh
+sudo ./clean.sh
 
 #Check the code using pyflakes
 python3.8 -m pip install pyflakes
