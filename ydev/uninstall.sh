@@ -2,7 +2,7 @@
 set -e
 
 #Uninstall if only installed for current user
-python3.8 -m pip uninstall ydev
+sudo python3.8 -m pip uninstall ydev
 
 #Uninstall if installed for all users
 #sudo python3.8 -m pip uninstall ydev

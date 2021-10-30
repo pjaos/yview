@@ -43,9 +43,8 @@ python3.8 -m pip install pyflakes
 #Check the python files and exit on error.
 python3.8 -m pyflakes ydev/*.py
 
-# Install. If this script is executed using sudo then
-# ogsolar is installed for all users.
-python3.8 -m pip install .
+# Install. sudo is required so that the package is installed for all users.
+sudo python3.8 -m pip install .
 
 # Upgrade pip to the latest if required
 #python3.8 -m pip install --upgrade build
