@@ -14,8 +14,7 @@ import  paho.mqtt.client as mqtt
 from    paramiko import AuthenticationException
 from    texttable import Texttable
 
-from    lib.icons_mqtt_rpc_provider import RPCMethodProvider
-
+from    p3lib.helper import GetFreeTCPPort
 from    p3lib.mqtt_rpc import MQTTRPCCallerClient
 from    p3lib.uio import UIO as UO
 from    p3lib.ssh import SSH, SSHTunnelManager
@@ -624,7 +623,7 @@ class IconsClient(object):
         """@brief Connect to the MQTT server through an ssh tunnel."""
 
         self._uo.info("Connecting to MQTT server on ssh server")
-        self._localMQTTPort = RPCMethodProvider.GetFreeTCPPort() #Get a free TCPIP port on the local machine
+        self._localMQTTPort = GetFreeTCPPort() #Get a free TCPIP port on the local machine
         self._sshTunnelManager = SSHTunnelManager(self._uo, self._ssh, not self._options.no_comp )
         self._sshTunnelManager.startFwdSSHTunnel(self._localMQTTPort, LOCALHOST, self._options.mqtt_port)
         self._uo.info("Connecting local port %d to the %d port on the ssh server (%s:%d)" % (self._localMQTTPort, self._options.mqtt_port, self._options.server, self._options.server_port) )

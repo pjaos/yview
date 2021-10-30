@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.9
 
 from    optparse import OptionParser
-from    pjalib.uio import UIO as UO
+from    p3lib.uio import UIO as UO
 import  paho.mqtt.client as mqtt
 
 DEFAULT_HOST = "localhost"
@@ -9,7 +9,8 @@ DEFAULT_PORT = 1883
 DEFAULT_KEEPALIVE_SECONDS = 60
 DEFAULT_SUBSCRIBE_TOPIC = "#"   #MQTT subscribe all topic
 
-uo = UO(syslogEnabled=True)
+uo = UO()
+uo.enableSyslog(True)
 
 def onConnect(client, userdata, flags, rc):
     uo.info("Connected to MQTT server")

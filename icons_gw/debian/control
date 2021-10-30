@@ -1,9 +1,0 @@
-Package: python-icons-gw
-Section: Network
-Priority: optional
-Architecture: all
-Essential: no
-Installed-Size: 78
-Maintainer: Paul Austen <pausten.os@gmail.com>
-Description: Internet Connection Server (ICONS) for Y devices.
-Version: 4.2
