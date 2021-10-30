@@ -9,4 +9,4 @@ sudo python3.8 -m pip uninstall icons_gw
 #sudo python3.8 -m pip uninstall icons_gw
 
 #Remove old build folders
-./clean.sh
+sudo ./clean.sh
