@@ -8,4 +8,4 @@ sudo python3.8 -m pip uninstall ydev
 #sudo python3.8 -m pip uninstall ydev
 
 #Remove old build folders
-./clean.sh
+sudo ./clean.sh
