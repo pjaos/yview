@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+APP_NAME=icons_gw
+
 check_internet_connectivity()
 {
 echo "Checking Internet connection"
@@ -36,12 +38,12 @@ if !(which python3.8) > /dev/null ; then
 fi
 
 #Remove old build folders
-./clean.sh
+sudo ./clean.sh
 
 #Check the code using pyflakes
 python3.8 -m pip install pyflakes
 #Check the python files and exit on error.
-python3.8 -m pyflakes icons_gw/*.py
+python3.8 -m pyflakes $APP_NAME/*.py
 
 # Install. sudo is required so that the package is installed for all users.
 sudo python3.8 -m pip install .
@@ -56,4 +58,4 @@ sudo python3.8 -m pip install .
 sync
 
 # Show a list of the installed files
-pip show -f icons_gw
+python3.8 -m pip show -f $APP_NAME
