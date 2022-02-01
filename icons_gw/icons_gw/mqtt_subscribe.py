@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.9
+#!/usr/bin/env python3
 
 from    optparse import OptionParser
 from    p3lib.uio import UIO as UO

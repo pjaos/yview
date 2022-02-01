@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+# set -e
 
 #Remove dirs created during build
 if [ -d "build" ]; then

@@ -13,10 +13,11 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(),
     include_package_data=True,
-    license="MIT License",                                                            # The License that the module is distributed under
+    python_requires='>3.8.2',                                                         # The minimum acceptable python version.
+    license="MIT License",                                                            # The License that the module is distributed under.
     url="https://github.com/pjaos/yview/tree/master/icons_gw",                        # The home page for the module
     install_requires=[
-        ['p3lib>=1.1.28','paho-mqtt','paramiko','texttable'],                         # A python list of required module dependencies (optionally including versions)
+        ['p3lib>=1.1.34','paho-mqtt','paramiko','texttable'],                         # A python list of required module dependencies (optionally including versions)
     ],
     scripts=['scripts/icons_gw','scripts/icons_json_check','scripts/mqtt_subscribe'], # A list of command line startup scripts to be installed.
 )

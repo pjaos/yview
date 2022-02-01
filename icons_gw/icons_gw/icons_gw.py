@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.9
+#!/usr/bin/env python3
 
 import  os
 import  socket
@@ -20,6 +20,7 @@ from    p3lib.uio import UIO as UO
 from    p3lib.ssh import SSH, SSHTunnelManager
 from    p3lib.pconfig import ConfigManager
 from    p3lib.boot_manager import BootManager
+from    p3lib.netif import NetIF
 
 LOCALHOST = 'localhost'
 LOCALHOST_IP = '127.0.0.1'
@@ -39,6 +40,7 @@ class IconsGWConfig(object):
     LOCATION                            = "location"
     AYT_MSG                             = "are_you_there_message"
     PRIVATE_KEY_FILE                    = "private_key_file"
+    AYT_DISCOVERY_INTERFACE             = "device_discovery_interface"    
 
     DEFAULT_GROUP_NAME       = "none"
     DISABLE_SYSLOG_FILE      = "disable_icons_gw_syslog"
@@ -48,12 +50,13 @@ class IconsGWConfig(object):
     DEFAULT_AYT_MSG          = "-!#8[dkG^v's!dRznE}6}8sP9}QoIR#?O&pg)Qra"
     
     DEFAULT_CONFIG = {
-        SERVER:             "",
-        SERVER_PORT:        "22",
-        USERNAME:           "",
-        LOCATION:           "",
-        AYT_MSG:            DEFAULT_AYT_MSG,
-        PRIVATE_KEY_FILE:   ""
+        SERVER:                     "",
+        SERVER_PORT:                "22",
+        USERNAME:                   "",
+        LOCATION:                   "",
+        AYT_MSG:                    DEFAULT_AYT_MSG,
+        PRIVATE_KEY_FILE:           "",
+        AYT_DISCOVERY_INTERFACE:    ""
     }
     
     @staticmethod
@@ -86,7 +89,7 @@ class IconsGWConfig(object):
         """@brief Constructor.
            @param uio UIO instance.
            @param configFile Config file instance."""
-
+        self._uio = uio
         self._configManager = ConfigManager(uio, configFile, IconsGWConfig.DEFAULT_CONFIG)
         self._configManager.load()
 
@@ -94,6 +97,44 @@ class IconsGWConfig(object):
         """@brief configure the required parameters for normal operation."""
         self._configManager.configure(self._editConfig)
         
+    def _showAvalableNetworkInterfaces(self):
+        """@param Show the use the available network interfaces.
+           @return A list of network interface names in the order in which they 
+                   appear in the displayed list."""
+        self._uio.info("Available network interfaces.")
+        self._uio.info("ID    Name            Address")
+        netIF = NetIF()
+        ifDict = netIF.getIFDict()
+        nameList = []
+        ifNameID = 1
+        self._uio.info("{: <2d}    {}".format(ifNameID, "All Interfaces"))
+        ifNameID = ifNameID + 1
+        for ifName in list(ifDict.keys()):
+            ipsStr = ",".join(ifDict[ifName])
+            if ifName == "lo":
+                continue
+            self._uio.info("{: <2d}    {: <10s}      {}".format(ifNameID, ifName, ipsStr))
+            nameList.append(ifName)
+            ifNameID = ifNameID + 1
+        return nameList
+                 
+    def _enterDiscoveryInterface(self):
+        """@brief Allow the user to enter a network interface name to discover YView devices on.
+                  This is optional. If the user enters none then AYT broadcast messages are sent 
+                  over all network interfaces."""
+        self._uio.info("Select the interface/s to find YView devices over.")
+        self._uio.info("")
+        ifNameList = self._showAvalableNetworkInterfaces()
+        idSelected = ConfigManager.GetDecInt(self._uio, "Enter the ID from the above list", minValue=1, maxValue=len(ifNameList)+1)
+        if idSelected == 1:
+             self._configManager.addAttr(IconsGWConfig.AYT_DISCOVERY_INTERFACE, None)
+        else:
+            selectedIndex = idSelected-2
+            if selectedIndex < len(ifNameList):
+                self._configManager.addAttr(IconsGWConfig.AYT_DISCOVERY_INTERFACE, ifNameList[selectedIndex])
+            else:
+                raise Exception("{} ID is not valid for {} interface list.".format(idSelected, ",".join(ifNameList)))
+         
     def _editConfig(self, key):
         """@brief Edit an icons_gw persistent config attribute.
            @param key The dictionary key to edit."""
@@ -122,6 +163,9 @@ class IconsGWConfig(object):
 
             self._configManager.inputStr(IconsGWConfig.PRIVATE_KEY_FILE, "The local ssh private key file to use when connecting to the ICONS", False)
 
+        elif key == IconsGWConfig.AYT_DISCOVERY_INTERFACE:
+            self._enterDiscoveryInterface()
+            
     def loadConfigQuiet(self):
         """@brief Load the config without displaying a message to the user."""
         self._configManager.load(showLoadedMsg=False)
@@ -134,6 +178,7 @@ class IconsGWConfig(object):
         options.location    = self._configManager.getAttr(IconsGWConfig.LOCATION)
         options.ayt_msg     = self._configManager.getAttr(IconsGWConfig.AYT_MSG)
         options.private_key = self._configManager.getAttr(IconsGWConfig.PRIVATE_KEY_FILE)
+        options.net_if      = self._configManager.getAttr(IconsGWConfig.AYT_DISCOVERY_INTERFACE)
 
 class ServiceConfigurator(object):
     """@brief Responsible for loading editing and saving service configurations"""
@@ -472,9 +517,40 @@ class AreYouThereThread(threading.Thread):
         aytDict={"AYT": ayt_msg_str}
         return IconsClient.DictToJSON(aytDict)
 
+    @staticmethod
+    def GetSubnetMultiCastAddress(ifName):
+        """@brief Get the subnet multicast IP address for the given interface.
+           @param ifName The name of a local network interface.
+           @return A list of all the subnet multicast IP addresses."""
+        subNetMultiCastAddressList = []
+        netIF = NetIF()
+        ifDict = netIF.getIFDict()
+        if ifName in ifDict:
+            ipList = ifDict[ifName]
+            for elem in ipList:
+                elems = elem.split("/")
+                if len(elems) == 2:
+                    # Extract the interface IP address. Calc the multicast IP address 
+                    # for the subnet and add this to the list for the interface.
+                    try:
+                        ipAddress = elems[0]
+                        subNetMaskBitCount = int(elems[1])
+                        intIP = NetIF.IPStr2int(ipAddress)
+                        subNetBits = (1<<(32-subNetMaskBitCount))-1
+                        intMulticastAddress = intIP | subNetBits
+                        subNetMultiCastAddress = NetIF.Int2IPStr(intMulticastAddress)
+                        subNetMultiCastAddressList.append(subNetMultiCastAddress)
+                    except ValueError:
+                        pass
+            
+        else:
+            raise Exception("{} is not a local network interface name.".format(ifName))
+        
+        return subNetMultiCastAddressList
+    
     def __init__(self, uo, sock, options):
         """@brief Constructor
-           @param uo The USerOutput object
+           @param uo The UserOutput object
            @param sock The UDP socket to send AYT messages on
            @param options Command line options."""
         threading.Thread.__init__(self)
@@ -491,11 +567,16 @@ class AreYouThereThread(threading.Thread):
         self._uo.info("Started the AYT thread")
         while self._running:
             if self._options.no_lan:
-                destAddress = LOCALHOST_IP
+                destAddressList = (LOCALHOST_IP,)
             else:
-                destAddress = AreYouThereThread.MULTICAST_ADDRESS
+                # If the user configured YView devices discovery on all interfaces.
+                if self._options.net_if is None:
+                    destAddressList = (AreYouThereThread.MULTICAST_ADDRESS,)
+                else:
+                    destAddressList = AreYouThereThread.GetSubnetMultiCastAddress(self._options.net_if)
             try:
-                self._sock.sendto( str.encode( AreYouThereThread.GetJSONAYTMsg(self._aytMsg) ), (destAddress, AreYouThereThread.UDP_DEV_DISCOVERY_PORT) )
+                for destAddress in destAddressList:
+                    self._sock.sendto( str.encode( AreYouThereThread.GetJSONAYTMsg(self._aytMsg) ), (destAddress, AreYouThereThread.UDP_DEV_DISCOVERY_PORT) )
             except:
                 self._uo.error("Failed to send AYT message.")
                 self._uo.errorException()

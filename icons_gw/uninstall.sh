@@ -2,11 +2,13 @@
 
 set -e
 
+PYTHON=python3.9
+
 #Uninstall if only installed for current user
-sudo python3.8 -m pip uninstall icons_gw
+sudo $PYTHON -m pip uninstall icons_gw
 
 #Uninstall if installed for all users
-#sudo python3.8 -m pip uninstall icons_gw
+#sudo $PYTHON -m pip uninstall icons_gw
 
 #Remove old build folders
 sudo ./clean.sh
