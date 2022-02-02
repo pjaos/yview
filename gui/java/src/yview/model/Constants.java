@@ -5,7 +5,7 @@ package yview.model;
  */
 public class Constants
 {
-  public static double          VERSION                        		= 5.8;
+  public static double          VERSION                        		= 5.9;
 
   public static final String    APP_NAME                       		= "yView";
   public static final String    LOCAL_HOST					   		= "localhost";
