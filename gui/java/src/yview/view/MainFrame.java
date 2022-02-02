@@ -376,7 +376,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	  
 	  if( e.getSource() == configJMenuItem ) {
     	  
-        String name = (String)JOptionPane.showInputDialog(this, "Group name", "Enter configured WyTerm group name", JOptionPane.INFORMATION_MESSAGE, null, null, GroupName);
+        String name = (String)JOptionPane.showInputDialog(this, "Group name", "Enter configured group name", JOptionPane.INFORMATION_MESSAGE, null, null, GroupName);
         if( name != null ) {
           GroupName=name;
           
