@@ -89,9 +89,23 @@ public class JSONProcessor {
 	public static boolean GroupNameMatch(String groupName, JSONObject json) {
 		boolean match=false;
 		String jsonGroupName = JSONProcessor.GetGroupName(json);
-		
+
+		// If the device group name and the configured group name are set and they match
 		if( jsonGroupName != null && groupName != null && jsonGroupName.equals(groupName) ) {
 			match=true;
+		}
+		else {
+			// Treat a 0 length strings and a null string the same
+			if( groupName != null && groupName.length() == 0 ) {
+				groupName = null;
+			}
+			if( jsonGroupName != null && jsonGroupName.length() == 0 ) {
+				jsonGroupName = null;
+			}
+			// If neither the device group name or the configured group name are set they match
+			if( jsonGroupName == null && groupName == null ) {
+				match=true;
+			}
 		}
 		
 		return match;
