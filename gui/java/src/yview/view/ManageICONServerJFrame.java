@@ -67,6 +67,7 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 	StatusBar statusBar;
 	UserInfo userInfo;
 	ICONSConnectionManager iconsConnectionManager;
+	boolean connectToLocalDevices;
 
 	/**
 	 * @brief Constructor
@@ -135,12 +136,12 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 			saveServerDetails(serverProperties);
 			setVisible(false);
 			statusBar.close();
-			connectToServer(true);
+			connectToServer(true, connectToLocalDevices);
+			mainFrame.updateActiveICONS();
 		} else if (e.getSource() == cancelButton) {
 			setVisible(false);
 			statusBar.close();
 		}
-
 	}
 	
 	/**
@@ -150,8 +151,10 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 	 *        possible for a about 3 seconds after this method is called.
 	 *        After this we return to the delaying a reconnect to the ICONS
 	 *        should the connection drop.
+	 *  @param connectToLocalDevices If true attempt to connect to local devices directly. I.E don't go through ICONS.
 	 */
-	public void connectToServer(boolean pauseReconnectDelay) {
+	public void connectToServer(boolean pauseReconnectDelay, boolean connectToLocalDevices) {
+		this.connectToLocalDevices = connectToLocalDevices;
 		statusBar.close();
 		try {
 			mainFrame.initTabs();
@@ -159,7 +162,7 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 		catch(SocketException ex) {}
 		if( iconsConnectionManager != null ) {
 			iconsConnectionManager.shutdown(pauseReconnectDelay);
-			iconsConnectionManager.connectICONS(getICONServerList());
+			iconsConnectionManager.connectICONS(getICONServerList(), connectToLocalDevices);
 		}
 	}
 	
@@ -325,6 +328,15 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 	}
 
 	public void mouseReleased(MouseEvent e) {
+	}
+
+	/**
+	 * @brief Set direct connection to local devices.
+	 * @param connectToLocalDevices If true attempt to connect to local devices directly. I.E don't go through ICONS.
+	 */
+	public void setDirectLocalDevConnect(boolean connectToLocalDevices) {
+		this.connectToLocalDevices = connectToLocalDevices;
+		iconsConnectionManager.setDirectLocalDevConnect(connectToLocalDevices);
 	}
 
 }

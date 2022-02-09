@@ -22,6 +22,8 @@ public class AreYouThereTXThread extends Thread {
 	private boolean running;
 	DatagramSocket lanDatagramSocket;
 	String aytMsg;
+	int runTimeSeconds;
+	long startTimeMS;
 	
 	/**
 	 * @brief Constructor
@@ -67,11 +69,24 @@ public class AreYouThereTXThread extends Thread {
 	}
 	
 	/**
+	 * @brief Define the run time for the AYT TX process.
+	 *        By default the AYT TX process runs until shutdown() is called.
+	 * @param seconds The number of seconds the process should run for.
+	 */
+	public void setRuntime(int seconds) {
+		this.runTimeSeconds = seconds;
+	}
+	
+	/**
 	 * @brief Thread method runs until shutdown() is called.
 	 */
 	public void run() {
+		long activeTimeSeconds = 0;
+		long nowMs;
 		InetAddress mcIPAddress;
 		running = true;
+		startTimeMS = System.currentTimeMillis();
+		
 		
 		Vector<String> multicastIPList = GetMulticastIPAddressList();
 		
@@ -91,6 +106,14 @@ public class AreYouThereTXThread extends Thread {
 			    
 				//Wait between TX of multicast messages
 				Thread.sleep(Constants.DEFAULT_AYT_PERIOD_MS);
+				
+				nowMs = System.currentTimeMillis();
+				activeTimeSeconds = (nowMs-startTimeMS)/1000;
+
+				//If it's time to shutdown the AYT TX message process.
+				if(runTimeSeconds != 0 &&  activeTimeSeconds > runTimeSeconds ) {
+					running = false;
+				}
 			}
 		
 	    }
@@ -103,6 +126,7 @@ public class AreYouThereTXThread extends Thread {
 	    finally {
 	    	if( lanDatagramSocket != null ) {
 	    		lanDatagramSocket.close();
+	    		lanDatagramSocket = null;
 	    	}
 	    }
 	    

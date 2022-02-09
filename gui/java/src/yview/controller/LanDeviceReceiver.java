@@ -51,7 +51,8 @@ public class LanDeviceReceiver extends Thread
 	      java.util.Arrays.fill(deviceRXBuffer, (byte)0);
 	      lanDatagramSocket.receive(deviceDataGram);
 
-	      String rxData = new String( deviceDataGram.getData(), 0 , deviceDataGram.getLength() );
+	      String rxData = new String( deviceDataGram.getData(), 0 , deviceDataGram.getLength() );      
+
 	      json = new JSONObject( rxData );
 	      json.put(JSONProcessor.LOCATION, Constants.LOCAL_LOCATION);
 		  long now = System.currentTimeMillis();
@@ -69,7 +70,7 @@ public class LanDeviceReceiver extends Thread
 	    }
 	  }
 	  catch(Exception e) {
-	    e.printStackTrace();
+	    //e.printStackTrace();
 	  }
   }
   

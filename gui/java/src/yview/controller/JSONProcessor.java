@@ -27,6 +27,7 @@ public class JSONProcessor {
     public static final String SERVER_SERVICE_LIST= "SERVER_SERVICE_LIST";
     public static final String LOCAL_RX_TIME_MS   = "LOCAL_RX_TIME_MS";
     public static final String SESSION_ID 		  = "SESSION_ID";
+    public static final String SERVICE_LIST       = "SERVICE_LIST";
     
     /**
      * @brief Get a value from a json object.
@@ -248,7 +249,7 @@ public class JSONProcessor {
     }
     
 	/**
-	 * @brief Get the service services list from JSON message
+	 * @brief Get the service list from JSON message
 	 * @param json The json message.
 	 * return The value or Null if not found.
 	 */
@@ -370,6 +371,35 @@ public class JSONProcessor {
 		}
 		
 		return match;
+	}
+	
+	/**
+	 * @brief Get the TCP port that a service is presented on, on the local LAN.
+	 * @param jsonDevice The JSONDevice instance.
+	 * @param reqServiceName The name of the service to check for.
+	 * @return The TCP port or -1 if not found.
+	 */
+	public static int GetLocalServicePort(JSONObject jsonDevice, String reqServiceName) {
+		int servicePort = -1;
+		String serviceListStr = JSONProcessor.GetValue(JSONProcessor.SERVICE_LIST, jsonDevice);
+		if( serviceListStr != null ) {
+			String serviceList[] = serviceListStr.split(",");
+			for( String serviceStr : serviceList ) {
+				String elems[] = serviceStr.split(":");
+				if( elems.length >= 2 ) {
+					String serviceName = elems[0];
+					// Case insensitive service match
+					if( serviceName.toLowerCase().equals(reqServiceName.toLowerCase()) ) {
+						try {
+							servicePort = Integer.parseInt(elems[1]);
+							break;
+						}
+						catch(NumberFormatException e) {}
+					}
+				}
+			}
+		}
+		return servicePort;
 	}
 	
 }

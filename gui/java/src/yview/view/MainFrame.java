@@ -116,6 +116,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	public static final String 	GROUP_NAME 				= "GROUP_NAME";
 	public static final String 	WARNING_DEVICE_TIMEOUT  = "WARNING_DEVICE_TIMEOUT";
 	public static final String 	LOST_DEVICE_TIMEOUT  	= "LOST_DEVICE_TIMEOUT";
+	public static final String 	DIRECT_CONNECT_TO_LOCAL_DEVICES = "DIRECT_CONNECT_TO_LOCAL_DEVICES";
 	public static final boolean 	DEBUG     			= true;            //Enable this to print stack traces
 	private static float DeviceTimeoutWarningSeconds 	= Constants.DEFAULT_WARNING_DEVICE_TIMEOUT_SECS;
 	private static float DeviceTimeoutLostSeconds 		= Constants.DEFAULT_LOST_DEVICE_TIMEOUT_SECS;
@@ -129,6 +130,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	JMenuItem         		configDeviceWarningTimeoutJMenuItem;
 	JMenuItem         		configDeviceLostTimeoutJMenuItem;
 	JMenuItem         		configICONSJMenuItem;
+	JRadioButtonMenuItem    configDirectLocalDevConnectJMenuItem;
 	JMenuItem         		showDevMessagesMenuItem;
 	JMenuItem         		lookAndFeelMenuItem;
 	JMenuItem         		exitJMenuItem;
@@ -154,6 +156,16 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	JButton	reconnectButton = new JButton("Reconnect");
 	
   /**
+   * @brief Get the AYT message string 
+   * @param msgContent The AYT message ID string
+   * @return The JSON message.
+   */
+  public static String GetJSONAYTM(String idStr) {
+	  String jsonMsg = "{\"AYT\":\""+idStr+"\"}";
+	  return jsonMsg;
+  }
+	  
+  /**
    * Constructor.
    * @param title The terminal frames window title.
    */
@@ -170,6 +182,9 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
       
       ConfigFile = new File( SimpleConfig.GetTopLevelConfigPath(Constants.APP_NAME), MainFrame.class.getName());
       DevicePropertiesConfigFile = new File( SimpleConfig.GetTopLevelConfigPath(Constants.APP_NAME), MainFrame.class.getName()+"_device_properties.cfg");
+
+      configDirectLocalDevConnectJMenuItem = new JRadioButtonMenuItem("Direct Connect To Local Devices", false);
+      configDirectLocalDevConnectJMenuItem.setToolTipText("When selected devices found on the local LAN are connected to directly rather than through the ICON server.");
 
       //Load window pos and size, if no saved details then set default size and position
       if ( !loadUIConfig() ) {
@@ -206,11 +221,12 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
       showDevMessagesMenuItem = new JMenuItem("Device Message Viewer", KeyEvent.VK_S);
       lookAndFeelMenuItem = new JMenuItem("Look And Feel", KeyEvent.VK_F);
       exitJMenuItem = new JMenuItem("Exit", KeyEvent.VK_E);
-      
+
       m.add(configJMenuItem);
       m.add(configDeviceWarningTimeoutJMenuItem);
       m.add(configDeviceLostTimeoutJMenuItem);
       m.add(configICONSJMenuItem);
+      m.add(configDirectLocalDevConnectJMenuItem);
       m.add(showDevMessagesMenuItem);
       m.add(lookAndFeelMenuItem);
       m.add(exitJMenuItem);
@@ -219,6 +235,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
       configDeviceWarningTimeoutJMenuItem.addActionListener(this);
       configDeviceLostTimeoutJMenuItem.addActionListener(this);
       configJMenuItem.addActionListener(this);
+      configDirectLocalDevConnectJMenuItem.addActionListener(this);
       showDevMessagesMenuItem.addActionListener(this);
       lookAndFeelMenuItem.addActionListener(this);
       exitJMenuItem.addActionListener(this);
@@ -248,15 +265,29 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
     	    		}
     	    	}
     	    }
-    	}); 
+    	});
       initTabs();
-      
+
       removeLocationTimer = new Timer(5000, this);
       removeLocationTimer.start();
  
       iconsConnectionManager.setStatusBar(statusBar);
       iconsConnectionManager.addDeviceListener(this);
       new Thread(this).start();
+      
+      updateActiveICONS();
+  }
+  
+  /**
+   * @brief Update the GUI based on whether any ICON server are selected.
+   */
+  public void updateActiveICONS() {
+	  if( getActiveICONSCount() == 0 ) {
+		  configDirectLocalDevConnectJMenuItem.setEnabled(false);
+	  }
+	  else {
+		  configDirectLocalDevConnectJMenuItem.setEnabled(true);
+	  }
   }
   
   /**
@@ -308,6 +339,10 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	  
 	  if( getActiveICONSCount() == 0 ) {
 	      try {
+	    	  if( lanDatagramSocket != null ) {
+	    		  lanDatagramSocket.close();
+	    		  lanDatagramSocket = null;
+	    	  }
 	    	  lanDatagramSocket = new DatagramSocket(Constants.UDP_MULTICAST_PORT);
 	      }
 	      catch(BindException e ) {
@@ -347,9 +382,8 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	  if( lanDatagramSocket != null ) {
 			
 		  String aytMsgContent = JOptionPane.showInputDialog(this, "The device are you there message", Constants.DEFAULT_AYT_MESSAGE);
-		  String aytMsg = "{\"AYT\":\""+aytMsgContent+"\"}";
 		 
-	      areYouThereTXThread = new AreYouThereTXThread(lanDatagramSocket, aytMsg);
+	      areYouThereTXThread = new AreYouThereTXThread(lanDatagramSocket, MainFrame.GetJSONAYTM(aytMsgContent) );
 		  areYouThereTXThread.start();    
 	
 	      lanDeviceReceiver = new LanDeviceReceiver(lanDatagramSocket);
@@ -366,7 +400,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
    * @brief Thread to build connections to the ICON (ssh) server/s
    */
   public void run() {
-	  iconsConnectionManager.connectICONS(manageICONServerJFrame.getICONServerList());
+	  iconsConnectionManager.connectICONS(manageICONServerJFrame.getICONServerList(), configDirectLocalDevConnectJMenuItem.isSelected());
   }
   
   /**
@@ -425,13 +459,16 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
     		  //Execute the reconnection from another thread so as not to block
     		  new Thread() {
     			  public void run() {
-    				  manageICONServerJFrame.connectToServer(true);
+    				  manageICONServerJFrame.connectToServer(true, configDirectLocalDevConnectJMenuItem.isSelected());
     			  }
     		  }.start();
     	  }
       }
       else if( e.getSource() == removeLocationTimer ) {
     	  purgeEmptyLocations();
+      }
+      else if( e.getSource() == configDirectLocalDevConnectJMenuItem ) {
+    	  manageICONServerJFrame.setDirectLocalDevConnect(configDirectLocalDevConnectJMenuItem.isSelected());
       }
 	  
 	  
@@ -558,6 +595,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 		  selectedLookAndFeel = (int)Double.parseDouble( windowProperties.getProperty(MainFrame.LOOK_AND_FEEL) );
 	      UIManager.LookAndFeelInfo[] lookAndFeels = UIManager.getInstalledLookAndFeels();
 	      UIManager.setLookAndFeel( lookAndFeels[selectedLookAndFeel].getClassName() );
+	      configDirectLocalDevConnectJMenuItem.setSelected( (boolean)Boolean.parseBoolean( windowProperties.getProperty(MainFrame.DIRECT_CONNECT_TO_LOCAL_DEVICES) ) );
 		  this.setSize( width, height );
 		  this.setLocation( xpos, ypos );
 		  fis.close();
@@ -584,6 +622,7 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 		  windowProperties.put(MainFrame.HEIGHT, ""+this.getSize().getHeight());
 		  windowProperties.put(MainFrame.GROUP_NAME, ""+GroupName);
 		  windowProperties.put(MainFrame.LOOK_AND_FEEL, ""+selectedLookAndFeel);
+		  windowProperties.put(MainFrame.DIRECT_CONNECT_TO_LOCAL_DEVICES, ""+configDirectLocalDevConnectJMenuItem.isSelected());
 		  windowProperties.store(fw, "");
 		  fw.close();
 	  }
@@ -804,36 +843,51 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	  String cmdLineString;
 	  boolean lan=false;
 	  boolean serviced=false;
-      int localPort=-1;
+      int tcpPort=-1;
+	  String deviceAddress = null;
 
       try {
 
 	      Service serviceArray[] = Service.GetServiceList( JSONProcessor.GetServicesList(jsonDevice) );
 		  
 		  for( Service service : serviceArray ) {
-	
-	          localPort = getLocalhostForwardingPort(JSONProcessor.GetLocation(jsonDevice), JSONProcessor.GetIPAddress(jsonDevice), service.port );
-	          if (localPort != -1) {
-	        	  
-	        	  if( !isPortForwardingAlreadySetup(JSONProcessor.GetLocation(jsonDevice), JSONProcessor.GetIPAddress(jsonDevice), service.port, localPort) ) {
-	                  //Setup forwarding from a local TCP server port to the remote ssh server port = that connected to the remote device.
-	        		  Session session = JSONProcessor.GetICONSSSHSession(jsonDevice);
-	        		  if( session != null ) {
-	        			  session.setPortForwardingL(Constants.LOCAL_HOST, localPort, Constants.LOCAL_HOST, service.port);
-	        		  }
-	        		  else {
-	        			  statusBar.println("No session object found for: "+jsonDevice.toString(4));
-	        		  }
-	                  storeLocalhostForwardingPort(JSONProcessor.GetLocation(jsonDevice), JSONProcessor.GetIPAddress(jsonDevice), service.port, localPort);
-	                  statusBar.println("Forwarding local port "+localPort+" to connect to this service (server port="+service.port+").");
-	        	  }
-	
-	        	  //As we're remote all connections will be to a local port forwarded via ssh tunnel to a remote device
-	        	  String deviceAddress=Constants.LOCAL_HOST;
+  
+			  // If the device running this program is on a LAN where an ICONS server is running then devices 
+			  // may be present on the local LAN. If this is the case we can connect directly to the device
+			  // over the local LAN.
+        	  if( iconsConnectionManager.isOnLocalLan(jsonDevice) ) {
+        		  deviceAddress = iconsConnectionManager.getLocalAddress(jsonDevice);
+        		  if( Service.ServiceMatch(service, serviceCmd.getServiceName() ) ) {
+        			  tcpPort = JSONProcessor.GetLocalServicePort(jsonDevice, serviceCmd.getServiceName());
+        		  }
+        	  }
+        	  else {
+	        	  //As device was not found on local LAN it must be remote. Therefore we connect to it via an ssh port forwarding connection via localhost.
+	        	  deviceAddress=Constants.LOCAL_HOST;
+	        	  tcpPort = getLocalhostForwardingPort(JSONProcessor.GetLocation(jsonDevice), JSONProcessor.GetIPAddress(jsonDevice), service.port );
+		          if (tcpPort != -1) {
+		        	  
+		        	  if( !isPortForwardingAlreadySetup(JSONProcessor.GetLocation(jsonDevice), JSONProcessor.GetIPAddress(jsonDevice), service.port, tcpPort) ) {
+		                  //Setup forwarding from a local TCP server port to the remote ssh server port = that connected to the remote device.
+		        		  Session session = JSONProcessor.GetICONSSSHSession(jsonDevice);
+		        		  if( session != null ) {
+		        			  session.setPortForwardingL(Constants.LOCAL_HOST, tcpPort, Constants.LOCAL_HOST, service.port);
+		        		  }
+		        		  else {
+		        			  statusBar.println("No session object found for: "+jsonDevice.toString(4));
+		        		  }
+		                  storeLocalhostForwardingPort(JSONProcessor.GetLocation(jsonDevice), JSONProcessor.GetIPAddress(jsonDevice), service.port, tcpPort);
+		                  statusBar.println("Forwarding local port "+tcpPort+" to connect to this service (server port="+service.port+").");
+		        	  }
+		          }
+        	  }
+        	  //If we have a valid TCP port
+        	  if( tcpPort != -1 ) {
+        		  
 	        	  cmdLineString = serviceCmd.getCmd();
 	        	  cmdLineString=cmdLineString.replace(Constants.HOST_STRING, deviceAddress);
-	        	  cmdLineString=cmdLineString.replace(Constants.PORT_STRING, ""+localPort);
-
+	        	  cmdLineString=cmdLineString.replace(Constants.PORT_STRING, ""+tcpPort);
+		        	  
 	        	  if( service.serviceName.equals(serviceCmd.getServiceName()) ) {
 	        		  
 	        		  if( serviceCmd.getCmdType() == ServiceCmd.INTERNAL_HTTP_CMD_TYPE ) {
@@ -844,13 +898,13 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	        	      }
 	        		  else if ( serviceCmd.getCmdType() == ServiceCmd.INTERNAL_VNC_CMD_TYPE ) {
 	        			  
-	        			  OpenVNC(jsonDevice, deviceAddress, localPort);
+	        			  OpenVNC(jsonDevice, deviceAddress, tcpPort);
 	        			  serviced=true;
 	        			  
 	        		  }
 	        		  else if ( serviceCmd.getCmdType() == ServiceCmd.INTERNAL_SERIAL_PORT_CMD_TYPE ) {
 	  
-	        			  OpenTerminal(jsonDevice, deviceAddress, localPort);
+	        			  OpenTerminal(jsonDevice, deviceAddress, tcpPort);
 	        			  serviced=true;
 	        			  
 	        		  }
@@ -859,10 +913,12 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	        			  serviced=true;
 	        		  }
 	        	  }
-	          }
-	          if( serviced ) {
-	        	  break;
-	          }
+	
+		          if( serviced ) {
+		        	  break;
+		          }
+			  }
+        	  
 		  }
 	  
 	  }
@@ -1128,5 +1184,13 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
    */
   public static String GetGroupName() {
 	  return GroupName;
+  }
+  
+  /**
+   * @brief Determine if we should attempt to connect directly to local devices.
+   * @return true if we should attempt directly (not through ICONS) to local devices.
+   */
+  public boolean connectDirectlyToLocalDevices() {
+	  return configDirectLocalDevConnectJMenuItem.isSelected();
   }
 }
