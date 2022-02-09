@@ -28,7 +28,7 @@ public class ICONSConnectionManager extends Thread implements JSONListener {
 	private AreYouThereTXThread areYouThereTXThread;
 	private LanDeviceReceiver lanDeviceReceiver;
 	private ReentrantLock devListLock = new ReentrantLock();
-	private Hashtable<String, JSONObject> localDevHashtable = new Hashtable<>(); 
+	private Hashtable<String, JSONObject> localDevHashtable = new Hashtable<String, JSONObject>(); 
 
 	/**
 	 * @brief Get the key in the localDevHashtable used to identify a unique device on the local LAN.
@@ -167,7 +167,7 @@ public class ICONSConnectionManager extends Thread implements JSONListener {
 			lanDeviceReceiver.shutdown();
 			lanDeviceReceiver = null;
 		}
-		localDevHashtable = new Hashtable<>();
+		localDevHashtable = new Hashtable<String, JSONObject>();
 		
 		if( enable ) {
 			
