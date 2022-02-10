@@ -518,6 +518,19 @@ class AreYouThereThread(threading.Thread):
         return IconsClient.DictToJSON(aytDict)
 
     @staticmethod
+    def IsAYTMsg(msg, exepectedAYTString):
+        aytMsg = False
+        try:
+            aDict = IconsClient.JSONToDict(msg)
+            if "AYT" in aDict:
+                aytString = aDict["AYT"]
+                if aytString == exepectedAYTString:
+                    aytMsg = True
+        except:
+            pass
+        return aytMsg
+
+    @staticmethod
     def GetSubnetMultiCastAddress(ifName):
         """@brief Get the subnet multicast IP address for the given interface.
            @param ifName The name of a local network interface.
@@ -1176,8 +1189,8 @@ class IconsGW(IconsClient):
                 if self._options.debug:
                     self._uo.debug("%s: DEVICE RX DATA: %s" % (str(addressPort), rxData))
 
-                #Ignore the discovery message we sent as this will come back to us
-                if rxData == AreYouThereThread.GetJSONAYTMsg(self._options.ayt_msg):
+                # If weve received an AYT message then send response.
+                if AreYouThereThread.IsAYTMsg(rxData, self._options.ayt_msg):
                     self._sendServicesResponse(addressPort)
 
                 else:
