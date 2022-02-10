@@ -370,22 +370,12 @@ class ServiceConfigurator(object):
             return
         serviceName=serviceName.upper()
 
-        port = self.getInteger("TCP IP port", 1, 65534)
+        port = self.getInteger("The TCP IP port that the machine provides the service on.", 1, 65534)
+        host = self._uo.getInput("The address of the machine providing this service.")
 
         groupName = self.getValidInput("Enter group name (default=%s)" % (IconsGWConfig.DEFAULT_GROUP_NAME), allowNoInput=True )
         if len(groupName) == 0 or groupName.lower() == "none":
             groupName = IconsGWConfig.DEFAULT_GROUP_NAME
-
-        response = self._uo.getInput("Is the service hosted on this machine [Y]es, [N]o")
-        response = response.lower()
-        if response == 'y' or response == 'yes':
-            host = socket.gethostname()
-            usedPortList = ServiceConfigurator.GetLocalServicePortList()
-            if port in usedPortList:
-                self._uo.error("!!! %d port is already used by a local service on this machine !!!" % (port) )
-                return
-        else:
-            host = self._uo.getInput("Enter the address of the remote machine providing the service.")
 
         serviceConfig = ServiceConfig(deviceType, serviceName, port, host, groupName)
         ServiceConfigurator.SaveService(serviceConfig, uio=self._uo)
@@ -440,18 +430,13 @@ class ServiceConfigurator(object):
                 except ValueError:
                     self._uo.error("%s is an invalid port (not an integer value)." % (portStr))
 
+        host = self._uo.getInput("The address of the machine providing this service [%s] " % (serviceConfig.host) )
+        if not host:
+            host = serviceConfig.host  
+
         groupName = self.getValidInput("Enter group name [%s] " % (serviceConfig.groupName), allowNoInput=True )
         if not groupName or len(groupName) == 0 or groupName.lower() == "none":
             groupName = IconsGWConfig.DEFAULT_GROUP_NAME
-
-        host = self._uo.getInput("The address of the remote machine providing the service [%s] " % (serviceConfig.host) )
-        if not host:
-            host = serviceConfig.host
-
-        usedPortList = ServiceConfigurator.GetLocalServicePortList()
-        if port in usedPortList:
-            self._uo.error("!!! %d port is already used by a local service on this machine !!!" % (port) )
-            return
 
         return ServiceConfig(deviceType, serviceName, port, host, groupName)
 
