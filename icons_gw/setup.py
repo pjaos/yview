@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="icons_gw",                                                                  # The python module name.
-    version="4.5",                                                                    # The version of the module.
+    version="4.6",                                                                    # The version of the module.
     author="Paul Austen",                                                             # The name of the module author.
     author_email="pausten.os@gmail.com",                                              # The email address of the author.
     description="Register a device in the YView network.",                            # A short description of the module.
