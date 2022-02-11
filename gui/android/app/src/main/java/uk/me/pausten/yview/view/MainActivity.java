@@ -102,9 +102,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             NetworkManager = new NetworkingManager(this, IconsConnectionActive(this));
             NetworkManager.setDaemon(true);
             NetworkManager.start();
-            if (IconsConnectionActive(this)) {
-                NetworkManager.enableICONSConnection(true);
-            }
+	    NetworkManager.enableICONSConnection( IconsConnectionActive(this) );
+
             NetworkManager.removeAllDeviceLisenters();
             NetworkManager.addLocationListener(this);
         }

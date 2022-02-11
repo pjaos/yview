@@ -158,6 +158,7 @@ public class ICONSConnection extends Thread implements MqttCallback {
      */
     private void status(String line) {
         if( activity != null ) {
+            MainActivity.Log(line);
             Dialogs.Toast(activity, line);
         }
     }
@@ -192,12 +193,21 @@ public class ICONSConnection extends Thread implements MqttCallback {
      */
     private void reconnectDelay() {
         long runningMS = System.currentTimeMillis()-startMS;
-        //If we've tried at least 3 times
-        if( runningMS > Constants.ICONS_RECONNECT_DELAY_SECONDS*1000*3 ) {
+
+        //If we've tried several times
+        if( runningMS > Constants.ICONS_RECONNECT_DELAY_SECONDS*1000 ) {
             status("Pausing for " + Constants.ICONS_RECONNECT_DELAY_SECONDS + " seconds before reconnecting to " + serverAddress + ":" + serverPort);
             try {
                 Thread.sleep(Constants.ICONS_RECONNECT_DELAY_SECONDS * 1000);
             } catch (InterruptedException ex) {}
+        }
+        else {
+            // Shorter pause time when making the first few connect attempts.
+            status("Pausing for " + Constants.ICONS_RECONNECT_DELAY_SECONDS/5 + " seconds before reconnecting to " + serverAddress + ":" + serverPort);
+            try {
+                Thread.sleep((Constants.ICONS_RECONNECT_DELAY_SECONDS*1000)/5);
+            } catch (InterruptedException ex) {}
+
         }
     }
 
