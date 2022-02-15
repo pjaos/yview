@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <EditTextPreference
-        android:capitalize="words"
-        android:defaultValue="@string/empty_string"
-        android:inputType="text"
-        android:key="@string/pref_group"
-        android:maxLines="1"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:title="@string/group_label" />
-
     <PreferenceCategory
         android:title="@string/server_options_string"
         android:key="server_options_string">
@@ -50,6 +40,17 @@
             android:dependency="@string/pref_server_active"
             android:key="@string/pref_server_port"
             android:title="@string/server_port_label" />
+
+        <EditTextPreference
+            android:capitalize="words"
+            android:defaultValue="@string/empty_string"
+            android:inputType="text"
+            android:key="@string/pref_group"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/group_label"
+            android:dependency="@string/pref_server_active" />
 
     </PreferenceCategory>
 
