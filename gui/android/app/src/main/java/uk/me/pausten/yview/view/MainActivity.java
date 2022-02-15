@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         if( NetworkManager == null ) {
             MainActivity.Log("startNetworkingManager(");
             NetworkManager = new NetworkingManager(this, IconsConnectionActive(this));
+            NetworkManager.setAYTMsgContents(Constants.AYT_MESSAGE_CONTENTS);
             NetworkManager.setDaemon(true);
             NetworkManager.start();
 	    NetworkManager.enableICONSConnection( IconsConnectionActive(this) );
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         ensureNetworkManagerExists();
         //If not using an ICONS server allow the user to set the AYT message
         if( !NetworkManager.isICONSConnectionEnabled() ) {
-            enterAYTMsgDialog = Dialogs.showInputDialog(this, "YView", Constants.AYT_MSG_PROMPT, Constants.AYT_MESSAGE_CONTENTS , false, this);
+//            enterAYTMsgDialog = Dialogs.showInputDialog(this, "YView", Constants.AYT_MSG_PROMPT, Constants.AYT_MESSAGE_CONTENTS , false, this);
         }
     }
 
