@@ -380,10 +380,13 @@ public class MainFrame extends JFrame implements ActionListener, WindowListener,
 	  tabbedPane.setMnemonicAt(0, KeyEvent.VK_L);
 
 	  if( lanDatagramSocket != null ) {
-			
+		  /* Debug Ask user for AYT message string to test different supplier strings.
 		  String aytMsgContent = JOptionPane.showInputDialog(this, "The device are you there message", Constants.DEFAULT_AYT_MESSAGE);
-		 
 	      areYouThereTXThread = new AreYouThereTXThread(lanDatagramSocket, MainFrame.GetJSONAYTM(aytMsgContent) );
+	      */
+		  
+	      areYouThereTXThread = new AreYouThereTXThread(lanDatagramSocket, MainFrame.GetJSONAYTM(Constants.DEFAULT_AYT_MESSAGE) );
+	      
 		  areYouThereTXThread.start();    
 	
 	      lanDeviceReceiver = new LanDeviceReceiver(lanDatagramSocket);
