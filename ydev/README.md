@@ -1,7 +1,6 @@
 # YDev
 Run in a Linux machine to add a device (Linix machine) to the YView networking platform.
 
-
 ## Installing on Linux
 The git repo must be present on the target machine. The following command can
 then be executed.
@@ -10,18 +9,32 @@ then be executed.
 sudo ./install.sh
 ```
 
-If you do not have python3.8 installed on the target machine you will be prompted
-to install this.
+If you do not have python3.8.2 or greater installed on the target machine
+you will be prompted to indicate that the package requires python3.8.2 or
+greater.
 
-The commands to do this on Linux machines will be provided.
+The following commands can be used to install python3.10.4 onto Debian based Linux systems.
+
+```
+sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget curl
+sudo apt install libssl-dev libffi-dev
+cd /tmp
+curl -O https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tar.xz
+tar -xf Python-3.10.4.tar.xz
+cd Python-3.10.4
+./configure --enable-optimizations
+sudo make altinstall
+sudo python3.10 -m pip install --upgrade pip
+```
+If no python3 version is installed then The commands to do this on Linux machines will be provided.
 
 ## Installing on non Linux operating systems
 
-- Install python3.8 on the target machine
-- Run the following command to install ydev
+- Install python3.8 or greater on the target machine if not already installed.
+- Run the following command to install ydev from this folder.
 
 ```
-python3.8 -m pip install .
+python3 -m pip install .
 ```
 
 ## Configuration
