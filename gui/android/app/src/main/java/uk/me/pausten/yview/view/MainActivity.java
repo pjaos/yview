@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         //If not using an ICONS server allow the user to set the AYT message
 /*
         if( !NetworkManager.isICONSConnectionEnabled() ) {
-            enterAYTMsgDialog = Dialogs.showInputDialog(this, "YView", Constants.AYT_MSG_PROMPT, Constants.AYT_MESSAGE_CONTENTS , false, this);
+//            enterAYTMsgDialog = Dialogs.showInputDialog(this, "YView", Constants.AYT_MSG_PROMPT, Constants.AYT_MESSAGE_CONTENTS , false, this);
         }
  */
     }

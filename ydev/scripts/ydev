@@ -1,2 +1,2 @@
 #!/bin/sh
-python3.8 -u -m ydev.ydev $@
+python3 -u -m ydev.ydev $@

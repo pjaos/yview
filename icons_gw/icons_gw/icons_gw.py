@@ -1204,8 +1204,11 @@ class IconsGW(IconsClient):
         if user:
             arsString = ""
             if self._options.log_file:
-                arsString = "--log_file {}".format(self.options.log_file)
-                
+                arsString = "--log_file {}".format(self._options.log_file)
+
+            if self._options.debug:
+                arsString = "{} --debug".format(arsString)
+
             bootManager.add(user=user, argString=arsString, enableSyslog=self._options.enable_syslog)
         else:
             raise Exception("--user not set.")
