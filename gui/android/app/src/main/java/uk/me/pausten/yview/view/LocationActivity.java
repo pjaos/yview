@@ -597,12 +597,13 @@ public class LocationActivity extends AppCompatActivity implements OnClickListen
             for( Service service : serviceArray ) {
 
                 String location = JSONProcessor.GetLocation(device);
+                MainActivity.Log("handleRemoteDevice(): location="+location+", service.port ="+service.port);
                 localPort = getLocalhostForwardingPort(location, service.port );
                 MainActivity.Log("handleRemoteDevice(): localPort="+localPort);
                 if (localPort != -1) {
 
                     if( !isPortForwardingAlreadySetup(location, service.port, localPort) ) {
-
+                        MainActivity.Log("handleRemoteDevice(): SETTING UP PORT FORWARDING");
                         //Setup forwarding from a local TCP server port to the remote ssh server port = that connected to the remote device.
                         Session session = JSONProcessor.GetICONSSSHSession(device);
                         if( session != null ) {
@@ -620,6 +621,9 @@ public class LocationActivity extends AppCompatActivity implements OnClickListen
 
                         storeLocalhostForwardingPort(location, service.port, localPort);
 
+                    }
+                    else {
+                        MainActivity.Log("handleRemoteDevice(): PORT FORWARDING ALREADY SETUP");
                     }
 
                     if( (service.serviceName.toUpperCase().equals(Constants.WEB_SERVICE_NAME) || service.serviceName.equals(Constants.HTTP_SERVICE_NAME)) && serviceName.equals(Constants.HTTP_SERVICE_NAME) ) {

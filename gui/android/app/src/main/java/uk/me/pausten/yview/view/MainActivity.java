@@ -1,7 +1,6 @@
 package uk.me.pausten.yview.view;
 
 import android.content.Intent;
-import 	android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,16 +20,14 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.graphics.drawable.ColorDrawable;
-import android.widget.Toast;
 import android.content.SharedPreferences;
 import 	android.app.Activity;
-import android.app.AlertDialog;
+//import android.app.AlertDialog;
 
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Vector;
-import java.net.SocketException;
 
 import uk.me.pausten.yview.R;
 import uk.me.pausten.yview.controller.JSONProcessor;
@@ -46,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     public static final int             TABLE_GRAVITY               = Gravity.CENTER;
     public static final int             TABLE_FONT_SIZE             = 24;
     private static String               AppStorageFolder;
-    private AlertDialog                 enterAYTMsgDialog;
+//    private AlertDialog                 enterAYTMsgDialog;
 
     public static NetworkingManager     NetworkManager;
 
@@ -94,12 +91,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     /**
-     * @brief Ensure that the location manager instance is present and running.
+     * Ensure that the location manager instance is present and running.
      */
     private void ensureNetworkManagerExists() {
         if( NetworkManager == null ) {
             MainActivity.Log("startNetworkingManager(");
             NetworkManager = new NetworkingManager(this, IconsConnectionActive(this));
+            NetworkManager.setAYTMsgContents(Constants.AYT_MESSAGE_CONTENTS);
             NetworkManager.setDaemon(true);
             NetworkManager.start();
 	    NetworkManager.enableICONSConnection( IconsConnectionActive(this) );
@@ -127,9 +125,11 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         MainActivity.Log("MainActivity.onStart()");
         ensureNetworkManagerExists();
         //If not using an ICONS server allow the user to set the AYT message
+/*
         if( !NetworkManager.isICONSConnectionEnabled() ) {
             enterAYTMsgDialog = Dialogs.showInputDialog(this, "YView", Constants.AYT_MSG_PROMPT, Constants.AYT_MESSAGE_CONTENTS , false, this);
         }
+ */
     }
 
     /**
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     /**
-     * @brief Check if the user preference has ssh (ICON server) connection enabled.
+     * Check if the user preference has ssh (ICON server) connection enabled.
      * @return true if ssh connection is enabled.
      */
     public static boolean IconsConnectionActive(Activity activity) {
@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
     /**
      * Called from the Network manager thread
-     * @param updatedLocation
+     * @param updatedLocation The location string for the device list.
      */
     public void updated(String updatedLocation) {
         if( activityVisible ) {
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     /**
-     * @brief Called to update the location hashtable
+     * Called to update the location hashtable
      */
     public void updateTable() {
         TableRow row;
@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     /**
-     * @brief When user selects a location open the activity for that location.
+     * When user selects a location open the activity for that location.
      * @param v The View selected by the user.
      */
     public void onClick(View v) {
@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
      * Get the location from a list of devices. This assumes that all devices
      * in the list are from the same location.
      *
-     * @param deviceList
+     * @param deviceList A Vector of JSONObject
      * @return The location String
      */
     public static String GetLocation(Vector<JSONObject> deviceList) {
@@ -325,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     /**
-     * @brief Get the storage folder where thios app may save files.
+     * Get the storage folder where this app may save files.
      * @return The storage folder
      * @throws IOException If unable to find the folder.
      */
