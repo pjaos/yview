@@ -34,6 +34,7 @@ import java.util.Vector;
 import java.util.Hashtable;
 import java.net.ServerSocket;
 import java.io.IOException;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -62,6 +63,7 @@ public class LocationActivity extends AppCompatActivity implements OnClickListen
     boolean                             activityVisible;
     Hashtable<String, Integer>          remoteLocalPortHashtable;
     Vector<String>                      serviceList = new Vector<String>();
+    ReentrantLock                       handleDeviceLock = new ReentrantLock();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -449,13 +451,14 @@ public class LocationActivity extends AppCompatActivity implements OnClickListen
      * @param serviceName The name of the service.
      */
     public void handleDevice(JSONObject device, String serviceName) {
-
+        handleDeviceLock.lock();
         if( isLocalDevice(device) ) {
             handleLocalDevice(device, serviceName);
         }
         else {
             handleRemoteDevice(device, serviceName);
         }
+        handleDeviceLock.unlock();
     }
 
     /**
