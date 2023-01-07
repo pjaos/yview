@@ -516,34 +516,41 @@ class AreYouThereThread(threading.Thread):
         return aytMsg
 
     @staticmethod
-    def GetSubnetMultiCastAddress(ifName):
+    def GetSubnetMultiCastAddress(ifName, uo, ifDownDelay=10):
         """@brief Get the subnet multicast IP address for the given interface.
            @param ifName The name of a local network interface.
+           @param uo A UserOutput instance.
+           @param ifDownDelay The delay in seconds to wait for the interface to come up if it's not found.
+                              This may occur if the WiFi interface is down.
            @return A list of all the subnet multicast IP addresses."""
         subNetMultiCastAddressList = []
         netIF = NetIF()
-        ifDict = netIF.getIFDict()
-        if ifName in ifDict:
-            ipList = ifDict[ifName]
-            for elem in ipList:
-                elems = elem.split("/")
-                if len(elems) == 2:
-                    # Extract the interface IP address. Calc the multicast IP address 
-                    # for the subnet and add this to the list for the interface.
-                    try:
-                        ipAddress = elems[0]
-                        subNetMaskBitCount = int(elems[1])
-                        intIP = NetIF.IPStr2int(ipAddress)
-                        subNetBits = (1<<(32-subNetMaskBitCount))-1
-                        intMulticastAddress = intIP | subNetBits
-                        subNetMultiCastAddress = NetIF.Int2IPStr(intMulticastAddress)
-                        subNetMultiCastAddressList.append(subNetMultiCastAddress)
-                    except ValueError:
-                        pass
+        # Don't exit until we have the multicast address
+        while len(subNetMultiCastAddressList) == 0:
+            ifDict = netIF.getIFDict()
+            if ifName in ifDict:
+                ipList = ifDict[ifName]
+                for elem in ipList:
+                    elems = elem.split("/")
+                    if len(elems) == 2:
+                        # Extract the interface IP address. Calc the multicast IP address 
+                        # for the subnet and add this to the list for the interface.
+                        try:
+                            ipAddress = elems[0]
+                            subNetMaskBitCount = int(elems[1])
+                            intIP = NetIF.IPStr2int(ipAddress)
+                            subNetBits = (1<<(32-subNetMaskBitCount))-1
+                            intMulticastAddress = intIP | subNetBits
+                            subNetMultiCastAddress = NetIF.Int2IPStr(intMulticastAddress)
+                            subNetMultiCastAddressList.append(subNetMultiCastAddress)
+                        except ValueError as ex:
+                            uo.error("Unable to obtain multicast address for {}: {}".format(ifName, str(ex))) 
+                
+            else:
+                uo.error("{} is not a local network interface name.".format(ifName))
+                uo.warn("Wait {} seconds for {} interface to come up.".format(ifDownDelay, ifName))
+                sleep(ifDownDelay)
             
-        else:
-            raise Exception("{} is not a local network interface name.".format(ifName))
-        
         return subNetMultiCastAddressList
     
     def __init__(self, uo, sock, options):
@@ -571,7 +578,7 @@ class AreYouThereThread(threading.Thread):
                 if self._options.net_if is None:
                     destAddressList = (AreYouThereThread.MULTICAST_ADDRESS,)
                 else:
-                    destAddressList = AreYouThereThread.GetSubnetMultiCastAddress(self._options.net_if)
+                    destAddressList = AreYouThereThread.GetSubnetMultiCastAddress(self._options.net_if, self._uo)
             try:
                 for destAddress in destAddressList:
                     self._sock.sendto( str.encode( AreYouThereThread.GetJSONAYTMsg(self._aytMsg) ), (destAddress, AreYouThereThread.UDP_DEV_DISCOVERY_PORT) )
@@ -1235,7 +1242,7 @@ def main():
 
         opts=OptionParser(usage='Connects (via ssh) to an ICONS (internet connection server) and provides a gateway from the local network.')
         opts.add_option("--debug",              help="Enable debugging. If enabled then all RX device will be displayed on stdout.", action="store_true", default=False)
-        opts.add_option("--config",             help="Configure the ICONS destination client.", action="store_true", default=False)
+        opts.add_option("-c", "--config",       help="Configure the ICONS destination client.", action="store_true", default=False)
         opts.add_option("--mqtt_port",          help="The MQTT server TCPIP port on the ssh server port (default=%d)" % (IconsGWConfig.MQTT_SERVER_PORT) , type="int", default=IconsGWConfig.MQTT_SERVER_PORT)
         opts.add_option("--log_file",           help="A log file to save all output to (default=None)" , default=None)
         opts.add_option("--dev_poll_period",    help="The device poll period in seconds (default=%d)" % (IconsGWConfig.DEFAULT_DEV_POLL_PERIOD) , type="float", default=IconsGWConfig.DEFAULT_DEV_POLL_PERIOD)
