@@ -17,7 +17,7 @@ setup(
     license="MIT License",                           # The License that the module is distributed under
     url="https://github.com/pjaos/yview/tree/master/ydev",      # The home page for the module
     install_requires=[
-        ['p3lib>=1.1.28'],                           # A python list of required module dependencies (optionally including versions)
+        ['p3lib>=1.1.53'],                           # A python list of required module dependencies (optionally including versions)
     ],
     scripts=['scripts/ydev'],                        # A list of command line startup scripts to be installed.
 )
