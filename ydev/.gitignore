@@ -3,3 +3,4 @@ packages
 deploy.sh
 build
 dist
+ydev.egg-info
