@@ -1208,17 +1208,14 @@ class IconsGW(IconsClient):
         """@brief Enable this program to auto start when the computer on which it is installed starts.
            @param user The username which which you wish to execute on autostart."""
         bootManager = BootManager()
-        if user:
-            arsString = ""
-            if self._options.log_file:
-                arsString = "--log_file {}".format(self._options.log_file)
+        arsString = ""
+        if self._options.log_file:
+            arsString = "--log_file {}".format(self._options.log_file)
 
-            if self._options.debug:
-                arsString = "{} --debug".format(arsString)
+        if self._options.debug:
+            arsString = "{} --debug".format(arsString)
 
-            bootManager.add(user=user, argString=arsString, enableSyslog=self._options.enable_syslog)
-        else:
-            raise Exception("--user not set.")
+        bootManager.add(user=user, argString=arsString, enableSyslog=self._options.enable_syslog)
 
     def disableAutoStart(self):
         """@brief Enable this program to auto start when the computer on which it is installed starts."""
@@ -1241,7 +1238,7 @@ def main():
     try:
 
         opts=OptionParser(usage='Connects (via ssh) to an ICONS (internet connection server) and provides a gateway from the local network.')
-        opts.add_option("--debug",              help="Enable debugging. If enabled then all RX device will be displayed on stdout.", action="store_true", default=False)
+        opts.add_option("-d", "--debug",        help="Enable debugging. If enabled then all RX device will be displayed on stdout.", action="store_true", default=False)
         opts.add_option("-c", "--config",       help="Configure the ICONS destination client.", action="store_true", default=False)
         opts.add_option("--mqtt_port",          help="The MQTT server TCPIP port on the ssh server port (default=%d)" % (IconsGWConfig.MQTT_SERVER_PORT) , type="int", default=IconsGWConfig.MQTT_SERVER_PORT)
         opts.add_option("--log_file",           help="A log file to save all output to (default=None)" , default=None)

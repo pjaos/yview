@@ -1,2 +1,0 @@
-#!/bin/sh
-python3.9 -u -m icons_gw.mqtt_subscribe $@

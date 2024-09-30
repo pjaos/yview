@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "icons-gw"
+version = "5.0.0"
+description = ""
+authors = ["Paul Austen <pjaos@gmail.com>"]
+readme = "README.md"
+packages = [
+    { include = "icons_gw" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+p3lib = "^1.1.78"
+paho-mqtt = "*"
+paramiko = "*"
+texttable = "*"
+
+[tool.poetry.scripts]
+icons_gw = "icons_gw.icons_gw:main"
+icons_json_check = "icons_gw.icons_json_check:main"
+mqtt_subscribe = "icons_gw.mqtt_subscribe:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
