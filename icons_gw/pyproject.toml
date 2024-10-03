@@ -9,7 +9,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"
 p3lib = "^1.1.78"
 paho-mqtt = "*"
 paramiko = "*"
