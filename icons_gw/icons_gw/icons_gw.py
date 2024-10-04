@@ -1204,22 +1204,19 @@ class IconsGW(IconsClient):
 
         self._uo.info("Stopped listening for device responses.")
 
-    def enableAutoStart(self, user):
-        """@brief Enable this program to auto start when the computer on which it is installed starts.
-           @param user The username which which you wish to execute on autostart."""
-        bootManager = BootManager()
-        arsString = ""
-        if self._options.log_file:
-            arsString = "--log_file {}".format(self._options.log_file)
-
-        if self._options.debug:
-            arsString = "{} --debug".format(arsString)
-
-        bootManager.add(user=user, argString=arsString, enableSyslog=self._options.enable_syslog)
+    def enableAutoStart(self):
+        """@brief Enable this program to auto start when the computer on which it is installed starts."""
+        bootManager = BootManager(ensureRootUser=True)
+        cmdArgs = sys.argv
+        # We dont want this argument in the list of arguments passed to the program when this
+        # program is started on boot.
+        cmdArgs.remove("--enable_auto_start")
+        arsString = " ".join(cmdArgs)
+        bootManager.add(argString=arsString, enableSyslog=self._options.enable_syslog)
 
     def disableAutoStart(self):
         """@brief Enable this program to auto start when the computer on which it is installed starts."""
-        bootManager = BootManager()
+        bootManager = BootManager(ensureRootUser=True)
         bootManager.remove()
         
     def checkAutoStartStatus(self):
@@ -1251,7 +1248,6 @@ def main():
         opts.add_option("--enable_auto_start",  help="Auto start when this computer starts.", action="store_true", default=False)
         opts.add_option("--disable_auto_start", help="Disable auto starting when this computer starts.", action="store_true", default=False)
         opts.add_option("--check_auto_start",   help="Check the status of an auto started icons_gw instance.", action="store_true", default=False)
-        opts.add_option("--user",               help="Set the user for auto start.")
 
         (options, args) = opts.parse_args()
 
@@ -1286,7 +1282,7 @@ def main():
             iconsGW = IconsGW(uo, options)
 
             if options.enable_auto_start:
-                iconsGW.enableAutoStart(options.user)
+                iconsGW.enableAutoStart()
 
             elif options.disable_auto_start:
                 iconsGW.disableAutoStart()

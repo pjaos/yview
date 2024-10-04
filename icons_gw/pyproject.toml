@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "icons-gw"
-version = "5.0.0"
+version = "5.0.1"
 description = ""
 authors = ["Paul Austen <pjaos@gmail.com>"]
 readme = "README.md"
@@ -10,7 +10,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-p3lib = "^1.1.78"
+p3lib = "^1.1.81"
 paho-mqtt = "*"
 paramiko = "*"
 texttable = "*"
