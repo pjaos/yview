@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "icons-gw"
-version = "5.0.1"
+version = "6.0.0"
 description = ""
 authors = ["Paul Austen <pjaos@gmail.com>"]
 readme = "README.md"

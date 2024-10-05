@@ -170,13 +170,13 @@ test-randomorder = ["pytest-randomly"]
 
 [[package]]
 name = "p3lib"
-version = "1.1.76"
+version = "1.1.82"
 description = "A group of python modules for networking, plotting data, config storage, automating boot scripts, ssh access and user input output."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "p3lib-1.1.76-py3-none-any.whl", hash = "sha256:ea18f5181b32139646747e270e697aeeb5254032da4caba68c5456cba8e913dd"},
-    {file = "p3lib-1.1.76.tar.gz", hash = "sha256:c3fa8ce3f5ef01f7cd4f9518605066144cabb56987127006504c067b192998de"},
+    {file = "p3lib-1.1.82-py3-none-any.whl", hash = "sha256:1564e147bd9eb3abbda38fceb0ff3874dbccf2fb6d5cbf6f36953f5576aed8e3"},
+    {file = "p3lib-1.1.82.tar.gz", hash = "sha256:c7572b82a9cfcf5bcc8f9a5a53abd42ecac0673bff29153b9d45a4a975ead6ea"},
 ]
 
 [package.dependencies]
@@ -365,5 +365,5 @@ files = [
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.12"
-content-hash = "7fa6da110eb52403b652b7a073bbde6c4298a7acf61865874007e20a1a35e150"
+python-versions = "^3.10"
+content-hash = "61145078bbd3cf2bc29f45b1c9d4c72726517f952a06979d96921d655097353f"

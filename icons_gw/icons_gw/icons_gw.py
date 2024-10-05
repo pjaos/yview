@@ -7,7 +7,7 @@ import  traceback
 import  threading
 import  _thread
 import  json
-from    optparse import OptionParser
+import  argparse
 from    time import sleep
 import  getpass
 import  paho.mqtt.client as mqtt
@@ -16,7 +16,7 @@ from    texttable import Texttable
 
 from    p3lib.helper import GetFreeTCPPort
 from    p3lib.mqtt_rpc import MQTTRPCCallerClient
-from    p3lib.uio import UIO as UO
+from    p3lib.uio import UIO
 from    p3lib.ssh import SSH, SSHTunnelManager
 from    p3lib.pconfig import ConfigManager
 from    p3lib.boot_manager import BootManager
@@ -610,7 +610,6 @@ class RPCCallerOptions(object):
 
 class IconsClient(object):
 
-    ICONS_RECONNECT_DELAY           = 5
     MQTT_DEFAULT_KEEPALIVE_SECONDS  = 60
 
     JSON_UNIT_NAME           = "UNIT_NAME"
@@ -817,30 +816,13 @@ class IconsClient(object):
 
     def runClientConnection(self):
         """@brief Called to connect to the server and handle all responses from it."""
-        while True:
-            try:
+        try:
 
-                self._startServerWithException()
+            self._startServerWithException()
 
-            except AuthenticationException:
-                self.setupAutologin()
-
-            except SystemExit:
-              raise
-
-            #Don't print error information if CTRL C pressed
-            except KeyboardInterrupt:
-                raise
-
-            except Exception as ex:
-                if self._options.debug:
-                    self._uo.errorException()
-                else:
-                    self._uo.error(ex)
-
-            self._uo.error("Waiting %d seconds before attempting to reconnect to ICON server." % (IconsClient.ICONS_RECONNECT_DELAY) )
-            sleep(IconsClient.ICONS_RECONNECT_DELAY)
-
+        except AuthenticationException:
+            self.setupAutologin()
+            self._uo.info("Auto login setup complete. Now try again.")
 
 class IconsGW(IconsClient):
 
@@ -1229,63 +1211,46 @@ class IconsGW(IconsClient):
         
 
 def main():
-    uo = UO()
+    uio = UIO()
     debug = False
 
     try:
+        parser = argparse.ArgumentParser(description='Connects (via ssh) to an ICONS (internet connection server) and provides a gateway from the local network.')
+        parser.add_argument("-d", "--debug",        help="Enable debugging. If enabled then all RX device will be displayed on stdout.", action="store_true", default=False)
+        parser.add_argument("-c", "--config",       help="Configure the ICONS destination client.", action="store_true", default=False)
+        parser.add_argument("--mqtt_port",          help="The MQTT server TCPIP port on the ssh server port (default=%d)" % (IconsGWConfig.MQTT_SERVER_PORT) , type=int, default=IconsGWConfig.MQTT_SERVER_PORT)
+        parser.add_argument("--log_file",           help="A log file to save all output to (default=None)" , default=None)
+        parser.add_argument("--dev_poll_period",    help="The device poll period in seconds (default=%d)" % (IconsGWConfig.DEFAULT_DEV_POLL_PERIOD) , type=float, default=IconsGWConfig.DEFAULT_DEV_POLL_PERIOD)
+        parser.add_argument("--no_comp",            help="Disable SSH data compression. By default compression is used.", action="store_true", default=False)
+        parser.add_argument("--services",           help="Configure services to be provided by machines. These can be any network device that runs a TCP server (E.G SSH, VNC etc).", action="store_true", default=False)
+        parser.add_argument("--no_lan",             help="Do not attempt to discover devices on the LAN.", action="store_true", default=False)
+        parser.add_argument("--enable_syslog",      help="Enable syslog on this instance of icons_gw. By default syslog is disabled.", action="store_true", default=False)
+        parser.add_argument("--keepalive",          help="The number of seconds between each MQTT keepalive message (default=%d)." % (IconsClient.MQTT_DEFAULT_KEEPALIVE_SECONDS) , type=int, default=IconsClient.MQTT_DEFAULT_KEEPALIVE_SECONDS)
+        BootManager.AddCmdArgs(parser)
 
-        opts=OptionParser(usage='Connects (via ssh) to an ICONS (internet connection server) and provides a gateway from the local network.')
-        opts.add_option("-d", "--debug",        help="Enable debugging. If enabled then all RX device will be displayed on stdout.", action="store_true", default=False)
-        opts.add_option("-c", "--config",       help="Configure the ICONS destination client.", action="store_true", default=False)
-        opts.add_option("--mqtt_port",          help="The MQTT server TCPIP port on the ssh server port (default=%d)" % (IconsGWConfig.MQTT_SERVER_PORT) , type="int", default=IconsGWConfig.MQTT_SERVER_PORT)
-        opts.add_option("--log_file",           help="A log file to save all output to (default=None)" , default=None)
-        opts.add_option("--dev_poll_period",    help="The device poll period in seconds (default=%d)" % (IconsGWConfig.DEFAULT_DEV_POLL_PERIOD) , type="float", default=IconsGWConfig.DEFAULT_DEV_POLL_PERIOD)
-        opts.add_option("--no_comp",            help="Disable SSH data compression. By default compression is used.", action="store_true", default=False)
-        opts.add_option("--services",           help="Configure services to be provided by machines. These can be any network device that runs a TCP server (E.G SSH, VNC etc).", action="store_true", default=False)
-        opts.add_option("--no_lan",             help="Do not attempt to discover devices on the LAN.", action="store_true", default=False)
-        opts.add_option("--enable_syslog",      help="Enable syslog on this instance of icons_gw. By default syslog is disabled.", action="store_true", default=False)
-        opts.add_option("--keepalive",          help="The number of seconds between each MQTT keepalive message (default=%d)." % (IconsClient.MQTT_DEFAULT_KEEPALIVE_SECONDS) , type="int", default=IconsClient.MQTT_DEFAULT_KEEPALIVE_SECONDS)
-        opts.add_option("--enable_auto_start",  help="Auto start when this computer starts.", action="store_true", default=False)
-        opts.add_option("--disable_auto_start", help="Disable auto starting when this computer starts.", action="store_true", default=False)
-        opts.add_option("--check_auto_start",   help="Check the status of an auto started icons_gw instance.", action="store_true", default=False)
-
-        (options, args) = opts.parse_args()
-
-        debug = options.debug
-        uo.enableDebug(debug)
+        options = parser.parse_args()
+        uio.enableDebug(options.debug)
+        uio.logAll(True)
+        uio.enableSyslog(options.enable_syslog, programName="ct6_dash")
 
         if options.log_file:
-            uo.setLogFile(options.log_file)
+            uio.setLogFile(options.log_file)
+           
+        iconsGWConfig = IconsGWConfig(uio, IconsGWConfig.CONFIG_FILENAME)
 
-        if options.enable_syslog:
-            uo.enableSyslog(True)
-            
-        iconsGWConfig = IconsGWConfig(uo, IconsGWConfig.CONFIG_FILENAME)
-
-        if options.services:
-
-            serviceConfigurator = ServiceConfigurator(uo)
-            serviceConfigurator.editServices(uo)
-
-        elif options.config:
-
-            iconsGWConfig.configure()
-
-        elif options.check_auto_start:
-            iconsGW = IconsGW(uo, options)
-            iconsGW.checkAutoStartStatus()            
-            
-        else:
-
+        handled = BootManager.HandleOptions(uio, options, True)
+        if not handled:
             iconsGWConfig.updateOptions(options)
+            iconsGW = IconsGW(uio, options)
 
-            iconsGW = IconsGW(uo, options)
+            if options.services:
 
-            if options.enable_auto_start:
-                iconsGW.enableAutoStart()
+                serviceConfigurator = ServiceConfigurator(uio)
+                serviceConfigurator.editServices(uio)
 
-            elif options.disable_auto_start:
-                iconsGW.disableAutoStart()
+            elif options.config:
+
+                iconsGWConfig.configure()
 
             else:
                 iconsGW.runClient()
@@ -1300,11 +1265,11 @@ def main():
 
     except Exception as e:
          if debug:
-           uo.errorException()
+           uio.errorException()
            raise
 
          else:
-           uo.error(str(e))
+           uio.error(str(e))
 
 if __name__== '__main__':
     main()
