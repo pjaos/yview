@@ -34,4 +34,4 @@ fi
 
 service ssh start
 mosquitto &
-/usr/local/bin/icons_mqtt_rpc_provider 2>&1 > /tmp/boot.log
+/root/.local/bin/icons_mqtt_rpc_provider --server 127.0.0.1 2>&1 > /tmp/boot.log

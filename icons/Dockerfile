@@ -1,4 +1,4 @@
-FROM python:2
+FROM ubuntu:24.04
 
 ARG USER
 ARG SUDO
@@ -19,18 +19,26 @@ ENV USER_PASSWORD=${USER_PASSWORD}
 
 RUN apt-get update
 RUN apt-get install -y apt-utils
-RUN apt-get install -y openssh-server sudo mosquitto ne python-pip git
+RUN apt-get install -y ssh 
+RUN apt-get install -y sudo 
+RUN apt-get install -y mosquitto 
+RUN apt-get install -y ne 
+RUN apt-get install -y python3-pip 
+RUN apt-get install -y git
+RUN apt-get install -y pipx
+RUN apt-get install -y net-tools
 
-COPY assets/pip_requirements.txt ./
-RUN pip install --no-cache-dir -r pip_requirements.txt
+RUN pipx ensurepath
 
-COPY assets/python-pjalib-4.0-all.deb /tmp
-COPY assets/python-icons-rpc-provider-1.1-all.deb /tmp
-RUN dpkg -i /tmp/python-pjalib-4.0-all.deb
-RUN dpkg -i /tmp/python-icons-rpc-provider-1.1-all.deb
-RUN ln -s /usr/local/lib/python2.7/dist-packages/pjalib /usr/local/lib/python2.7/site-packages/pjalib
-RUN sudo ln -s /usr/local/lib/python2.7/site-packages/paho /usr/local/lib/python2.7/dist-packages/paho
-RUN sudo ln -s /usr/local/lib/python2.7/dist-packages/icons_mqtt_rpc_provider.py /usr/local/lib/python2.7/site-packages/icons_mqtt_rpc_provider.py
+COPY assets/icons_rpc_provider-0.1.0-py3-none-any.whl /tmp
+RUN pipx install /tmp/icons_rpc_provider-0.1.0-py3-none-any.whl
+
+# We copy the authorized_keys file to the container.
+# If is recomended that ALLOW_SSH_PASSWORD is set false.
+# If this is the case the only way to connect to the ssh server
+# is to add your public ssh key to this file and then build the container.  
+COPY assets/authorized_keys /home/$USER/.ssh/
+RUN chmod 600 /home/$USER/.ssh/authorized_keys
 
 COPY assets/rc.local /etc/rc.local
 RUN chmod +x /etc/rc.local

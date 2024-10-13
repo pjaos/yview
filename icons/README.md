@@ -7,7 +7,7 @@ This server exposes a single SSH port (by default 2222). This allows any device 
 Before this docker image can be used the following must be installed.
 
  - Docker must be installed in the linux host
- 	[Installing Docker on Ubuntu 18.04](https://www.hostinger.com/tutorials/how-to-install-and-use-docker-on-ubuntu/)
+ 	[Installing Docker on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
  - docker-compose must be also be installed
     `sudo apt-get install docker-compose`
 
@@ -27,7 +27,7 @@ This defines whether `sudo` is enabled. The default for this value is true but i
 If SUDO=true then this options is used. If you wish to allow sudo access but require that the user must enter the user password then this option should be set to true. In this case a user password must be set. The default for this value is false.
 
 ### ALLOW_SSH_PASSWORD
-If this is set to true then a password maybe entered over the ssh connection to login to the ssh server. The default for this option is false. By default the only way to login to the ssh server is to include a public ssh key in the ssh/authorized_keys file.
+If this is set to true then a password maybe entered over the ssh connection to login to the ssh server. The default for this option is false. By default the only way to login to the ssh server is to include a public ssh key in the assets/authorized_keys file.
 
 ## Building the docker container
  `USER=ausername && docker-compose build`
@@ -40,3 +40,9 @@ Where ausername is the ssh username. This should be set to your selected usernam
 ## Stopping the docker container
 
  `docker-compose stop`
+
+## To start in interactive mode
+
+```
+docker container run -it icons_icons /bin/bash
+```

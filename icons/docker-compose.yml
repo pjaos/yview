@@ -11,7 +11,7 @@ services:
         - USER_PASSWORD=changemeNOW
         - SUDO=true
         - SUDO_REQUIRE_PASSWORD=false
-        - ALLOW_SSH_PASSWORD=true
+        - ALLOW_SSH_PASSWORD=false
 
     volumes:
       - ./ssh/:/home/${USER}/.ssh
