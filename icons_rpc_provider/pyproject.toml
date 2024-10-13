@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "icons-rpc-provider"
+version = "0.1.0"
+description = ""
+authors = ["Paul Austen <pjaos@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+p3lib = "^1.1.91"
+paho-mqtt = "*"
+
+[tool.poetry.scripts]
+icons_mqtt_rpc_provider = "icons_rpc_provider.icons_mqtt_rpc_provider:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
