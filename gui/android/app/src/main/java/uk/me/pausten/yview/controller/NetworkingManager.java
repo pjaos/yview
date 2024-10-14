@@ -3,6 +3,7 @@ package uk.me.pausten.yview.controller;
 import 	android.app.Activity;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -142,6 +143,7 @@ public class NetworkingManager extends Thread implements JSONListener {
             //Setup a timer to timeout units we have lost contact with
             aytTXTimer = new Timer();
             AYTTXTask aytTXTask = new AYTTXTask();
+            aytTXTask.setActivity(activity);
             aytTXTimer.schedule(aytTXTask, 0, Constants.DEFAULT_AYT_PERIOD_MS);
 
             //Setup a timer to timeout units we have lost contact with
@@ -241,14 +243,21 @@ public class NetworkingManager extends Thread implements JSONListener {
      * @brief Task called periodically to broadcast and AYT message.
      */
     class AYTTXTask extends TimerTask {
+        Activity activity;
+        public void setActivity(Activity activity) {
+            this.activity=activity;
+        }
 
         public void run() {
-
-            //If we should send device AYT messages
-            if( aytTransmitter != null ) {
-                aytTransmitter.sendAYTMessage(lanDatagramSocket);
+            try {
+                //If we should send device AYT messages
+                if (aytTransmitter != null) {
+                    aytTransmitter.sendAYTMessage(lanDatagramSocket);
+                }
             }
-
+            catch(IOException ex) {
+                Toast.makeText(this.activity, ex.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+            }
         }
 
     }

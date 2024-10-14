@@ -25,7 +25,7 @@
     <string name="group_label">Group</string>
     <string name="test_connection_label">Test Connection</string>
     <string name="delete_ssh_key_label">Delete Local SSH Key</string>
-
+    <string name="show_public_ssh_key_label">Show Public SSH Key</string>
 
     <string name="pref_server_username">pref_server_username</string>
     <string name="pref_server_address">pref_server_address</string>

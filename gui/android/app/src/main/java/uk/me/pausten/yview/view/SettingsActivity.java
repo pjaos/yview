@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.os.Bundle;
 import android.widget.ListView;
@@ -16,6 +17,10 @@ import android.os.Message;
 import android.os.Looper;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.ClipboardManager;
+import android.content.ClipData;
+import android.content.Context;
+import android.widget.Toast;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -30,6 +35,7 @@ import uk.me.pausten.yview.model.Constants;
 public class SettingsActivity extends AppCompatPreferenceActivity implements StringInputListener {
 
     Button                      testConnectionButton;
+    Button                      showPublicSSHKeyButton;
     Button                      deleteLocalSSHKeysButton;
     SharedPreferences           sharedPreferences;
     Handler                     uiHandler;
@@ -87,6 +93,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Str
         MainActivity.Log("addTestConnectionButton()");
         testConnectionButton = new Button(this);
         testConnectionButton.setText(getResources().getString(R.string.test_connection_label));
+        showPublicSSHKeyButton = new Button(this);
+        showPublicSSHKeyButton.setText(getResources().getString(R.string.show_public_ssh_key_label));
         deleteLocalSSHKeysButton = new Button(this);
         deleteLocalSSHKeysButton.setText(getResources().getString(R.string.delete_ssh_key_label));
 
@@ -94,6 +102,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Str
             public void onClick(View v) {
                 testSShConnection(null);
             }
+        });
+
+        showPublicSSHKeyButton.setOnClickListener( new OnClickListener() {
+            public void onClick(View v) { showPublicSSHKey(); }
         });
 
         deleteLocalSSHKeysButton.setOnClickListener( new OnClickListener() {
@@ -105,8 +117,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Str
         //enable/disable button along with other connection parameters
         boolean active = sharedPreferences.getBoolean( getResources().getString(R.string.pref_server_active), false );
         testConnectionButton.setEnabled(active);
+        showPublicSSHKeyButton.setEnabled(active);
         deleteLocalSSHKeysButton.setEnabled(active);
         v.addFooterView(testConnectionButton);
+        v.addFooterView(showPublicSSHKeyButton);
         v.addFooterView(deleteLocalSSHKeysButton);
 
     }
@@ -336,10 +350,29 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Str
      */
     public void deleteLocalSSHKey() {
         try {
-            SSHWrapper.deleteLocalKeys(this);
+            SSHWrapper.DeleteLocalKeys(this);
         }
         catch(IOException e) {}
         catch(JSchException e) {}
+    }
+
+    private void showPublicSSHKey() {
+        try {
+            String pubKeyText = SSHWrapper.GetPublicKey();
+            Dialogs.OKDialog(this,
+                    "Local Public SSH Key",
+                    pubKeyText,
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            ClipboardManager clipboard = (ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipData clip = ClipData.newPlainText("label", pubKeyText);
+                            clipboard.setPrimaryClip(clip);
+                            Toast toast = Toast.makeText(getApplicationContext(), "Copied public ssh key to the clipboard.", Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER,0, 0);
+                            toast.show();
+                        }
+                    });
+        }catch(IOException e) {}
     }
 
 }

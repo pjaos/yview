@@ -98,7 +98,7 @@ public class SSHWrapper {
      * @throws JSchException
      * @throws IOException
      */
-    public static void deleteLocalKeys(Activity activity) throws JSchException, IOException {
+    public static void DeleteLocalKeys(Activity activity) throws JSchException, IOException {
         boolean deleted = false;
 
         String privateKeyFilenames[] = SSHWrapper.GetDefaultSSHPrivateKeyFilenames();

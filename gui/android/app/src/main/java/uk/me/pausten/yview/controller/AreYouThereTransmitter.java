@@ -60,12 +60,12 @@ public class AreYouThereTransmitter {
      * @brief Send an are you there broadcast message.
      * @param lanDatagramSocket The socket to send the broadcast messages on.
      */
-    public void sendAYTMessage(DatagramSocket lanDatagramSocket) {
+    public void sendAYTMessage(DatagramSocket lanDatagramSocket) throws IOException {
         InetAddress mcIPAddress;
 
         Vector<String> multicastIPList = GetMulticastIPAddressList();
 
-        try {
+//        try {
             String aytMsg = "{\"AYT\":\""+aytMsgContents+"\"}";
             byte[] msg = aytMsg.getBytes();
 
@@ -77,12 +77,12 @@ public class AreYouThereTransmitter {
                 packet.setAddress(mcIPAddress);
                 lanDatagramSocket.send(packet);
             }
-
+/*
         }
         catch(IOException e) {
             e.printStackTrace();
         }
-
+*/
     }
 
     /**
