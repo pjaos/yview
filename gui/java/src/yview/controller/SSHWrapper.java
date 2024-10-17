@@ -211,22 +211,26 @@ public class SSHWrapper {
 
 	        session.setConfig("StrictHostKeyChecking", "no");
 	        
+     
 	        MyUserInfo userInfo = new MyUserInfo();
 	        session.setUserInfo(userInfo);
 
+System.out.println("PJA: Call Session connect()");
 	        session.connect();
 
 	        if( statusBar != null ) {
 	        	statusBar.println("Connected to " + username + "@" + host + ": " + port);
 	        }
 	        
-    		//If user had to enter a password, add the public key to the server authorised keys file
-    		if( ((MyUserInfo) userInfo).wasPasswordEntered() ) {
-    			UpdateRemoteAuthorisedKeys(session, statusBar);
-    		}
+		       
+	   		//If user had to enter a password, add the public key to the server authorised keys file
+	   		if( ((MyUserInfo) userInfo).wasPasswordEntered() ) {
+	   			UpdateRemoteAuthorisedKeys(session, statusBar);
+	   		}
     		
 		} 
     	catch( IOException ex) {
+    		ex.printStackTrace();
     		String msg = ex.getMessage()+" ("+username + "@" + host + ": " + port+")";
     		JOptionPane.showMessageDialog(parent, msg, "Error", JOptionPane.ERROR_MESSAGE);
     		statusBar.println( msg );

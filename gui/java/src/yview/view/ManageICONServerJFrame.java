@@ -2,6 +2,7 @@ package yview.view;
 
 import yview.controller.ICONSConnectionManager;
 import yview.controller.SSHWrapper;
+import yview.controller.SSHLogger;
 import yview.model.Constants;
 import yview.model.ICONServer;
 
@@ -14,7 +15,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -37,6 +41,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.UserInfo;
 
 import pja.gui.Dialogs;
+import pja.gui.UI;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.JOptionPane;
@@ -56,6 +61,7 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 	JButton editButton = new JButton("Edit");
 	JButton okButton = new JButton("OK");
 	JButton cancelButton = new JButton("Cancel");
+	JButton pubSSHKeyButton = new JButton("Get Public SSH Key"); 
 	DefaultListModel listModel;
 	JList list;
 	static File ConfigFile;
@@ -68,6 +74,8 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 	UserInfo userInfo;
 	ICONSConnectionManager iconsConnectionManager;
 	boolean connectToLocalDevices;
+	SSHLogger sshLogger = new SSHLogger();
+	boolean startup = true;
 
 	/**
 	 * @brief Constructor
@@ -78,7 +86,10 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 		super("Manage ICON Servers");
 		this.mainFrame = mainFrame;
 		this.iconsConnectionManager=iconsConnectionManager;
-
+		
+		// Enable ssh logging to stdout
+		jsch.setLogger(sshLogger);
+		
 		statusBar = new StatusBar();
 
 		setMinimumSize(new Dimension(400, 200));
@@ -95,13 +106,15 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 
 		JScrollPane listScrollPane = new JScrollPane(list);
 		mainPanel.add(listScrollPane, BorderLayout.CENTER);
-
+		
+		pubSSHKeyButton.addActionListener(this);
 		addButton.addActionListener(this);
 		deleteButton.addActionListener(this);
 		editButton.addActionListener(this);
 		okButton.addActionListener(this);
 		cancelButton.addActionListener(this);
 
+        buttonPane.add(pubSSHKeyButton);
 		buttonPane.add(cancelButton);
 		buttonPane.add(addButton);
 		buttonPane.add(deleteButton);
@@ -120,12 +133,27 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 		serverProperties = getServerProperties();
 		updateConnectionList();
 
-		serverPropertiesDialog = new ServerPropertiesDialog(this);
+		
 
 	}
 
+	/**
+	 * @brief If we reused the serverPropertiesDialog the setLocation call 
+	 * on it would fail and leave the dialog at 0,0.
+	 * Calling this method works around this by re creating the server 
+	 * properties dialog each time.
+	 */
+	private void newServerPropertiesDialog() {
+		if( serverPropertiesDialog != null ) {
+			serverPropertiesDialog.dispose();
+			serverPropertiesDialog= null;
+		}
+		serverPropertiesDialog = new ServerPropertiesDialog(this);
+	}
+	
 	public void actionPerformed(ActionEvent e) {
-		serverPropertiesDialog.setLocationRelativeTo(this);
+		newServerPropertiesDialog();
+		UI.CenterInParent(this.mainFrame, serverPropertiesDialog);
 		if (e.getSource() == addButton) {
 			addServer();
 		} else if (e.getSource() == editButton) {
@@ -142,6 +170,24 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 			setVisible(false);
 			statusBar.close();
 		}
+		else if( e.getSource() == pubSSHKeyButton ) {
+			getPublicSSHKey();
+		}
+	}
+	
+
+	/**
+	 * @brief Get the public SSH key.
+	 */
+	public void getPublicSSHKey() {
+		try {
+			String publicSSHKey = SSHWrapper.GetPublicKey();		
+			StringSelection stringSelection = new StringSelection(publicSSHKey);
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(stringSelection, null);
+			JOptionPane.showMessageDialog(null, "Copied ssh public key to clipboard.");
+		}
+		catch( IOException ex) {}
 	}
 	
 	/**
@@ -159,7 +205,9 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 		try {
 			mainFrame.initTabs();
 		}
-		catch(SocketException ex) {}
+		catch(SocketException ex) {
+			ex.printStackTrace();
+		}
 		if( iconsConnectionManager != null ) {
 			iconsConnectionManager.shutdown(pauseReconnectDelay);
 			iconsConnectionManager.connectICONS(getICONServerList(), connectToLocalDevices);
@@ -184,6 +232,9 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 					  }
 				}).start();
 			}
+			else {
+				listModel.addElement(""+iconServer);
+			}
 		}
 	}
 	
@@ -200,7 +251,8 @@ public class ManageICONServerJFrame extends JFrame implements ActionListener, Li
 	}
 	
 	private void editSelectedItem() {
-		serverPropertiesDialog.setLocationRelativeTo(this);
+		newServerPropertiesDialog();
+		UI.CenterInParent(this.mainFrame, serverPropertiesDialog);
 		SelectedIndex = list.getSelectedIndex();
 		if (SelectedIndex >= 0) {
 			ICONServer iconServer = new ICONServer();

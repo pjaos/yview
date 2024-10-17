@@ -9,7 +9,7 @@ import sys
 import os
 
 def fatal(msg):
-  print 'ERROR: %s' % (msg)
+  print('ERROR: %s' % (msg))
   sys.exit(-1)
   
 if __name__ == "__main__":
@@ -40,7 +40,7 @@ if __name__ == "__main__":
             try:
               version=float(lr)
               foundVersion=foundVersion+1
-              print lr
+              print(lr)
             except ValueError:
               raise
               fatal("Failed to extract version number from line: %s" % (l) )

@@ -240,26 +240,26 @@ public class ICONSConnection extends Thread implements MqttCallback {
 
 	/**
 	 * @brief Called when a connection is lost to the ICONS.
+	 * This maybe overridden in subclass in order to handle this.
 	 */
-	@Override
 	public void connectionLost(Throwable arg0) {
 		System.out.println("MQTT connectionLost(): " + arg0);
 	}
 
 	/**
 	 * @brief Called when an ICONS message delivery is complete. 
+	 * This maybe overridden in subclass in order to handle this.
 	 */
-	@Override
 	public void deliveryComplete(IMqttDeliveryToken arg0) {
 		System.out.println("deliveryComplete(): " + arg0);
 	}
 
 	/**
 	 * @brief Called when a message is received from the ICONS MQTT server.
+	 * This maybe overridden in subclass in order to handle this.
 	 * @param topic   The topic that the message was received on.
 	 * @param message The MQTT message received.
 	 */
-	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		try {
 

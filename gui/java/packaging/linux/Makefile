@@ -1,5 +1,5 @@
 #Get the versions for the programs to be built from the src code
-YVIEW_VER := $(shell python get_version.py ../../src/yview/model/Constants.java)
+YVIEW_VER := $(shell python3 get_version.py ../../src/yview/model/Constants.java)
 
 OUTPUT_ROOT_PATH = output
 

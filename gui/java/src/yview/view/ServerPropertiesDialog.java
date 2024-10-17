@@ -2,11 +2,15 @@ package yview.view;
 
 import java.awt.BorderLayout;
 
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
+import java.awt.datatransfer.StringSelection;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 
 import javax.swing.JFrame;
 import javax.swing.JButton;
@@ -14,7 +18,9 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.text.NumberFormatter;
+import javax.swing.JOptionPane;
 
+import yview.controller.SSHWrapper;
 import yview.model.Constants;
 import yview.model.ICONServer;
 
@@ -64,6 +70,7 @@ public class ServerPropertiesDialog extends JDialog implements ActionListener, W
        
 		buttonPane.add(okButton);
 		buttonPane.add(cancelButton);
+		
 		okButton.addActionListener(this);
 		cancelButton.addActionListener(this);
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
@@ -84,14 +91,14 @@ public class ServerPropertiesDialog extends JDialog implements ActionListener, W
 				portField.getText().length() == 0 ) {
 				return;
 			}
+
 			okSelected=true;
 			setVisible(false);	
 		}
-		
-		if( e.getSource() == cancelButton ) {
+		else if( e.getSource() == cancelButton ) {
 			setVisible(false);
 		}
-
+		
 	}
 	
 	/**
