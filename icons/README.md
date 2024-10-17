@@ -41,7 +41,9 @@ Where ausername is the ssh username. This should be set to your selected usernam
 
  `docker-compose stop`
 
-## To start in interactive mode
+## To connect to the start in interactive mode
+This is useful for debugging but you'll need to manually run the commands
+from assets/rc.local when testing.
 
 ```
 docker container run -it icons_icons /bin/bash
