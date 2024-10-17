@@ -1,0 +1,85 @@
+author: mongoose-os
+description: A Mongoose OS app skeleton
+version: 1.0
+
+libs_version: ${mos.version}
+modules_version: ${mos.version}
+mongoose_os_version: ${mos.version}
+
+# Optional. List of tags for online search.
+tags:
+  - c
+
+# List of files / directories with C sources. No slashes at the end of dir names.
+sources:
+  - src
+
+includes:
+  - include
+
+# List of dirs. Files from these dirs will be copied to the device filesystem
+filesystem:
+  - fs
+
+#Define the configuration attributes here
+config_schema:
+# Custom configuration entries, settable via "device configuration"
+# Below is a custom firmware configuration example.
+# Uncomment and modify according to your needs:
+
+# config_schema:
+#  - ["my_app", "o", {title: "My app custom settings"}]
+#  - ["my_app.bool_value", "b", false, {title: "Some boolean value"}]
+#  - ["my_app.string_value", "s", "", {title: "Some string value"}]
+#  - ["my_app.int_value", "i", 123, {title: "Some integer value"}]
+
+# These settings get compiled into the C structure, and can be accessed
+# from the C code this way:
+#
+# printf("Hello from %s!\n", mgos_sys_config_get_device_id());
+#
+# Settings are cool: can be modified remotely without full firmware upgrade!
+#
+# To see all available compiled settings, buid the firmware and open
+# build/gen/mgos_config.h file.
+#
+# Also, in this config_schema section, you can override existing
+# settings that has been created by other libraries. For example, debug log
+# level is 2 by default. For this firmware we can override it to 3:
+#
+# config_schema:
+#  - ["debug.level", 3]
+
+#These are user configurable attributes
+ - ["ydev",               "o",              {title: "Holds attributes that the user may configure."}]
+ - ["ydev.product_id",    "s", "DRV8825",   {title: "The Y product ID."}]
+ - ["ydev.unit_name",     "s", "DRV8825_A", {title: "The users name for the device."}]
+ - ["ydev.group_name",    "s", "",          {title: "The yView group name."}]
+ - ["ydev.enable_syslog", "b", false,       {title: "Enable syslogging."}]
+ - ["ydev.option_a",      "i", 0,           {title: "An options field."}]
+ - ["drv8825", "o",                         {"title": "DRV8825 stepper motor controler device"}]
+ - ["drv8825.enable",     "i", 39,          {title:   "DRV8825 module /ENABLE pin"}]
+ - ["drv8825.m0",         "i", 16,          {title:   "DRV8825 module M0 pin"}]
+ - ["drv8825.m1",         "i", 18,          {title:   "DRV8825 module M1 pin"}]
+ - ["drv8825.m2",         "i", 19,          {title:   "DRV8825 module M2 pin"}]
+ - ["drv8825.rst_slp",    "i", 23,          {title:   "DRV8825 module RST & /SLP pins"}]
+ - ["drv8825.step",       "i", 5,           {title:   "DRV8825 module STEP pin"}]
+ - ["drv8825.fault",      "i", 4,           {title:   "DRV8825 module /FAULT pin"}]
+ - ["drv8825.dir",        "i", 15,          {title:   "DRV8825 module DIR pin"}]
+
+libs:
+ - origin: https://github.com/mongoose-os-libs/boards
+ - origin: https://github.com/mongoose-os-libs/ca-bundle
+ - origin: https://github.com/mongoose-os-libs/http-server
+ - origin: https://github.com/mongoose-os-libs/rpc-service-config
+ - origin: https://github.com/mongoose-os-libs/rpc-service-fs
+ - origin: https://github.com/mongoose-os-libs/rpc-uart
+ - origin: https://github.com/mongoose-os-libs/wifi
+ - origin: https://github.com/mongoose-os-libs/ota-common
+ - origin: https://github.com/mongoose-os-libs/ota-http-server
+ - origin: https://github.com/pjaos/syslog.git
+ - origin: https://github.com/pjaos/ydev_ayt_handler.git
+ - origin: https://github.com/pjaos/wifi_button_setup.git
+
+# Used by the mos tool to catch mos binaries incompatible with this file format
+manifest_version: 2017-09-29
