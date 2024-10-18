@@ -13,7 +13,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Vector;
 
-import com.jcraft.jsch.IO;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
