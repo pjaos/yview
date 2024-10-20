@@ -1,7 +1,9 @@
 #!/bin/bash
 
 SSH=/home/$USER/.ssh
-chown $USER:sshgroup $SSH/authorized_keys && chmod 600 $SSH/authorized_keys
+chown $USER:sshgroup $SSH
+chown $USER:sshgroup $SSH/authorized_keys 
+chmod 600 $SSH/authorized_keys
 
 if [[ "$SUDO" == "true" ]]; then
     if [[ "$SUDO_REQUIRE_PASSWORD" == "true" ]]; then
@@ -23,15 +25,20 @@ else
 fi
 
 if [[ "$ALLOW_SSH_PASSWORD" == "true" ]]; then
-    sed -i '/^#PasswordAuthentication/c\PasswordAuthentication yes' /etc/ssh/sshd_config
-    sed -i '/^PasswordAuthentication/c\PasswordAuthentication yes' /etc/ssh/sshd_config
+    echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
     echo "User/password ssh access is enabled."
 else
-    sed -i '/^PasswordAuthentication/c\PasswordAuthentication no' /etc/ssh/sshd_config
+    echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
     echo "User/password ssh access is disabled."
 fi
 
 
 service ssh start
 mosquitto &
+
+# Added so that the docker logs show the contents of the ssh folder when the container starts
+ls -altR /home/${USER}/.ssh/
+cat /home/${USER}/.ssh/*
+echo ""
+
 /root/.local/bin/icons_mqtt_rpc_provider --server 127.0.0.1 2>&1 > /tmp/boot.log

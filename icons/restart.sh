@@ -1,4 +1,5 @@
 #!/bin/sh
 
-docker-compose stop
-docker-compose up -d
+./stop.sh
+./build.sh
+./start.sh

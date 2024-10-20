@@ -33,13 +33,6 @@ RUN pipx ensurepath
 COPY assets/icons_rpc_provider-0.1.0-py3-none-any.whl /tmp
 RUN pipx install /tmp/icons_rpc_provider-0.1.0-py3-none-any.whl
 
-# We copy the authorized_keys file to the container.
-# If is recomended that ALLOW_SSH_PASSWORD is set false.
-# If this is the case the only way to connect to the ssh server
-# is to add your public ssh key to this file and then build the container.  
-COPY assets/authorized_keys /home/$USER/.ssh/
-RUN chmod 600 /home/$USER/.ssh/authorized_keys
-
 COPY assets/rc.local /etc/rc.local
 RUN chmod +x /etc/rc.local
 
