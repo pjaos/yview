@@ -37,5 +37,9 @@ COPY assets/rc.local /etc/rc.local
 RUN chmod +x /etc/rc.local
 
 RUN groupadd sshgroup && useradd -ms /bin/bash -g sshgroup $USER
+RUN mkdir -p /home/$USER/.ssh
+RUN chown $USER /home/$USER/.ssh
+COPY assets/authorized_keys /home/$USER/.ssh
+RUN chown $USER /home/$USER/.ssh/authorized_keys
 
 CMD /etc/rc.local

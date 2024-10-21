@@ -30,7 +30,8 @@ This defines whether `sudo` is enabled. The default for this value is true but i
 If SUDO=true then this options is used. If you wish to allow sudo access but require that the user must enter the user password then this option should be set to true. In this case a user password must be set. The default for this value is false.
 
 ### ALLOW_SSH_PASSWORD
-If this is set to true then a password maybe entered over the ssh connection to login to the ssh server. The default for this option is false. By default the only way to login to the ssh server is to include a public ssh key in the ssh/authorized_keys file.
+If this is set to true then a password maybe entered over the ssh connection to login to the ssh server. The default for this option is false.
+By default the only way to login to the ssh server is to include a public ssh key in the assets/authorized_keys file.
 
 ## Building the docker container
 
@@ -46,3 +47,5 @@ Use ssh to connect to the container once it is started
 ```
 ssh -p 2222 <username>@localhost
 ```
+
+The assets/authorized_keys file must be updated (assuming ALLOW_SSH_PASSWORD=false) to allow access to the internet connection server (icons). If you update this file run the ./restart.sh script to rebuild the container with the updated file.

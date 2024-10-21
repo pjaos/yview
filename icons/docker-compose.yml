@@ -13,8 +13,8 @@ services:
         - SUDO_REQUIRE_PASSWORD=false
         - ALLOW_SSH_PASSWORD=false
 
-    volumes:
-      - ./ssh/:/home/${USER}/.ssh
+#    volumes:
+#      - ./ssh/:/home/${USER}/.ssh
     ports:
       - "2222:22"
 
