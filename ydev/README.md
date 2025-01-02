@@ -1,40 +1,18 @@
 # YDev
-Run in a Linux machine to add a device (Linix machine) to the YView networking platform.
+Run on a machine to add a device to the YView network.
 
-## Installing on Linux
-The git repo must be present on the target machine. The following command can
-then be executed.
+## Installing ydev
+The python wheel package can be built by running the build.sh script.
 
-```
-sudo ./install.sh
-```
+### Installing pipx
+pipx must be installed on your machine before proceeding with installation. Details of how to install pipx can be found [here](https://pipx.pypa.io/latest/installation/).
 
-If you do not have python3.8.2 or greater installed on the target machine
-you will be prompted to indicate that the package requires python3.8.2 or
-greater.
-
-The following commands can be used to install python3.10.4 onto Debian based Linux systems.
+### Installing ydev
+Copy the *.whl (E.G installers/ydev-3.8.3-py3-none-any.whl) to the target machine. Open a terminal session on your
+computer and run the following command assuming the *.whl file is sitting in the /tmp folder.
 
 ```
-sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev wget curl
-sudo apt install libssl-dev libffi-dev
-cd /tmp
-curl -O https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tar.xz
-tar -xf Python-3.10.4.tar.xz
-cd Python-3.10.4
-./configure --enable-optimizations
-sudo make altinstall
-sudo python3.10 -m pip install --upgrade pip
-```
-If no python3 version is installed then The commands to do this on Linux machines will be provided.
-
-## Installing on non Linux operating systems
-
-- Install python3.8 or greater on the target machine if not already installed.
-- Run the following command to install ydev from this folder.
-
-```
-python3 -m pip install .
+pipx install /tmp/ydev-3.8.3-py3-none-any.whl
 ```
 
 ## Configuration
@@ -50,7 +28,7 @@ INFO:  ID  PARAMETER     VALUE
 INFO:  1   UNIT_NAME     My Linux Laptop
 INFO:  2   PRODUCT_ID    Server
 INFO:  3   SERVICE_LIST  ssh:22,vnc:5900
-INFO:  4   GROUP_NAME    
+INFO:  4   GROUP_NAME
 INFO:  5   AYT_MSG       -!#8[dkG^v's!dRznE}6}8sP9}QoIR#?O&pg)Qra
 INPUT: Enter 'E' to edit a parameter, 'S' to save and quit or 'Q' to quit:
 ```

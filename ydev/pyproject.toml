@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "ydev"
+version = "3.8.3"
+description = ""
+authors = ["Paul Austen <pjaos@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+p3lib = "^1.1.100"
+
+[tool.poetry.scripts]
+ydev = "ydev.ydev:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
