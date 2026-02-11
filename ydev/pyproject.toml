@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 p3lib = "^1.1.100"
+cryptography = "^46.0.5"
 
 [tool.poetry.scripts]
 ydev = "ydev.ydev:main"
