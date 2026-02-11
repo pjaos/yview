@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.10"
 p3lib = "^1.1.91"
 paho-mqtt = "*"
+cryptography = "^46.0.5"
 
 [tool.poetry.scripts]
 icons_mqtt_rpc_provider = "icons_rpc_provider.icons_mqtt_rpc_provider:main"
