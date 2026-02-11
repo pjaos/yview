@@ -14,6 +14,7 @@ p3lib = "^1.1.81"
 paho-mqtt = "*"
 paramiko = "*"
 texttable = "*"
+cryptography = "^46.0.5"
 
 [tool.poetry.scripts]
 icons_gw = "icons_gw.icons_gw:main"
