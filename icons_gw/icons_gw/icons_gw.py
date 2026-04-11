@@ -40,7 +40,7 @@ class IconsGWConfig(object):
     LOCATION                            = "location"
     AYT_MSG                             = "are_you_there_message"
     PRIVATE_KEY_FILE                    = "private_key_file"
-    AYT_DISCOVERY_INTERFACE             = "device_discovery_interface"    
+    AYT_DISCOVERY_INTERFACE             = "device_discovery_interface"
 
     DEFAULT_GROUP_NAME       = "none"
     DISABLE_SYSLOG_FILE      = "disable_icons_gw_syslog"
@@ -48,7 +48,7 @@ class IconsGWConfig(object):
     DEFAULT_DEV_POLL_PERIOD  = 10
     CONFIG_FILENAME          = "icons_gw.cfg"
     DEFAULT_AYT_MSG          = "-!#8[dkG^v's!dRznE}6}8sP9}QoIR#?O&pg)Qra"
-    
+
     DEFAULT_CONFIG = {
         SERVER:                     "",
         SERVER_PORT:                "22",
@@ -58,7 +58,7 @@ class IconsGWConfig(object):
         PRIVATE_KEY_FILE:           "",
         AYT_DISCOVERY_INTERFACE:    ""
     }
-    
+
     @staticmethod
     def GetHomePath():
         """Get the user home path as this will be used to store config files"""
@@ -96,10 +96,10 @@ class IconsGWConfig(object):
     def configure(self):
         """@brief configure the required parameters for normal operation."""
         self._configManager.configure(self._editConfig)
-        
+
     def _showAvalableNetworkInterfaces(self):
         """@param Show the use the available network interfaces.
-           @return A list of network interface names in the order in which they 
+           @return A list of network interface names in the order in which they
                    appear in the displayed list."""
         self._uio.info("Available network interfaces.")
         self._uio.info("ID    Name            Address")
@@ -117,10 +117,10 @@ class IconsGWConfig(object):
             nameList.append(ifName)
             ifNameID = ifNameID + 1
         return nameList
-                 
+
     def _enterDiscoveryInterface(self):
         """@brief Allow the user to enter a network interface name to discover YView devices on.
-                  This is optional. If the user enters none then AYT broadcast messages are sent 
+                  This is optional. If the user enters none then AYT broadcast messages are sent
                   over all network interfaces."""
         self._uio.info("Select the interface/s to find YView devices over.")
         self._uio.info("")
@@ -134,13 +134,13 @@ class IconsGWConfig(object):
                 self._configManager.addAttr(IconsGWConfig.AYT_DISCOVERY_INTERFACE, ifNameList[selectedIndex])
             else:
                 raise Exception("{} ID is not valid for {} interface list.".format(idSelected, ",".join(ifNameList)))
-         
+
     def _editConfig(self, key):
         """@brief Edit an icons_gw persistent config attribute.
            @param key The dictionary key to edit."""
         if key == IconsGWConfig.SERVER:
             self._configManager.inputStr(IconsGWConfig.SERVER, "The ICON server (ICONS) address", False)
-            
+
         elif key == IconsGWConfig.SERVER_PORT:
             self._configManager.inputDecInt(IconsGWConfig.SERVER_PORT, "The ICON server TCP IP port", 1, 65535)
 
@@ -165,7 +165,7 @@ class IconsGWConfig(object):
 
         elif key == IconsGWConfig.AYT_DISCOVERY_INTERFACE:
             self._enterDiscoveryInterface()
-            
+
     def loadConfigQuiet(self):
         """@brief Load the config without displaying a message to the user."""
         self._configManager.load(showLoadedMsg=False)
@@ -432,7 +432,7 @@ class ServiceConfigurator(object):
 
         host = self._uo.getInput("The address of the machine providing this service [%s] " % (serviceConfig.host) )
         if not host:
-            host = serviceConfig.host  
+            host = serviceConfig.host
 
         groupName = self.getValidInput("Enter group name [%s] " % (serviceConfig.groupName), allowNoInput=True )
         if not groupName or len(groupName) == 0 or groupName.lower() == "none":
@@ -527,13 +527,13 @@ class AreYouThereThread(threading.Thread):
         netIF = NetIF()
         # Don't exit until we have the multicast address
         while len(subNetMultiCastAddressList) == 0:
-            ifDict = netIF.getIFDict()
+            ifDict = netIF.getIFDict(readNow=True)
             if ifName in ifDict:
                 ipList = ifDict[ifName]
                 for elem in ipList:
                     elems = elem.split("/")
                     if len(elems) == 2:
-                        # Extract the interface IP address. Calc the multicast IP address 
+                        # Extract the interface IP address. Calc the multicast IP address
                         # for the subnet and add this to the list for the interface.
                         try:
                             ipAddress = elems[0]
@@ -544,15 +544,15 @@ class AreYouThereThread(threading.Thread):
                             subNetMultiCastAddress = NetIF.Int2IPStr(intMulticastAddress)
                             subNetMultiCastAddressList.append(subNetMultiCastAddress)
                         except ValueError as ex:
-                            uo.error("Unable to obtain multicast address for {}: {}".format(ifName, str(ex))) 
-                
+                            uo.error("Unable to obtain multicast address for {}: {}".format(ifName, str(ex)))
+
             else:
                 uo.error("{} is not a local network interface name.".format(ifName))
                 uo.warn("Wait {} seconds for {} interface to come up.".format(ifDownDelay, ifName))
                 sleep(ifDownDelay)
-            
+
         return subNetMultiCastAddressList
-    
+
     def __init__(self, uo, sock, options):
         """@brief Constructor
            @param uo The UserOutput object
@@ -728,7 +728,7 @@ class IconsClient(object):
         self._mqttRPCCallerClient.connect()
         _thread.start_new_thread( self._mqttRPCCallerClient.loopForever, () )
         # PJA Not sure this is needed
-        #self._mqttRPCCallerClient.waitForConnectSuccess() 
+        #self._mqttRPCCallerClient.waitForConnectSuccess()
 
     def _startServerWithException(self):
         """@brief Called to connect to the ssh server running the ICONS MQTT server.
@@ -748,11 +748,11 @@ class IconsClient(object):
                 raise IconsClientError("%s file not found. Please reconfigure and try again." % (self._options.private_key) )
 
             #Build an ssh connection to the ICON server
-            self._ssh = SSH(self._options.server, 
-                            self._options.username, 
-                            port=self._options.server_port, 
-                            useCompression=not self._options.no_comp, 
-                            privateKeyFile=self._options.private_key, 
+            self._ssh = SSH(self._options.server,
+                            self._options.username,
+                            port=self._options.server_port,
+                            useCompression=not self._options.no_comp,
+                            privateKeyFile=self._options.private_key,
                             uio=self._uo)
             self._ssh.connect()
             self._locaIPAddress = self._ssh.getLocalAddress()
@@ -1200,7 +1200,7 @@ class IconsGW(IconsClient):
         """@brief Enable this program to auto start when the computer on which it is installed starts."""
         bootManager = BootManager(ensureRootUser=True)
         bootManager.remove()
-        
+
     def checkAutoStartStatus(self):
         """@brief Check the status of a process previously set to auto start."""
         bootManager = BootManager()
@@ -1208,7 +1208,7 @@ class IconsGW(IconsClient):
         if lines and len(lines) > 0:
             for line in lines:
                 self._uo.info(line)
-        
+
 
 def main():
     uio = UIO()
@@ -1235,7 +1235,7 @@ def main():
 
         if options.log_file:
             uio.setLogFile(options.log_file)
-           
+
         iconsGWConfig = IconsGWConfig(uio, IconsGWConfig.CONFIG_FILENAME)
 
         handled = BootManager.HandleOptions(uio, options, True)
