@@ -7,8 +7,11 @@ verify_ssl = true
 
 [packages]
 # >= 3.3.2 to fix security vulnerability reported by github.
-cryptography = "==46.0.5"
-paramiko = ">=2.10.1"
+#cryptography = "==46.0.5"
+cryptography = ">=46.0.7"
+paramiko = ">=3.4.0"
+PyNaCl = ">=1.6.2,<2.0.0"
+
 # requires
 # sudo apt-get install python3-dev default-libmysqlclient-dev build-essential
 # to install mysqlclient
@@ -17,4 +20,4 @@ paho-mqtt = "*"
 p3lib = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.12"
