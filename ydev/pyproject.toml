@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ydev"
-version = "3.8.3"
+version = "3.8.4"
 description = ""
 authors = ["Paul Austen <pjaos@gmail.com>"]
 readme = "README.md"
@@ -8,7 +8,9 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 p3lib = "^1.1.100"
-cryptography = "^46.0.5"
+cryptography = "^46.0.7"
+pillow = "^12.1.1"
+PyNaCl = "^1.6.2"
 
 [tool.poetry.scripts]
 ydev = "ydev.ydev:main"
