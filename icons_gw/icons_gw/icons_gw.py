@@ -355,6 +355,7 @@ class ServiceConfigurator(object):
 
     def addService(self):
         """@brief Add a service to the list of configured services"""
+        existing_service_list = ServiceConfigurator.GetServiceList()
         self._uo.info("Device Type")
         self._uo.info("This can be any string (not containing commas) that describes the device.")
         self._uo.info("E.G Server, Heating Controller, etc...")
@@ -363,12 +364,16 @@ class ServiceConfigurator(object):
             return
 
         self._uo.info("Service Name")
-        self._uo.info("This should identify the service being provided.")
-        self._uo.info("E.G Server, ssh or http or vnc, etc...")
+        self._uo.info("This should uniquely identify the service being provided.")
+        self._uo.info("E.G Server, ssh, http, vnc, or any unique name to identify the service from the device.")
         serviceName = self.getValidInput("Enter service name")
         if serviceName == None:
             return
         serviceName=serviceName.upper()
+        for service in existing_service_list:
+            if service.serviceName.upper() == serviceName:
+                self._uo.error(f"The {serviceName} already exists. Please use another name for the service.")
+                return
 
         port = self.getInteger("The TCP IP port that the machine provides the service on.", 1, 65534)
         host = self._uo.getInput("The address of the machine providing this service.")
