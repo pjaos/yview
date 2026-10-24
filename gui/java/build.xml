@@ -58,7 +58,7 @@
         </java>
     </target>
 
-    <target name="create_jar">
+    <target name="create_jar"  depends="build">
         <jar destfile="yview.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="yview.controller.Main"/>
