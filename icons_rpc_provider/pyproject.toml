@@ -6,11 +6,11 @@ authors = ["Paul Austen <pjaos@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.11,<4.0"
 p3lib = "^1.1.91"
 paho-mqtt = "*"
 cryptography = "^46.0.7"
-pillow = "^12.1.1"
+pillow = "^13.0.0"
 PyNaCl = "^1.6.2"
 
 [tool.poetry.scripts]
