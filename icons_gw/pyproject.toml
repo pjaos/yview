@@ -14,7 +14,7 @@ p3lib = "^1.1.158"
 paho-mqtt = "*"
 paramiko = "^3.4.0"
 texttable = "*"
-cryptography = "^46.0.7"
+cryptography = "^49.0.0"
 pillow = "^13.0.0"
 PyNaCl = "^1.6.2"
 
